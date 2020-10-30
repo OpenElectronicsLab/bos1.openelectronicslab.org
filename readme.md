@@ -1,0 +1,57 @@
+# bos1.openelectronicslab.org
+
+This is a repository for configuration files for the servers in the
+bos1.openelectronicslab.org subdomain.
+
+## Directory structure
+
+  - `ssh-keys`: contains ssh public keys for users and administrators
+  - `gpg-keys`: contains gpg public keys for users and administrators
+
+
+## Setup notes
+
+### GPG setup
+
+Each user will need to generate a GPG key as follows (if they don't already
+have one):
+
+    gpg --full-gen-key
+
+Choose RSA/RSA keys with a 4096 bit key length, give it a good password, and
+choose an email address to associate the key with.
+
+You will then need to export your public key to a file:
+
+    gpg -a --output $USER.asc --export [your email address]
+
+Place this file in the `gpg-keys` directory.
+
+The easiest way to share the keys with another machine is just by copying the
+contents of the `~/.gnupg` directory:
+
+    scp -r ~/.gnupg [remote host]:
+
+You can also copy individual keys using the `--export-secret-key` and
+`--import` flags for GPG - see the documentation for more details.
+
+
+### Bootstrapping the servers
+
+First, you'll need to create a bootable USB drive for morchella0:
+
+    cd initial-boot/morchella
+    make
+    sudo dd if=morchella0.iso of=[usb device] bs=16M
+
+## TODO
+
+- ansible framework, including GPG encrypted secrets
+- basic ansible setup for morchella
+- morchella wireguard and kvm setup
+- DHCP server setup
+- PXE boot setup
+- boletus PXE boot
+- boletus ansible setup
+- static IP setup
+- ...
