@@ -5,9 +5,10 @@ bos1.openelectronicslab.org subdomain.
 
 ## Directory structure
 
-  - `ssh-keys`: contains ssh public keys for users and administrators
-  - `gpg-keys`: contains gpg public keys for users and administrators
-
+  - `ssh-keys`: ssh public keys for users and administrators
+  - `gpg-keys`: gpg public keys for users and administrators
+  - `initial-boot`: files for installing a basic OS on first boot
+      - `morchella`: usb setup drive for the firewall server
 
 ## Setup notes
 
@@ -43,6 +44,10 @@ First, you'll need to create a bootable USB drive for morchella0:
     cd initial-boot/morchella
     make
     sudo dd if=morchella0.iso of=[usb device] bs=16M
+
+Next, you'll need to boot the firewall from this drive, which will install a
+minimal Debian setup with an encrypted root partition and Dropbear client for
+remotely unlocking the drive during boot.
 
 ## TODO
 
