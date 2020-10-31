@@ -48,15 +48,3 @@ First, you'll need to create a bootable USB drive for morchella0:
 Next, you'll need to boot the firewall from this drive, which will install a
 minimal Debian setup with an encrypted root partition and Dropbear client for
 remotely unlocking the drive during boot.
-
-## TODO
-
-- ansible framework, including GPG encrypted secrets
-- basic ansible setup for morchella
-- morchella wireguard and kvm setup
-- DHCP server setup
-- PXE boot setup
-- boletus PXE boot
-- boletus ansible setup
-- static IP setup
-- ...
