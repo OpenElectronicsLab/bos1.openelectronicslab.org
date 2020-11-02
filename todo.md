@@ -1,15 +1,24 @@
 # TODO
 
 ## supporting physical machines
-- ansible framework, including GPG encrypted secrets
 - basic ansible setup for morchella
 - morchella wireguard and kvm setup
-- DHCP server setup
+- morchella DHCP server setup
+- morchella proxy server setup
 - PXE boot setup
 - boletus PXE boot
 - boletus ansible setup
 - static IP setup
-- ...
+- back-haul network setup
+- boletus firewall/reverse proxy setup (keepalived + haproxy?)
+- virtual machine hypervisor (kvm/virt-lib?)
+- network storage setup (ceph?)
+
+## virtual machine infrastructure
+- clustering setup (kubernetes?)
+- networking layer (calico?)
+- microservice mesh (istio?)
+- logging/metrics (Prometheus + Grafana?)
 
 ## services
 - DNS (unbound?)
