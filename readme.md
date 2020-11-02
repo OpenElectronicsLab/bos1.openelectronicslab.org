@@ -63,8 +63,9 @@ This will print out an Ansible variable declaration with an encrypted value
 that can be cut and pasted into Ansible code.  The value itself will be a
 45 character (upper and lower case letter) password, containing about 256
 bits of entropy.  Note that adding numbers, underscores, and dashes would
-only add about 0.3 bits per character, and thus the resulting passwords would
-only be about 3 characters shorter but slower to type.
+only add about 0.3 bits of entropy per character, and thus the resulting
+passwords would only be about 2 characters shorter and would likely be more
+cumbersome and error-prone to type.
 
 If random passwords of another form are needed, (e.g. of a
 different length) they can often easily be generated just by modifying the code
