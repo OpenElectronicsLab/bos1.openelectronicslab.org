@@ -1,0 +1,13 @@
+---
+  - hosts: all
+    gather_facts: false
+    tasks:
+      - name: builtin variable test
+        debug:
+            var: inventory_hostname
+      - name: host var test
+        debug:
+            var: foo
+      - name: encrypted host var test
+        debug:
+            var: secret_foo

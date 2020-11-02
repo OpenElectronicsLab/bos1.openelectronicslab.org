@@ -1,8 +1,9 @@
 TARGET_ISO=morchella0.iso
 DEBIAN_ISO_URL=https://cdimage.debian.org/mirror/cdimage/archive/10.3.0/amd64/iso-cd/debian-10.3.0-amd64-netinst.iso
 ISO_EXTRACTED_TAG=iso/README.txt
-AUTHORIZED_KEY_FILES= ../../ssh-keys/ace.keys ../../ssh-keys/eric.keys \
-					  ../../ssh-keys/kms15.keys
+AUTHORIZED_KEY_FILES= ../../secrets/ssh-keys/ace.keys \
+					  ../../secrets/ssh-keys/eric.keys \
+					  ../../secrets/ssh-keys/kms15.keys
 
 default: $(TARGET_ISO)
 
