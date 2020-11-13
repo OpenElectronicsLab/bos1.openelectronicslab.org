@@ -1,0 +1,39 @@
+---
+# tasks file for unlock_luks
+  - name: Unlock encrypted root drive
+    block:
+      - name: check if the server is already unlocked
+        wait_for:
+            port: 22
+            host: '{{ inventory_hostname }}'
+            connect_timeout: 1
+            timeout: 5
+        connection: local
+    rescue:
+      - name: Unlock the root filesystem with the assigned passphrase
+        block:
+          - name: send the unlock string
+            local_action: command /bin/bash -c
+                "printf \"{{ luks_password }}\" |
+                    ssh root@{{ inventory_hostname }} -p 23"
+            no_log: true
+          - name: wait for the server to come up to confirm that it
+                successfully unlocked
+            wait_for_connection:
+                connect_timeout: 1
+                timeout: 30
+        rescue:
+          - name: unlock the root filesystem with the installer's default
+                passphrase and ssh key
+            local_action: command /bin/bash -c
+                "printf \"temp\" |
+                    ssh root@{{ inventory_hostname }} -p 23"
+            no_log: true
+          - name: wait for the server to come up to confirm that it
+                successfully unlocked
+            wait_for:
+                port: 22
+                host: '{{ inventory_hostname }}'
+                connect_timeout: 1
+                timeout: 30
+            connection: local

@@ -1,13 +1,9 @@
 ---
-  - hosts: all
+    # first unlock any machines that have rebooted
+  - hosts: luks_encrypted_machines
     gather_facts: false
-    tasks:
-      - name: builtin variable test
-        debug:
-            var: inventory_hostname
-      - name: host var test
-        debug:
-            var: foo
-      - name: encrypted host var test
-        debug:
-            var: secret_foo
+    roles:
+      - role: add_to_known_hosts
+        ansible_port: 23
+        add_to_known_hosts__skip_if_connect_fails: true
+      - unlock_luks

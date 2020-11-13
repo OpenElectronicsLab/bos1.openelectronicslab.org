@@ -1,0 +1,20 @@
+---
+  - name: Check SSH known_hosts for host key for port {{ ansible_port }}
+    connection: local
+    shell: "ssh-keygen -F {{ ('{}' if ansible_port==22 else '[{}]:{}').format(
+        inventory_hostname, ansible_port) }}"
+    register: ssh_key_check
+    failed_when: false
+    changed_when: false
+    ignore_errors: yes
+    become: false
+  - name: Add host key for port {{ ansible_port }} to known_hosts if missing
+    connection: local
+    shell: ssh-keyscan -p {{ ansible_port }} {{ inventory_hostname }}
+        >> ~/.ssh/known_hosts
+    register: keyscan_result
+    when: ssh_key_check.rc == 1
+    changed_when: ssh_key_check.rc == 1 and keyscan_result.rc == 0
+    failed_when: keyscan_result != 0 and
+        not add_to_known_hosts__skip_if_connect_fails
+    become: false

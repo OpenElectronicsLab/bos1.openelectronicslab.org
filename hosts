@@ -1,2 +1,18 @@
-[firewalls]
+# Physical machines:
+
+# Physical server with an Atom D510 processor serving as a firewall
+# for IPMI ports.
+[morchella]
 morchella0
+
+
+# Functional machine groups:
+
+# machines providing firewalls for IPMI ports
+[ipmi_firewalls:children]
+morchella
+
+# machines with LUKS-encrypted root file systems that are unlocked
+# using ssh
+[luks_encrypted_machines:children]
+morchella
