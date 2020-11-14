@@ -2,4 +2,5 @@
 # If unable to connect to ssh, should the task be skipped or marked as
 # a failure?  (If marked as a failure, ansible will not try to run later
 # tasks on this host.)
+add_to_known_hosts__ssh_port : 22
 add_to_known_hosts__skip_if_connect_fails : False

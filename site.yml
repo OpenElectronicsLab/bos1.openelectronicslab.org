@@ -4,7 +4,9 @@
     gather_facts: false
     roles:
       - role: add_to_known_hosts
-        ansible_port: 23
+        add_to_known_hosts__skip_if_connect_fails: true
+      - role: add_to_known_hosts
+        add_to_known_hosts__ssh_port: 23
         add_to_known_hosts__skip_if_connect_fails: true
       - unlock_luks
     tasks:
