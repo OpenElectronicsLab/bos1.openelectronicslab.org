@@ -7,3 +7,12 @@
         ansible_port: 23
         add_to_known_hosts__skip_if_connect_fails: true
       - unlock_luks
+    tasks:
+      - name: run_lsb
+        command: lsb_release --all
+        vars:
+            ansible_user: root
+        register: lsb_release
+      - name: print_lsb
+        debug:
+            var: lsb_release
