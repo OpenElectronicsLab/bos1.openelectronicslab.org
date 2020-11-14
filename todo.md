@@ -39,3 +39,8 @@
 - move tdf email into our infra
 - spin-down tdf
 - move kendrickshaw.org website
+
+## improvements
+- document how the "temp" passphrase can be exploited if there is physical
+  access to the machines
+- replace the "temp" passphrase with a secret
