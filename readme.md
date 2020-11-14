@@ -8,6 +8,7 @@ bos1.openelectronicslab.org subdomain.
   - `host-vars`: Ansible variable definitions for specific machines.
   - `initial-boot`: files for installing a basic OS on first boot
       - `morchella`: usb setup drive for the firewall server
+  - `roles`: Ansible roles
   - `secrets`: files involved in secrets management
       - `ssh-keys`: ssh public keys for users and administrators
       - `gpg-keys`: gpg public keys for users and administrators
