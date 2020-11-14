@@ -61,6 +61,44 @@ the contents of the `~/.gnupg` directory:
 You can also copy individual keys using the `--export-secret-key` and
 `--import` flags for GPG - see the documentation for more details.
 
+#### GPG Agent Forwarding
+
+Agent forwarding can be done with ssh. The syntax is along the lines of port
+forwarding, but with sockets paths, similar to this:
+
+    LOCAL_SOCKET=$(gpgconf --list-dir agent-extra-socket)
+    REMOTE_SOCKET=$(ssh $REMOTE_HOSTNAME gpgconf --list-dir agent-socket)
+    ssh $REMOTE_HOSTNAME rm $REMOTE_SOCKET
+    ssh -R $REMOTE_SOCKET:$LOCAL_SOCKET $REMOTE_HOSTNAME
+
+
+The agent-extra-socket is a restricted socket.  You may see errors like:
+
+    gpg: connection to agent is in restricted mode
+    gpg: setting pinentry mode 'loopback' failed: Forbidden
+
+or:
+
+    gpg: public key decryption failed: Invalid IPC response
+
+If this is the case, try using the non-restricted socket:
+
+    LOCAL_SOCKET=$(gpgconf --list-dir agent-socket)
+
+If you have text-entry of the gpg passphrase, ensure `~/.gnupg/gpg.conf`
+contains:
+
+    use-agent
+    pinentry-mode loopback
+
+And ensure `~/.gnupg/gpg-agent.conf` contains:
+
+    allow-loopback-pinentry
+
+Restart the agent with:
+
+    echo RELOADAGENT | gpg-connect-agent
+
 #### Creating new secrets
 
 A new password (e.g. for an SQL admin account) can be generated with the
