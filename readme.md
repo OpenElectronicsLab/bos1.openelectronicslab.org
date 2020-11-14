@@ -39,9 +39,17 @@ You will then need to export your public key to a file:
 
     gpg -a --output $USER.asc --export [your email address]
 
-Place this file in the `secrets/gpg-keys` directory, then have someone with
-access to the repository re-encrypt each of the vault keys using the new set
-of GPG keys, e.g.
+If you have multiple keys with the same email address the fingerprint can be
+used instead.
+
+Place this file in the `secrets/gpg-keys` directory:
+
+    cp -iv $USER.asc secrets/gpg-keys
+    git add secrets/gpg-keys/$USER.asc
+    # git commit && git push
+
+After pushing the key, have someone with access to the repository re-encrypt
+each of the vault keys using the new set of GPG keys, e.g.
 
     secrets/re-encrypt-vault-key.sh vault0
 
