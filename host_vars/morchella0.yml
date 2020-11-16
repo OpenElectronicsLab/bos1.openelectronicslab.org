@@ -16,3 +16,14 @@ luks_password: !vault |
           64363035636135666266396535623334646262616162636532643766333562656438653838373439
           3834643937363631323666393931393530653337393164643334
 ssh_jump_host: kendrickshaw.org
+router_downstream_interfaces:
+  - enp3s0f0
+  - enp3s0f1
+  - enp4s0f0
+  - enp4s0f1
+  - enp5s0f0
+router_upstream_interface:
+  - enp6s0f0
+router_downstream_address: 172.16.0.1
+router_downstream_netmask: 255.255.255.0
+router_downstream_broadcast: 172.16.0.0

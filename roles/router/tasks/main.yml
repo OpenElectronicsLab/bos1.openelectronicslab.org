@@ -1,0 +1,83 @@
+---
+  - name: Install packages
+    apt:
+        name: "{{ item }}"
+        state: present
+    loop:
+        - bridge-utils
+        - isc-dhcp-server
+
+  - name: Configure downstream network interfaces
+    copy:
+        dest: /etc/network/interfaces.d/50-{{ item }}
+        content: |
+            allow-hotplug {{ item }}
+                iface {{ item }} inet manual
+    register: configure_interfaces
+    loop: "{{ router_downstream_interfaces }}"
+
+  - name: restart downstream interfaces
+    command: bash -c "
+        ifdown --ignore-errors {{ item.item }} ;
+        ifup --ignore-errors {{ item.item }}
+        "
+    when: item.changed
+    loop: "{{ configure_interfaces.results }}"
+
+  - name: Configure bridge
+    copy:
+        dest: /etc/network/interfaces.d/60-{{ router_bridge_name }}
+        content: |
+            auto {{ router_bridge_name }}
+            iface {{ router_bridge_name }} inet static
+                address {{ router_downstream_address }}
+                netmask {{ router_downstream_netmask }}
+                broadcast {{ router_downstream_broadcast }}
+                bridge_ports {% for interface in router_downstream_interfaces %}
+                    {{- interface }} {% endfor %}
+    register: configure_bridge
+
+  - name: restart bridge
+    command: bash -c "
+        ifdown --ignore-errors {{ router_bridge_name }} ;
+        ifup --ignore-errors {{ router_bridge_name }}
+        "
+    when: configure_bridge.changed
+
+  - name: Enable IPv4 forwarding in /etc/sysctl.conf
+    lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^\s*net.ipv4.ip_forward\s*='
+        line: net.ipv4.ip_forward=1
+    register: enable_forwarding
+
+  - name: If needed, enable forwarding in the running kernel
+    command: sysctl -w net.ipv4.ip_forward=1
+    when: enable_forwarding.changed
+
+  - name: Set up NAT rules for traffic on {{ router_upstream_interface }}
+    iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: "{{ router_upstream_interface }}"
+        jump: MASQUERADE
+        action: append
+
+  - name: Forward traffic from {{ router_bridge_name }} to
+        {{ router_upstream_interface }}
+    iptables:
+        chain: FORWARD
+        in_interface: "{{ router_bridge_name }}"
+        out_interface: "{{ router_upstream_interface }}"
+        jump: ACCEPT
+
+  - name: Forward established traffic from {{ router_upstream_interface }} to
+        {{ router_bridge_name }}
+    iptables:
+        chain: FORWARD
+        in_interface: "{{ router_upstream_interface }}"
+        out_interface: "{{ router_bridge_name }}"
+        ctstate:
+          - ESTABLISHED
+          - RELATED
+        jump: ACCEPT
