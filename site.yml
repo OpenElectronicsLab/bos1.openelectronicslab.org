@@ -1,5 +1,5 @@
 ---
-    # first unlock any machines that have rebooted
+    # First unlock any machines that have rebooted
   - hosts: luks_encrypted_machines
     gather_facts: false
     roles:
@@ -9,12 +9,12 @@
         add_to_known_hosts__ssh_port: 23
         add_to_known_hosts__skip_if_connect_fails: true
       - unlock_luks
-    tasks:
-      - name: run_lsb
-        command: lsb_release --all
-        vars:
-            ansible_user: root
-        register: lsb_release
-      - name: print_lsb
-        debug:
-            var: lsb_release
+
+
+    # Next, make sure that all of the machines have admin accounts set up and
+    # automatic security patches enabled.
+  - hosts: all
+    gather_facts: false
+    become: true
+    roles:
+      - role: core_setup

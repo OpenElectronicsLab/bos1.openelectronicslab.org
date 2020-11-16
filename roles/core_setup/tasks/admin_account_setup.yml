@@ -1,0 +1,34 @@
+---
+  - name: gather facts
+    setup:
+  - name: Create an admin group
+    group:
+        name: admin
+        state: present
+  - name: Add admin users as a members of the 'admin' group
+    user:
+        name: "{{ item.username }}admin"
+        comment: "{{ item.fullname }}"
+        groups: admin
+        shell: /bin/bash
+        password: '*'
+    loop: "{{ admin_users }}"
+  - name: set up authorized admin keys
+    authorized_key:
+        user: "{{ item.username }}admin"
+        state: present
+        exclusive: yes
+        key: "{{ lookup('file', 'secrets/ssh-keys/' + item.username + '.keys') }}"
+    loop: "{{ admin_users }}"
+  - name: ensure sudo is installed
+    apt:
+        name: sudo
+        state: present
+    when: ansible_facts['os_family'] == 'Debian'
+  - name: Allow admin users to do passwordless sudo
+    lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%admin(?![a-zA-Z0-9_])'
+        line: '%admin ALL=(ALL) NOPASSWD: ALL'
+        validate: visudo -cf %s

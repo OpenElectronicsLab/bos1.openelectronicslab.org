@@ -1,0 +1,36 @@
+---
+  - set_fact:
+        working_admin_account: true
+  - name: test the admin account
+    block:
+      - wait_for_connection:
+            timeout: 1
+    rescue:
+      - set_fact:
+            working_admin_account: false
+  - import_tasks: admin_account_setup.yml
+    when: working_admin_account
+  - import_tasks: admin_account_setup.yml
+    when: not working_admin_account
+    vars:
+        ansible_user: root
+        become: false
+  - name: Remove any root authorized keys (should use admin user)
+    file:
+        path: /root/.ssh/authorized_keys
+        state: absent
+  - name: Enable unattended upgrades
+    apt:
+        name: "{{ item }}"
+        state: present
+    loop:
+        - unattended-upgrades
+        - apt-listchanges
+    when: ansible_facts['os_family'] == 'Debian'
+  - name: Apply settings for unattended upgrades
+    copy:
+        src: "{{ role_path }}/files/etc_apt_apt.conf.d_02periodic"
+        dest: /etc/apt/apt.conf.d/02periodic
+        owner: root
+        group: root
+    when: ansible_facts['os_family'] == 'Debian'
