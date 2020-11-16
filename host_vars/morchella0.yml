@@ -22,8 +22,7 @@ router_downstream_interfaces:
   - enp4s0f0
   - enp4s0f1
   - enp5s0f0
-router_upstream_interface:
-  - enp6s0f0
+router_upstream_interface: enp6s0f0
 router_downstream_address: 172.16.0.1
 router_downstream_netmask: 255.255.255.0
 router_downstream_broadcast: 172.16.0.0
