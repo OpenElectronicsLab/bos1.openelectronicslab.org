@@ -5,7 +5,7 @@ ansible_user: "{{ lookup('env', 'USER') }}admin"
 
 # If a jump host is specified, add the appropriate command line parameters for
 # ssh.
-ansible_ssh_common_args: "-J {{ ssh_jump_host | default(omit) }}"
+ansible_ssh_common_args: "-oProxyJump={{ ssh_jump_host | default(omit) }}"
 
 # administrative users
 admin_users:
