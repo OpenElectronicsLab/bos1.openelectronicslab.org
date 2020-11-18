@@ -1,0 +1,8 @@
+---
+  - name: add hosts from {{ subnet.name }} subnet to /etc/hosts
+    lineinfile:
+        path: /etc/hosts
+        regexp: "\\b{{ item.key }}\\.{{ subnet.name }}\\b"
+        line: "{{ item.value.ip }} {{ item.key }}.{{ subnet.name }}"
+    loop: "{{ subnet.hosts | dict2items }}"
+

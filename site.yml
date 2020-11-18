@@ -22,6 +22,12 @@
   - hosts: morchella
     become: true
     roles:
+      - role: add_subnet_to_hosts_file
+        vars:
+            subnet: "{{ oel_subnets.bos1_public }}"
+      - role: add_subnet_to_hosts_file
+        vars:
+            subnet: "{{ oel_subnets.bos1_management }}"
       - router
       - dhcp_server
       # pxe_boot_server
