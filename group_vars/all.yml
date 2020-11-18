@@ -16,7 +16,26 @@ admin_users:
   - username: ace
     fullname: Stephanie Medlock
 
+# Put all of the subnets and IP addresses in one place to make it easier to
+# avoid collisions.
 oel_subnets:
+    bos1_public:
+        name: bos1.openelectroncslab.org
+        subnet: 192.168.1.0
+        netmask: 255.255.255.0
+        broadcast: 192.168.1.255
+        gateway: 192.168.1.1
+        hosts:
+            morchella0:
+                ip: 192.168.1.147
+            boletus0:
+                ip: 192.168.1.64
+            boletus1:
+                ip: 192.168.1.65
+            boletus2:
+                ip: 192.168.1.66
+            boletus3:
+                ip: 192.168.1.67
     bos1_management:
         name: management.bos1.openelectroncslab.org
         subnet: 172.16.0.0
