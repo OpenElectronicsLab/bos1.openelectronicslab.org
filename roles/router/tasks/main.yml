@@ -4,8 +4,9 @@
         name: "{{ item }}"
         state: present
     loop:
-        - bridge-utils
-        - isc-dhcp-server
+      - bridge-utils
+      - nftables
+      - iptables-persistent
 
   - name: Configure downstream network interfaces
     copy:
@@ -31,8 +32,8 @@
             auto {{ router_bridge_name }}
             iface {{ router_bridge_name }} inet static
                 address {{ router_downstream_address }}
-                netmask {{ router_downstream_netmask }}
                 broadcast {{ router_downstream_broadcast }}
+                netmask {{ router_downstream_netmask }}
                 bridge_ports {% for interface in router_downstream_interfaces %}
                     {{- interface }} {% endfor %}
     register: configure_bridge
@@ -62,6 +63,7 @@
         out_interface: "{{ router_upstream_interface }}"
         jump: MASQUERADE
         action: append
+    notify: save iptables
 
   - name: Forward traffic from {{ router_bridge_name }} to
         {{ router_upstream_interface }}
@@ -70,6 +72,7 @@
         in_interface: "{{ router_bridge_name }}"
         out_interface: "{{ router_upstream_interface }}"
         jump: ACCEPT
+    notify: save iptables
 
   - name: Forward established traffic from {{ router_upstream_interface }} to
         {{ router_bridge_name }}
@@ -81,3 +84,4 @@
           - ESTABLISHED
           - RELATED
         jump: ACCEPT
+    notify: save iptables

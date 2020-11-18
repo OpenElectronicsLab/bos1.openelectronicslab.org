@@ -22,7 +22,16 @@ router_downstream_interfaces:
   - enp4s0f0
   - enp4s0f1
   - enp5s0f0
-router_upstream_interface: enp6s0f0
-router_downstream_address: 172.16.0.1
-router_downstream_netmask: 255.255.255.0
-router_downstream_broadcast: 172.16.0.0
+router_upstream_interface: enp5s0
+router_bridgename: br0
+router_downstream_address: "{{ oel_subnets.bos1_management.gateway }}"
+router_downstream_netmask: "{{ oel_subnets.bos1_management.netmask }}"
+router_downstream_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
+
+dhcp_interfaces: "{{ router_bridgename }}"
+dhcp_subnet: "{{ oel_subnets.bos1_management.subnet }}"
+dhcp_netmask: "{{ oel_subnets.bos1_management.netmask }}"
+dhcp_gateway: "{{ oel_subnets.bos1_management.gateway }}"
+dhcp_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
+dhcp_domain_name: "{{ oel_subnets.bos1_management.name }}"
+dhcp_range: 172.16.0.192 172.16.0.254

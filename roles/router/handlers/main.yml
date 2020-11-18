@@ -1,0 +1,8 @@
+---
+  - name: save IPv4 iptables
+    command: bash -c "iptables-save > /etc/iptables/rules.v4"
+    listen: save iptables
+
+  - name: save IPv6 iptables
+    command: bash -c "iptables-save > /etc/iptables/rules.v6"
+    listen: save iptables
