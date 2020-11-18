@@ -23,5 +23,5 @@
     become: true
     roles:
       - router
-      # dhcp_server
+      - dhcp_server
       # pxe_boot_server

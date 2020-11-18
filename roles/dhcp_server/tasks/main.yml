@@ -1,0 +1,35 @@
+---
+  - name: Install the ISC DHCP server
+    apt:
+        name: isc-dhcp-server
+        state: present
+
+  - name: Set the interface to use for the DHCP server
+    lineinfile:
+        path: /etc/default/isc-dhcp-server
+        regexp: '^\s*INTERFACESv4\s*='
+        line: 'INTERFACESv4="{{ dhcp_interfaces }}"'
+    notify: restart dhcp server
+
+  - name: Set the DHCP domain name
+    lineinfile:
+        path: /etc/dhcp/dhcpd.conf
+        regexp: '^\s*option\s*domain-name\s'
+        line: option domain-name "{{ dhcp_domain_name }}";
+    notify: restart dhcp server
+
+  - name: Set the DNS servers
+    lineinfile:
+        path: /etc/dhcp/dhcpd.conf
+        regexp: '^\s*option\s*domain-name-servers\s'
+        line: option domain-name-servers 1.1.1.1, 1.0.0.1;
+    notify: restart dhcp server
+
+  - name: set up the subnet
+    blockinfile:
+        path: /etc/dhcp/dhcpd.conf
+        block: |
+            subnet {{ dhcp_subnet }} netmask {{ dhcp_netmask }} {
+                range {{ dhcp_range }};
+                option routers {{ dhcp_gateway }};
+            }
