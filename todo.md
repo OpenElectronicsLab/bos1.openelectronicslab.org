@@ -1,10 +1,8 @@
 # TODO
 
 ## supporting physical machines
-- basic ansible setup for morchella
 - morchella wireguard and kvm setup
 - morchella DHCP server setup
-- morchella proxy server setup
 - PXE boot setup
 - boletus PXE boot
 - boletus ansible setup
@@ -44,3 +42,4 @@
 - document how the "temp" passphrase can be exploited if there is physical
   access to the machines
 - replace the "temp" passphrase with a secret
+- switch from iptables to nftables syntax in ansible scripts
