@@ -30,4 +30,5 @@
             subnet: "{{ oel_subnets.bos1_management }}"
       - router
       - dhcp_server
+      - ipmi_viewer
       # pxe_boot_server

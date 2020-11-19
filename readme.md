@@ -5,6 +5,7 @@ bos1.openelectronicslab.org subdomain.
 
 ## Directory structure
 
+  - `group-vars`: Ansible variable definitions for groups of machines.
   - `host-vars`: Ansible variable definitions for specific machines.
   - `initial-boot`: files for installing a basic OS on first boot
       - `morchella`: usb setup drive for the firewall server
@@ -14,6 +15,21 @@ bos1.openelectronicslab.org subdomain.
       - `gpg-keys`: gpg public keys for users and administrators
       - `vault-keys`: master keys for ansible-vault secrets. Each vault has
         a subdirectory containing a gpg-encrypted key for each user.
+
+## IPMI/KVM access for boletus servers
+
+The boletus servers use an older version of the supermicro BMC software that
+requires an older (unsupported) version of Java to run.  To simplify working
+with these machines, an HTML5-hosted VNC session with an older version of Java
+(and firefox) is hosted in a container on morchella.  It can be accessed on
+local host port 8080, generally by forwarding this port to your local machine,
+e.g.
+
+    ssh -L localhost:8080:localhost:8080 USERNAME@morchella0.bos1.openelectronicslab.org
+
+Note the repetition of `localhost` after the `-L`: leaving off the first
+`localhost` won't cause an error but will allow anyone on your local network
+to also connect to this port (which is probably not what you want).
 
 ## Setup notes
 

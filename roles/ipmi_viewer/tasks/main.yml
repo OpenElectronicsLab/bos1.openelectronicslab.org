@@ -1,0 +1,58 @@
+---
+  - name: Install packages
+    apt:
+        name: "{{ item }}"
+        state: present
+    loop:
+      - docker.io
+      - rsync
+
+  - name: Create the /opt/src/ipmi-kvm-docker directory
+    file:
+        path: /opt/src/ipmi-kvm-docker
+        state: directory
+
+  - name: Create an ipmi_kvm_docker user
+    user:
+        name: ipmi_kvm_docker
+        comment: service account for ipmi-kvm-docker container
+        password: '*'
+        create_home: no
+        system: yes
+
+  - name: Copy the ipmi-kvm-docker source files
+    synchronize:
+        src: files/ipmi-kvm-docker/
+        dest: /opt/src/ipmi-kvm-docker
+        recursive: yes
+        archive: no
+        times: yes
+        links: yes
+    register: copy_ipmi_kvm_docker
+
+  - name: Install the ipmi-kvm-docker container
+    when: copy_ipmi_kvm_docker.changed
+    block:
+      - name: build the ipmi-kvm-docker image
+        command:
+            chdir: /opt/src/ipmi-kvm-docker
+            cmd: docker image build -t ipmi_kvm_docker:latest .
+
+      - name: stop any existing copies of the ipmi_kvm_docker container
+        command: docker container stop ipmi_kvm_docker
+        failed_when: false
+
+      - name: remove any existing copies of the ipmi_kvm_docker container
+        command: docker container rm ipmi_kvm_docker
+        failed_when: false
+
+      - name: start an ipmi_kvm_docker container
+        shell: docker container run --detach
+            --name ipmi_kvm_docker
+            --restart unless-stopped
+            --publish 127.0.0.1:8080:8080
+            --user $(id -u ipmi_kvm_docker):$(id -u ipmi_kvm_docker)
+            --volume /etc/hosts:/etc/hosts
+            --volume /etc/group:/etc/group
+            --volume /etc/passwd:/etc/passwd
+            ipmi_kvm_docker:latest
