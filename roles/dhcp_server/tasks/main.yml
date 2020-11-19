@@ -28,9 +28,23 @@
   - name: set up the subnet
     blockinfile:
         path: /etc/dhcp/dhcpd.conf
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ dhcp_subnet.name }}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK subnet {{ dhcp_subnet.name }}"
         block: |
             subnet {{ dhcp_subnet.subnet }} netmask {{ dhcp_subnet.netmask }} {
                 range {{ dhcp_range }};
                 option routers {{ dhcp_subnet.gateway }};
             }
+    notify: restart dhcp server
+
+  - name: add static ip addresses for hosts with a known mac address
+    blockinfile:
+        path: /etc/dhcp/dhcpd.conf
+        marker: "# {mark} ANSIBLE MANAGED BLOCK host {{ item.key }}"
+        block: |
+            host {{ item.key }} {
+                hardware ethernet {{ item.value.mac }};
+                fixed-address {{ item.value.ip }};
+            }
+    when: item.value.mac is defined
+    loop: "{{ dhcp_subnet.hosts | dict2items }}"
+    notify: restart dhcp server

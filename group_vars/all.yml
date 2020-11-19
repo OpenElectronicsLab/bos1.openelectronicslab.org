@@ -47,20 +47,28 @@ oel_subnets:
                 ip: 172.16.0.1
             boletus0:
                 ip: 172.16.0.2
+                mac: 00:25:90:17:4c:3c
             boletus0-ipmi:
                 ip: 172.16.0.3
+                mac: 00:25:90:76:06:31
             boletus1:
                 ip: 172.16.0.4
+                mac: 00:25:90:17:4c:60
             boletus1-ipmi:
                 ip: 172.16.0.5
+                mac: 00:25:90:76:06:3a
             boletus2:
                 ip: 172.16.0.6
+                mac: 00:25:90:17:4b:fc
             boletus2-ipmi:
                 ip: 172.16.0.7
+                mac: 00:25:90:76:06:21
             boletus3:
                 ip: 172.16.0.8
+                mac: 00:25:90:17:4b:a8
             boletus3-ipmi:
                 ip: 172.16.0.9
+                mac: 00:25:90:76:06:0c
     bos1_backend:
         name: backend.bos1.openelectroncslab.org
         subnet: 172.16.8.0
