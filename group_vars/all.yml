@@ -20,7 +20,7 @@ admin_users:
 # avoid collisions.
 oel_subnets:
     bos1_public:
-        name: bos1.openelectroncslab.org
+        name: bos1.openelectronicslab.org
         subnet: 192.168.1.0
         netmask: 255.255.255.0
         broadcast: 192.168.1.255
@@ -37,7 +37,7 @@ oel_subnets:
             boletus3:
                 ip: 192.168.1.67
     bos1_management:
-        name: management.bos1.openelectroncslab.org
+        name: management.bos1.openelectronicslab.org
         subnet: 172.16.0.0
         netmask: 255.255.255.0
         broadcast: 172.16.0.255
@@ -70,7 +70,7 @@ oel_subnets:
                 ip: 172.16.0.9
                 mac: 00:25:90:76:06:0c
     bos1_backend:
-        name: backend.bos1.openelectroncslab.org
+        name: backend.bos1.openelectronicslab.org
         subnet: 172.16.8.0
         netmask: 255.255.248.0
         broadcast: 172.16.15.255
