@@ -15,7 +15,7 @@
     lineinfile:
         path: /etc/dhcp/dhcpd.conf
         regexp: '^\s*option\s*domain-name\s'
-        line: option domain-name "{{ dhcp_domain_name }}";
+        line: option domain-name "{{ dhcp_subnet.name }}";
     notify: restart dhcp server
 
   - name: Set the DNS servers
@@ -28,8 +28,9 @@
   - name: set up the subnet
     blockinfile:
         path: /etc/dhcp/dhcpd.conf
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ dhcp_subnet.name }}"
         block: |
-            subnet {{ dhcp_subnet }} netmask {{ dhcp_netmask }} {
+            subnet {{ dhcp_subnet.subnet }} netmask {{ dhcp_subnet.netmask }} {
                 range {{ dhcp_range }};
-                option routers {{ dhcp_gateway }};
+                option routers {{ dhcp_subnet.gateway }};
             }

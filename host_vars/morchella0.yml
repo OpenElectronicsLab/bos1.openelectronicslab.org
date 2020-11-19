@@ -29,9 +29,5 @@ router_downstream_netmask: "{{ oel_subnets.bos1_management.netmask }}"
 router_downstream_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
 
 dhcp_interfaces: "{{ router_bridgename }}"
-dhcp_subnet: "{{ oel_subnets.bos1_management.subnet }}"
-dhcp_netmask: "{{ oel_subnets.bos1_management.netmask }}"
-dhcp_gateway: "{{ oel_subnets.bos1_management.gateway }}"
-dhcp_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
-dhcp_domain_name: "{{ oel_subnets.bos1_management.name }}"
+dhcp_subnet: "{{ oel_subnets.bos1_management }}"
 dhcp_range: 172.16.0.192 172.16.0.254
