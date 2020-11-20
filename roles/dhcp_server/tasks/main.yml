@@ -44,6 +44,10 @@
             host {{ item.key }} {
                 hardware ethernet {{ item.value.mac }};
                 fixed-address {{ item.value.ip }};
+            {% if item.value.pxe_file is defined %}
+                filename "{{ item.value.pxe_file }}";
+                next-server {{ dhcp_subnet.gateway }};
+            {% endif %}
             }
     when: item.value.mac is defined
     loop: "{{ dhcp_subnet.hosts | dict2items }}"
