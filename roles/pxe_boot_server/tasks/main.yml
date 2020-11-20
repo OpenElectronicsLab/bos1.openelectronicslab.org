@@ -1,0 +1,6 @@
+---
+  - name: Install a tftp server
+    apt:
+        name: tftpd-hpa
+        state: present
+
