@@ -47,7 +47,8 @@ oel_subnets:
                 ip: 172.16.0.1
             boletus0:
                 ip: 172.16.0.2
-                mac: 00:25:90:17:4c:3c
+                mac: 00:25:90:76:08:2c
+                pxe_file: pxelinux.0
             boletus0-ipmi:
                 ip: 172.16.0.3
                 mac: 00:25:90:76:06:31
