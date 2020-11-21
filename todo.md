@@ -1,5 +1,9 @@
 # TODO
 
+- debug ipmi\_kvm\_docker issue with the javaws console console redirect
+  - consider: https://github.com/sunfoxcz/ipmiview
+  - see also: https://github.com/ixs/kvm-cli
+
 ## supporting physical machines
 - morchella wireguard and kvm setup
 - morchella DHCP server setup
