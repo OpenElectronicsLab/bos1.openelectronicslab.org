@@ -19,6 +19,10 @@
     file:
         path: /root/.ssh/authorized_keys
         state: absent
+  - name: Set root password
+    user:
+        name: root
+        password: "{{ root_password | default('*') }}"
   - name: Enable unattended upgrades
     apt:
         name: "{{ item }}"
@@ -26,11 +30,9 @@
     loop:
         - unattended-upgrades
         - apt-listchanges
-    when: ansible_facts['os_family'] == 'Debian'
   - name: Apply settings for unattended upgrades
     copy:
-        src: "{{ role_path }}/files/etc_apt_apt.conf.d_02periodic"
+        src: "files/etc_apt_apt.conf.d_02periodic"
         dest: /etc/apt/apt.conf.d/02periodic
         owner: root
         group: root
-    when: ansible_facts['os_family'] == 'Debian'
