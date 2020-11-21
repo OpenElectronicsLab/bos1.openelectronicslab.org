@@ -28,6 +28,7 @@
         archive: no
         times: yes
         links: yes
+        use_ssh_args: yes
     register: copy_ipmi_kvm_docker
 
   - name: Install the ipmi-kvm-docker container
