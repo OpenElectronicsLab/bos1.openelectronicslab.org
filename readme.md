@@ -44,12 +44,12 @@ of the Open Electronics Labs administrators and stored in the
 #### GPG setup
 
 Each user will need to generate a GPG key as follows (if they don't already
-have one):
+have one).  Run the following command, choose RSA/RSA keys with a 4096 bit key
+length, give it a good password, and choose an email address to associate the
+key with:
 
     gpg --full-gen-key
 
-Choose RSA/RSA keys with a 4096 bit key length, give it a good password, and
-choose an email address to associate the key with.
 
 You will then need to export your public key to a file:
 
