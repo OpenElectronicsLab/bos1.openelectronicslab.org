@@ -43,3 +43,4 @@
   access to the machines
 - replace the "temp" passphrase with a secret
 - switch from iptables to nftables syntax in ansible scripts
+- add wireguard VPN accesses to management network etc.
