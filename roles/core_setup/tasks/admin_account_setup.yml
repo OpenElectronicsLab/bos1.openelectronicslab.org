@@ -24,7 +24,6 @@
     apt:
         name: sudo
         state: present
-    when: ansible_facts['os_family'] == 'Debian'
   - name: Allow admin users to do passwordless sudo
     lineinfile:
         dest: /etc/sudoers
