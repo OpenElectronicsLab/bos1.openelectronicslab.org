@@ -28,6 +28,6 @@ rm -rf $VAULTDIR/*.gpg
 # generate a vault key for each key in the vault keys
 for keyfile in $SECRETSDIR/gpg-keys/*.asc; do
     echo $keyfile
-    echo $PASSWORD | gpg --encrypt --recipient-file $keyfile \
+    echo $PASSWORD | gpg --armor --encrypt --recipient-file $keyfile \
         -o $VAULTDIR/`basename ${keyfile%.*}`.gpg
 done
