@@ -9,8 +9,8 @@ usage() {
     echo
     echo "Starts the WebSockets proxy and a mini-webserver and "
     echo "provides a cut-and-paste URL to go to."
-    echo 
-    echo "    --listen PORT         Port for proxy/webserver to listen on"
+    echo
+    echo "    --listen [HOST:]PORT  Host and port for proxy/webserver to listen on"
     echo "                          Default: 6080"
     echo "    --vnc VNC_HOST:PORT   VNC server host:port proxy target"
     echo "                          Default: localhost:5900"
@@ -23,7 +23,7 @@ usage() {
 
 NAME="$(basename $0)"
 HERE="$(cd "$(dirname "$0")" && pwd)"
-PORT="6080"
+LISTEN="6080"
 VNC_DEST="localhost:5900"
 CERT=""
 WEB=""
@@ -50,7 +50,7 @@ cleanup() {
 while [ "$*" ]; do
     param=$1; shift; OPTARG=$1
     case $param in
-    --listen)  PORT="${OPTARG}"; shift            ;;
+    --listen)  LISTEN="${OPTARG}"; shift            ;;
     --vnc)     VNC_DEST="${OPTARG}"; shift        ;;
     --cert)    CERT="${OPTARG}"; shift            ;;
     --web)     WEB="${OPTARG}"; shift            ;;
@@ -59,6 +59,9 @@ while [ "$*" ]; do
     *) break                                      ;;
     esac
 done
+
+PORT=${LISTEN#*:}
+HOST=${LISTEN#:%} && [[ "$HOST" == "$LISTEN" ]] && HOST=$(hostname)
 
 # Sanity checks
 which netstat >/dev/null 2>&1 \
@@ -101,8 +104,8 @@ else
     echo "Warning: could not find self.pem"
 fi
 
-echo "Starting webserver and WebSockets proxy on port ${PORT}"
-${HERE}/websockify --web ${WEB} ${CERT:+--cert ${CERT}} ${PORT} ${VNC_DEST} &
+echo "Starting webserver and WebSockets proxy on ${HOST} port ${PORT}"
+${HERE}/websockify --web ${WEB} ${CERT:+--cert ${CERT}} ${LISTEN} ${VNC_DEST} &
 proxy_pid="$!"
 sleep 1
 if ! ps -p ${proxy_pid} >/dev/null; then
@@ -112,7 +115,7 @@ if ! ps -p ${proxy_pid} >/dev/null; then
 fi
 
 echo -e "\n\nNavigate to this URL:\n"
-echo -e "    http://$(hostname):${PORT}/vnc.html?host=$(hostname)&port=${PORT}\n"
+echo -e "    http://${HOST}:${PORT}/vnc.html?host=${HOST}&port=${PORT}\n"
 echo -e "Press Ctrl-C to exit\n\n"
 
 wait ${proxy_pid}
