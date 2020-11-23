@@ -30,5 +30,14 @@
             subnet: "{{ oel_subnets.bos1_management }}"
       - router
       - dhcp_server
-      - ipmi_viewer
+      #- ipmi_viewer
       # pxe_boot_server
+    tasks: # TODO: should be replaced with roles
+      - name: additional packages
+        apt:
+            name: "{{ item }}"
+            state: present
+        loop:
+          - socat # needed for current IPMI UDP tunneling
+          - psmisc # for killall, used by IPMI tunneling script
+          - ipmitool # useful utility, should go in a role
