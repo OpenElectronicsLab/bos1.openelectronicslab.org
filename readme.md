@@ -15,21 +15,55 @@ bos1.openelectronicslab.org subdomain.
       - `gpg-keys`: gpg public keys for users and administrators
       - `vault-keys`: master keys for ansible-vault secrets. Each vault has
         a subdirectory containing a gpg-encrypted key for each user.
+  - `util`: misc. utility scripts
 
-## IPMI/KVM access for boletus servers
+## IPMI/KVM access for boletus servers (workaround)
 
 The boletus servers use an older version of the supermicro BMC software that
-requires an older (unsupported) version of Java to run.  To simplify working
-with these machines, an HTML5-hosted VNC session with an older version of Java
-(and firefox) is hosted in a container on morchella.  It can be accessed on
-local host port 8080, generally by forwarding this port to your local machine,
-e.g.
+requires an older (unsupported) version of Java to run.  The current attempt
+to run this version of java in a container on morchella0 is not working for
+unclear reasons.  We have a (temporary?) workaround for this using SSH
+tunneling and a container on the local machine.  You will first need to install
+some required packages:
 
-    ssh -L localhost:8080:localhost:8080 USERNAME@morchella0.bos1.openelectronicslab.org
+    apt install socat psmisc docker.io
 
-Note the repetition of `localhost` after the `-L`: leaving off the first
-`localhost` won't cause an error but will allow anyone on your local network
-to also connect to this port (which is probably not what you want).
+You may then want to add yourself to the docker group (if you skip this step,
+you will need to `sudo` the docker commands that follow):
+
+    sudo useradd $USER docker
+    newgrp docker
+    newgrp
+
+Next, you will need to build the docker container with the old java vm and a
+compatible version of firefox:
+
+    cd roles/ipmi_viewer/files/ipmi-kvm-docker
+    docker image build -t ipmi_kvm_docker .
+
+You can then run the container, for example:
+
+    docker container run --network="host" --user $(id -u):$(id -g) -it --rm \
+        --volume /etc/hosts:/etc/hosts --volume /etc/group:/etc/group
+        --volume /etc/passwd:/etc/passwd ipmi_kvm_docker:latest
+
+Leave this container running, and in a new console window run the following
+script to create an ssh tunnel from boletus0-ipmi through morchella to your
+local machine for the whole array of required ports for IPMI and with the java
+kvm (note than you can replace `boletus0` with `boletus1`, etc.).
+
+    util/proxy_ipmi boletus0
+
+At this point you should be able to open a local web browser and point it at
+localhost:8080 and see a vnc window containing an older version of firefox.
+If you connect to https://localhost in this older version of firefox, you
+should see be able to navigate the BMC web interface and open a java KVM.
+
+This is far from an ideal solution, but other things I've tried (e.g. running a
+similar container on morchella0 or trying to use the default bridged networking
+and map the ports inside of the container rather than for the host) all seem
+to cause a "connection failed" error in the java kvm client.  Something cleaner
+should be possible, but I haven't found it yet.
 
 ## Setup notes
 

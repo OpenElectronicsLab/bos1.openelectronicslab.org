@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# based on this stackoverflow answer:
+# https://serverfault.com/questions/327255/using-supermicro-ipmi-behind-a-proxy
+
+MORCHELLA_SSH="-J $USER@kendrickshaw.org "$USER"admin@morchella0"
+MORCHELLA_MANAGEMENT_IP=172.16.0.1
+TARGET_MACHINE=$1-ipmi.management.bos1.openelectronicslab.org
+
+# kill all child processes on exit
+trap "trap - SIGTERM && sudo kill -- -$$" SIGINT SIGTERM EXIT
+
+# socat sometimes hangs around, so first kill any old instances of it
+ssh $MORCHELLA_SSH sudo killall socat
+
+# set up the local end of an (ssh-tunnelable) tcp tunnel for UDP packets
+sudo socat udp4-recvfrom:623,reuseaddr,fork,bind=127.0.0.1 \
+    tcp:localhost:1623 &
+P1=$!
+
+# use ssh tunneling to forward the IPMI ports to the remote machine, and set up
+# the other end of the tunnel for UDP packets
+sudo -E ssh $MORCHELLA_SSH \
+    -L 127.0.0.1:80:$TARGET_MACHINE:80 \
+    -L 127.0.0.1:623:$TARGET_MACHINE:623 \
+    -L 127.0.0.1:5900:$TARGET_MACHINE:5900 \
+    -L 127.0.0.1:443:$TARGET_MACHINE:443 \
+    -L 127.0.0.1:1623:127.0.0.1:1623 \
+    socat tcp4-listen:1623,reuseaddr,fork,bind=127.0.0.1 \
+        udp:$TARGET_MACHINE:623,bind=$MORCHELLA_MANAGEMENT_IP &
+P2=$!
+
+echo "Fowarding IPMI to . Press control-C to quit."
+wait $P1 $P2
