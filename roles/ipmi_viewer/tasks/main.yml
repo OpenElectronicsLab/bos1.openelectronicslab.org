@@ -52,7 +52,7 @@
             --name ipmi_kvm_docker
             --restart unless-stopped
             --publish 127.0.0.1:8080:8080
-            --user $(id -u ipmi_kvm_docker):$(id -u ipmi_kvm_docker)
+            --user $(id -u ipmi_kvm_docker):$(id -g ipmi_kvm_docker)
             --volume /etc/hosts:/etc/hosts
             --volume /etc/group:/etc/group
             --volume /etc/passwd:/etc/passwd
