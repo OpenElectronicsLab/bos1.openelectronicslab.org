@@ -6,9 +6,6 @@ RUN apt-get update && apt-get -y install xvfb x11vnc wget supervisor fluxbox \
     firefox icedtea-7-plugin net-tools python-numpy
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN apt-get -y install ssh socat
-
-
 WORKDIR /home
 ADD novnc /home/novnc/
 
