@@ -6,6 +6,9 @@ RUN apt-get update && apt-get -y install xvfb x11vnc wget supervisor fluxbox \
     firefox icedtea-7-plugin net-tools python-numpy
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+RUN apt-get -y install ssh socat
+
+
 WORKDIR /home
 ADD novnc /home/novnc/
 
@@ -14,6 +17,6 @@ RUN chmod -R a+rw /home && \
     chmod -R a+rw /var/log && \
     chmod -R a+rw /var/run
 
-ENV DISPLAY :0
+ENV DISPLAY :42
 EXPOSE 8080
 CMD ["/usr/bin/supervisord"]
