@@ -4,5 +4,6 @@
         path: /etc/hosts
         regexp: '\b{{ item.key }}\.{{ subnet.name }}\b'
         line: "{{ item.value.ip }} {{ item.key }}.{{ subnet.name }}"
-    loop: "{{ subnet.hosts | dict2items }}"
+    with_dict: "{{ subnet.hosts }}"
+    #loop: "{{ subnet.hosts | dict2items }}"
 

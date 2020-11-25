@@ -50,5 +50,6 @@
             {% endif %}
             }
     when: item.value.mac is defined
-    loop: "{{ dhcp_subnet.hosts | dict2items }}"
+    with_dict: "{{ dhcp_subnet.hosts }}"
+    #loop: "{{ dhcp_subnet.hosts | dict2items }}"
     notify: restart dhcp server
