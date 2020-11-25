@@ -27,14 +27,19 @@ oel_subnets:
         gateway: 192.168.1.1
         hosts:
             morchella0:
+                #ip: 154.3.222.74
                 ip: 192.168.1.147
             boletus0:
+                #ip: 154.3.222.75
                 ip: 192.168.1.64
             boletus1:
+                #ip: 154.3.222.76
                 ip: 192.168.1.65
             boletus2:
+                #ip: 154.3.222.77
                 ip: 192.168.1.66
             boletus3:
+                #ip: 154.3.222.78
                 ip: 192.168.1.67
     bos1_management:
         name: management.bos1.openelectronicslab.org
