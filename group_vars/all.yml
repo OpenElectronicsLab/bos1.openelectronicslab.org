@@ -21,6 +21,10 @@ admin_users:
 oel_subnets:
     bos1_public:
         name: bos1.openelectronicslab.org
+        #subnet: 154.3.222.72
+        #netmask: 255.255.255.248
+        #broadcast: 153.3.222.79
+        #gateway: 154.3.222.73
         subnet: 192.168.1.0
         netmask: 255.255.255.0
         broadcast: 192.168.1.255
@@ -50,6 +54,7 @@ oel_subnets:
         hosts:
             morchella0:
                 ip: 172.16.0.1
+                dhcp_range: 172.16.0.192 172.16.0.254
             boletus0:
                 ip: 172.16.0.2
                 mac: 00:25:90:76:08:2c

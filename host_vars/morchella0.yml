@@ -23,11 +23,11 @@ router_downstream_interfaces:
   - enp4s0f1
   - enp5s0f0
 router_upstream_interface: enp5s0
-router_bridgename: br0
+router_bridge_name: br0
 router_downstream_address: "{{ oel_subnets.bos1_management.gateway }}"
 router_downstream_netmask: "{{ oel_subnets.bos1_management.netmask }}"
 router_downstream_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
 
-dhcp_interfaces: "{{ router_bridgename }}"
+dhcp_interfaces: "{{ router_bridge_name }}"
 dhcp_subnet: "{{ oel_subnets.bos1_management }}"
-dhcp_range: 172.16.0.192 172.16.0.254
+dhcp_range: "{{ oel_subnets.bos1_management.hosts.morchella0.dhcp_range }}"
