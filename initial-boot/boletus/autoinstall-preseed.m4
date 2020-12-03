@@ -77,7 +77,7 @@ d-i netcfg/choose_interface select auto
 # Any hostname and domain names assigned from dhcp take precedence over
 # values set here. However, setting the values still prevents the questions
 # from being shown, even if values come from dhcp.
-d-i netcfg/get_hostname string morchella0
+d-i netcfg/get_hostname string my_hostname
 d-i netcfg/get_domain string bos1.openelectronicslab.org
 
 # If you want to force a hostname, regardless of what either the DHCP
@@ -125,10 +125,10 @@ d-i mirror/http/proxy string
 d-i passwd/make-user boolean false
 
 # Root password, either in clear text
-#d-i passwd/root-password password r00tme
-#d-i passwd/root-password-again password r00tme
+d-i passwd/root-password password temp
+d-i passwd/root-password-again password temp
 # or encrypted using a crypt(3)  hash.
-d-i passwd/root-password-crypted password *
+#d-i passwd/root-password-crypted password temp
 
 # To create a normal user account.
 #d-i passwd/user-fullname string my_fullname
@@ -496,10 +496,10 @@ d-i finish-install/reboot_in_progress note
 # system booting to allow entering the LUKS password remotely.
 d-i preseed/late_command string in-target mkdir /root/.ssh ; \
     in-target chmod go-rwx /root/.ssh ; \
-    cp /hd-media/authorized_keys /target/root/.ssh/authorized_keys ; \
+    cp /authorized_keys /target/root/.ssh/authorized_keys ; \
     in-target chown -R root:root /root/.ssh ; \
     echo 'DROPBEAR_OPTIONS="-p 23 -s -j -k"' >> /target/etc/dropbear-initramfs/config ; \
-    cat /hd-media/authorized_keys | \
+    cat /authorized_keys | \
         sed -e 's/^/no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="\/bin\/cryptroot-unlock" /g' - \
         > /target/etc/dropbear-initramfs/authorized_keys ; \
     echo PasswordAuthentication no >> /target/etc/ssh/sshd_config ; \

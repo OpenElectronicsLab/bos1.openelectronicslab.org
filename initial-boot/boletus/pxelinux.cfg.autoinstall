@@ -4,7 +4,7 @@ path debian-installer/amd64/boot-screens/
 label autoinst
 	menu label ^Automated preseeded install
 	kernel debian-installer/amd64/linux
-	append auto=true priority=critical nomodeset initrd=debian-installer/amd64/initrd0.gz preseed/file=/preseed_DRIVE.cfg lowmem/low=true --- 
+	append auto=true priority=critical nomodeset vga=normal fb=false initrd=debian-installer/amd64/initrd0.gz lowmem/low=true --- 
 default autoinst
 prompt 0
 timeout 1

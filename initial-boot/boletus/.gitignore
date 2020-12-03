@@ -1,0 +1,7 @@
+*.iso
+*.qcow2
+netboot.tar.gz
+initrd.iso/*
+initrd.pxe/*
+iso/*
+tftp/*
