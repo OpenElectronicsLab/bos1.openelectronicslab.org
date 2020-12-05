@@ -1,4 +1,6 @@
 BUILDDIR=build
+CONFIGDIR=config
+INITRD=preseeded_initrd.gz
 
 TARGET_ISO=$(BUILDDIR)/autoinstall.iso
 TFTP_COMPLETE_TAG=$(BUILDDIR)/tftp/autoinstall.txt
@@ -38,11 +40,13 @@ $(ISO_EXTRACTED_TAG) : $(BUILDDIR)/debian_original.iso
 # (Used for UEFI)
 $(BUILDDIR)/iso/boot/grub/grub.cfg : grub.cfg $(ISO_EXTRACTED_TAG)
 	cp $< $@
+	sed -i -e 's/INITRD/$(INITRD)/g' $@
 
 # update the isolinux.cfg to do a preseeded install
 # (Used for Legacy BIOS)
 $(BUILDDIR)/iso/isolinux/isolinux.cfg : isolinux.cfg $(ISO_EXTRACTED_TAG)
 	cp $< $@
+	sed -i -e 's/INITRD/$(INITRD)/g' $@
 
 # extract the initrd.gz file (part of the iso image)
 $(BUILDDIR)/iso/install.amd/initrd.gz : $(ISO_EXTRACTED_TAG)
@@ -56,8 +60,9 @@ $(INITRD_ISO_TAG) : $(BUILDDIR)/iso/install.amd/initrd.gz
 	touch $@
 
 # copy the preseed file into the initrd.iso tree
-$(BUILDDIR)/initrd.iso/preseed.cfg : autoinstall-preseed.m4 $(INITRD_ISO_TAG)
-	m4 -P $< > $@
+$(BUILDDIR)/initrd.iso/preseed.cfg : $(CONFIGDIR)/preseed.cfg \
+		$(INITRD_ISO_TAG)
+	cp $< $@
 
 # generate an authorized_keys file
 $(BUILDDIR)/initrd.iso/authorized_keys : $(INITRD_ISO_TAG) \
@@ -65,18 +70,18 @@ $(BUILDDIR)/initrd.iso/authorized_keys : $(INITRD_ISO_TAG) \
 	cat $(AUTHORIZED_KEY_FILES) > $@
 
 # recompress the initrd.iso directory to create a new initrd with the preseed
-$(BUILDDIR)/iso/install.amd/preseedinitrd.gz : \
+$(BUILDDIR)/iso/install.amd/$(INITRD) : \
 		$(BUILDDIR)/initrd.iso/preseed.cfg \
 		$(BUILDDIR)/initrd.iso/authorized_keys \
 		$(ISO_EXTRACTED_TAG)
 	cd $(BUILDDIR)/initrd.iso \
 		&& find . | fakeroot cpio -o -H newc \
-		| gzip > ../iso/install.amd/preseedinitrd.gz
+		| gzip > ../iso/install.amd/$(INITRD)
 
 # generate the new iso install image
 $(TARGET_ISO) : $(BUILDDIR)/iso/boot/grub/grub.cfg \
 		$(BUILDDIR)/iso/isolinux/isolinux.cfg \
-		$(BUILDDIR)/iso/install.amd/preseedinitrd.gz
+		$(BUILDDIR)/iso/install.amd/$(INITRD)
 	genisoimage -o $(BUILDDIR)/temp.iso \
 		-b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -J -R \
@@ -136,9 +141,9 @@ $(INITRD_PXE_TAG) : $(BUILDDIR)/tftp/debian-installer/amd64/initrd.gz
 	touch $@
 
 # copy the preseed file into the initrd.pxe tree
-$(BUILDDIR)/initrd.pxe/preseed.cfg : autoinstall-preseed.m4 \
+$(BUILDDIR)/initrd.pxe/preseed.cfg : $(CONFIGDIR)/preseed.cfg \
 		$(INITRD_PXE_TAG)
-	m4 -P $< > $@
+	cp $< $@
 
 # generate an authorized_keys file
 $(BUILDDIR)/initrd.pxe/authorized_keys : $(INITRD_PXE_TAG) \
@@ -148,19 +153,19 @@ $(BUILDDIR)/initrd.pxe/authorized_keys : $(INITRD_PXE_TAG) \
 # create a pxelinux.cfg to boot using the preseed file
 $(BUILDDIR)/tftp/pxelinux.cfg/default: pxelinux.cfg.autoinstall $(TFTP_TAG)
 	cp $< $@
-	sed -i -e "s#DRIVE#default#g" $@
+	sed -i -e 's/INITRD/$(INITRD)/g' $@
 
 # recompress the initrd.pxe directory to create a new initrd with the preseed
-$(BUILDDIR)/tftp/debian-installer/amd64/initrd0.gz : \
+$(BUILDDIR)/tftp/debian-installer/amd64/$(INITRD) : \
 		$(BUILDDIR)/initrd.pxe/preseed.cfg \
 		$(BUILDDIR)/initrd.pxe/authorized_keys \
 		$(TFTP_TAG)
 	cd $(BUILDDIR)/initrd.pxe \
 		&& find . \
 		| fakeroot cpio -o -H newc \
-		| gzip > ../tftp/debian-installer/amd64/initrd0.gz
+		| gzip > ../tftp/debian-installer/amd64/$(INITRD)
 
-$(TFTP_COMPLETE_TAG) : $(BUILDDIR)/tftp/debian-installer/amd64/initrd0.gz \
+$(TFTP_COMPLETE_TAG) : $(BUILDDIR)/tftp/debian-installer/amd64/$(INITRD) \
 	$(BUILDDIR)/tftp/pxelinux.cfg/default
 	echo "Configured for autoinstall on $$(date)" > $@
 
