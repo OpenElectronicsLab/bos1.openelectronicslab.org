@@ -33,9 +33,10 @@ oel_subnets:
             morchella0:
                 #ip: 154.3.222.74
                 ip: 192.168.1.147
-            boletus0:
+            boletus0: # /dev/enp3s0f1
                 #ip: 154.3.222.75
                 ip: 192.168.1.64
+                mac: 00:25:90:76:08:2d
             boletus1:
                 #ip: 154.3.222.76
                 ip: 192.168.1.65
@@ -55,7 +56,7 @@ oel_subnets:
             morchella0:
                 ip: 172.16.0.1
                 dhcp_range: 172.16.0.192 172.16.0.254
-            boletus0:
+            boletus0: # /dev/enp3s0f0
                 ip: 172.16.0.2
                 mac: 00:25:90:76:08:2c
                 pxe_file: pxelinux.0
@@ -65,18 +66,21 @@ oel_subnets:
             boletus1:
                 ip: 172.16.0.4
                 mac: 00:25:90:17:08:3e
+                pxe_file: pxelinux.0
             boletus1-ipmi:
                 ip: 172.16.0.5
                 mac: 00:25:90:76:06:3a
             boletus2:
                 ip: 172.16.0.6
                 mac: 00:25:90:17:08:0c
+                pxe_file: pxelinux.0
             boletus2-ipmi:
                 ip: 172.16.0.7
                 mac: 00:25:90:76:06:21
             boletus3:
                 ip: 172.16.0.8
                 mac: 00:25:90:17:07:e2
+                pxe_file: pxelinux.0
             boletus3-ipmi:
                 ip: 172.16.0.9
                 mac: 00:25:90:76:06:0c
