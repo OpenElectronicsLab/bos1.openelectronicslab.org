@@ -48,7 +48,7 @@ compatible version of firefox:
 You can then run the container, for example:
 
     docker container run --network="host" --user $(id -u):$(id -g) -it --rm \
-        --volume /etc/hosts:/etc/hosts --volume /etc/group:/etc/group
+        --volume /etc/hosts:/etc/hosts --volume /etc/group:/etc/group \
         --volume /etc/passwd:/etc/passwd ipmi_kvm_docker:latest
 
 Leave this container running, and in a new console window run the following
