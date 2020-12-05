@@ -31,8 +31,12 @@ some required packages:
 You may then want to add yourself to the docker group (if you skip this step,
 you will need to `sudo` the docker commands that follow):
 
-    sudo useradd $USER docker
+    # add yourself to the docker group
+    sudo adduser $USER docker
+    # reload group membership
+    # first change current GID to docker
     newgrp docker
+    # reset GID to $USER, now will include docker
     newgrp
 
 Next, you will need to build the docker container with the old java vm and a
