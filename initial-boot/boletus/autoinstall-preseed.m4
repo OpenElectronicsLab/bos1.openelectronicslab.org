@@ -77,7 +77,7 @@ d-i netcfg/choose_interface select auto
 # Any hostname and domain names assigned from dhcp take precedence over
 # values set here. However, setting the values still prevents the questions
 # from being shown, even if values come from dhcp.
-d-i netcfg/get_hostname string my_hostname
+d-i netcfg/get_hostname string rename-me
 d-i netcfg/get_domain string bos1.openelectronicslab.org
 
 # If you want to force a hostname, regardless of what either the DHCP
