@@ -219,9 +219,9 @@ in config files and SQL databases).
 
 First, you'll need to create a bootable USB drive for morchella0:
 
-    cd initial-boot/morchella
-    make
-    sudo dd if=morchella0.iso of=[usb device] bs=16M
+    ansible-playbook make_install_media.yml
+    sudo dd if=build/make_install_media/morchella0/autoinstall.iso \
+        of=[usb device] bs=4M conv=fsync
 
 Next, you'll need to boot the firewall from this drive, which will install a
 minimal Debian setup with an encrypted root partition and Dropbear client for
