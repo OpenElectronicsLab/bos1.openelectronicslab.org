@@ -1,0 +1,22 @@
+---
+  - hosts: all
+    gather_facts: false
+    roles:
+       - make_install_media
+
+  - hosts: all
+    become: true
+    tasks:
+       - name: copy iso to remote machine
+         synchronize:
+            src: build/make_install_media/{{ inventory_hostname }}/autoinstall.iso
+            dest: /root/autoinstall.iso
+
+       - name: copy the image to the usb drive
+         command: dd if=/root/autoinstall.iso of={{ usb_boot_drive }} bs=4M conv=fsync
+
+       - name: erase the boot sector
+         command: dd if=/dev/zero of=/dev/sda bs=512 count=1
+
+       - name: trigger a reboot in 1 minute to start the install
+         command: shutdown -r +1
