@@ -1,4 +1,0 @@
----
-  - name: call make to build the iso and PXE images
-    delegate_to: 127.0.0.1
-    shell: "cd {{ playbook_dir }}/initial-boot/boletus; make"

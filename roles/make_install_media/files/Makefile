@@ -1,12 +1,13 @@
 BUILDDIR=build
 CONFIGDIR=config
+SSHKEYSDIR=../../../secrets/ssh-keys
 INITRD=preseeded_initrd.gz
 
 TARGET_ISO=$(BUILDDIR)/autoinstall.iso
 TFTP_COMPLETE_TAG=$(BUILDDIR)/tftp/autoinstall.txt
-AUTHORIZED_KEY_FILES= ../../secrets/ssh-keys/ace.keys \
-					  ../../secrets/ssh-keys/eric.keys \
-					  ../../secrets/ssh-keys/kms15.keys
+AUTHORIZED_KEY_FILES= $(SSHKEYSDIR)/ace.keys \
+					  $(SSHKEYSDIR)/eric.keys \
+					  $(SSHKEYSDIR)/kms15.keys
 
 all: $(TARGET_ISO) $(TFTP_COMPLETE_TAG)
 

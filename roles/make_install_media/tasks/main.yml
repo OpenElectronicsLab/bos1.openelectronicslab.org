@@ -1,0 +1,23 @@
+---
+
+  - name: Create build and config directories
+    delegate_to: 127.0.0.1
+    file:
+        path: "{{ local_build_dir }}/config"
+        state: directory
+
+  - name: Create preseed file
+    delegate_to: 127.0.0.1
+    template:
+        src: templates/preseed.cfg.j2
+        dest: "{{ local_build_dir }}/config/preseed.cfg"
+
+  - name: Build the install media on the local machine
+    delegate_to: 127.0.0.1
+    command: make
+        --directory {{ role_path }}/files
+        CONFIGDIR={{ local_build_dir }}/config
+        BUILDDIR={{ local_build_dir }}
+        SSHKEYSDIR={{ playbook_dir }}/secrets/ssh-keys
+    register: make_result
+    changed_when: 'not ("make: Nothing to be done" in make_result.stdout)'
