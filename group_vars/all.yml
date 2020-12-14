@@ -29,10 +29,13 @@ oel_subnets:
         netmask: 255.255.255.0
         broadcast: 192.168.1.255
         gateway: 192.168.1.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
         hosts:
             morchella0:
                 #ip: 154.3.222.74
-                ip: 192.168.1.147
+                ip: 192.168.1.68
             boletus0: # /dev/enp3s0f1
                 #ip: 154.3.222.75
                 ip: 192.168.1.64
@@ -52,6 +55,9 @@ oel_subnets:
         netmask: 255.255.255.0
         broadcast: 172.16.0.255
         gateway: 172.16.0.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
         hosts:
             morchella0:
                 ip: 172.16.0.1
@@ -90,6 +96,9 @@ oel_subnets:
         netmask: 255.255.248.0
         broadcast: 172.16.15.255
         gateway: 172.16.4.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
         hosts:
             boletus0:
                 ip: 172.16.8.10

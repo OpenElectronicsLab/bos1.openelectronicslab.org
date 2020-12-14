@@ -25,10 +25,10 @@ d-i keyboard-configuration/xkb-keymap select us
 
 # netcfg will choose an interface that has link if possible. This makes it
 # skip displaying a list if there is more than one interface.
-d-i netcfg/choose_interface select auto
+#d-i netcfg/choose_interface select auto
 
 # To pick a particular interface instead:
-#d-i netcfg/choose_interface select eth1
+d-i netcfg/choose_interface select {{ primary_interface }}
 
 # To set a different link detection timeout (default is 3 seconds).
 # Values are interpreted as seconds.
@@ -41,7 +41,7 @@ d-i netcfg/choose_interface select auto
 
 # If you prefer to configure the network manually, uncomment this line and
 # the static network configuration below.
-#d-i netcfg/disable_autoconfig boolean true
+d-i netcfg/disable_autoconfig boolean true
 
 # If you want the preconfiguration file to work on systems both with and
 # without a dhcp server, uncomment these lines and the static network
@@ -51,12 +51,12 @@ d-i netcfg/choose_interface select auto
 
 # Static network configuration.
 #
-# IPv4 example
-#d-i netcfg/get_ipaddress string 192.168.1.42
-#d-i netcfg/get_netmask string 255.255.255.0
-#d-i netcfg/get_gateway string 192.168.1.1
-#d-i netcfg/get_nameservers string 192.168.1.1
-#d-i netcfg/confirm_static boolean true
+# IPv4
+d-i netcfg/get_ipaddress string {{ primary_interface_ip }}
+d-i netcfg/get_netmask string {{ primary_interface_subnet.netmask }}
+d-i netcfg/get_gateway string {{ primary_interface_subnet.gateway }}
+d-i netcfg/get_nameservers string {{ primary_interface_subnet.dns[0] }}
+d-i netcfg/confirm_static boolean true
 #
 # IPv6 example
 #d-i netcfg/get_ipaddress string fc00::2
@@ -158,6 +158,9 @@ d-i clock-setup/ntp boolean true
 # This is only honoured if partman-auto/method (below) is not set.
 #d-i partman-auto/init_automatically_partition select biggest_free
 
+# Skip question about not having swap partition
+d-i partman-basicfilesystems partman-basicfilesystems/no_swap boolean false
+
 # Alternatively, you may specify a disk to partition. If the system has only
 # one disk the installer will default to using that, but otherwise the device
 # name must be given in traditional, non-devfs format (so e.g. /dev/sda
@@ -238,6 +241,11 @@ d-i partman-auto/expert_recipe string                         \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext4 }    \
                       mountpoint{ /boot }                     \
+              .                                               \
+              1000 2000 4096 linux-swap                       \
+                      $lvmok{ } lv_name{ swap }               \
+                      in_vg { crypt }                         \
+                      method{ swap } format{ }                \
               .                                               \
               1000 10000 100000 ext4                          \
                       $lvmok{ } lv_name{ root }               \
@@ -487,13 +495,31 @@ d-i preseed/late_command string in-target mkdir /root/.ssh ; \
     cp /authorized_keys /target/root/.ssh/authorized_keys ; \
     in-target chown -R root:root /root/.ssh ; \
     echo 'DROPBEAR_OPTIONS="-p 23 -s -j -k"' >> /target/etc/dropbear-initramfs/config ; \
+    echo 'IP={{ primary_interface_ip }}::{{ primary_interface_subnet.gateway }}:{{ primary_interface_subnet.netmask }}:{{ inventory_hostname }}:{{ primary_interface }}:off' \
+        >> /target/etc/dropbear-initramfs/config ; \
     cat /authorized_keys | \
         sed -e 's/^/no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="\/bin\/cryptroot-unlock" /g' - \
         > /target/etc/dropbear-initramfs/authorized_keys ; \
     echo PasswordAuthentication no >> /target/etc/ssh/sshd_config ; \
     echo GRUB_TERMINAL=console >> /target/etc/default/grub ; \
     in-target update-initramfs -u ; \
-    in-target update-grub
+    in-target update-grub ; \
+    sed -i -e '/{{ primary_interface }}/ d' /target/etc/network/interfaces; \
+    echo 'auto {{ primary_interface }}' > \
+        /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
+    echo 'iface {{ primary_interface }} inet static' >> \
+        /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
+    echo '    address {{ primary_interface_ip }}' >> \
+        /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
+    echo '    netmask {{ primary_interface_subnet.netmask }}' >> \
+        /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
+    echo '    gateway {{ primary_interface_subnet.gateway }}' >> \
+        /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
+    echo 'domain {{ primary_interface_subnet.name }}' > /etc/resolv.conf; \
+    {% for dns in primary_interface_subnet.dns %}
+    echo 'nameserver {{ dns }}' >> /etc/resolv.conf; \
+    {% endfor -%}
+    echo 'late commands completed'
 
 # Verbose output and no boot splash screen.
 d-i debian-installer/quiet boolean false

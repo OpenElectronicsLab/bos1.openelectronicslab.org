@@ -35,3 +35,7 @@ router_downstream_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
 dhcp_interfaces: "{{ router_bridge_name }}"
 dhcp_subnet: "{{ oel_subnets.bos1_management }}"
 dhcp_range: "{{ oel_subnets.bos1_management.hosts.morchella0.dhcp_range }}"
+
+primary_interface: enp5s0
+primary_interface_ip: "{{ oel_subnets.bos1_public.hosts.morchella0.ip }}"
+primary_interface_subnet: "{{ oel_subnets.bos1_public }}"

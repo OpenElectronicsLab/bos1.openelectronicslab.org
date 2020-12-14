@@ -37,7 +37,7 @@
                         "printf \"temp\" |
                             ssh {{ ansible_ssh_common_args | default("") }}
                                 root@{{ inventory_hostname }} -p 23"
-                    no_log: true
+                    #no_log: true
                   - name: wait for the server to come up to confirm that it
                         successfully unlocked (using root)
                     vars:

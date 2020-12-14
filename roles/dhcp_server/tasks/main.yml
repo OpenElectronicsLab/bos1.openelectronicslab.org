@@ -22,7 +22,7 @@
     lineinfile:
         path: /etc/dhcp/dhcpd.conf
         regexp: '^\s*option\s*domain-name-servers\s'
-        line: option domain-name-servers 1.1.1.1, 1.0.0.1;
+        line: option domain-name-servers {{ dhcp_subnet.dns | join( ', ' ) }};
     notify: restart dhcp server
 
   - name: set up the subnet

@@ -8,7 +8,7 @@
     become: true
     tasks:
        - name: copy iso to remote machine
-         synchronize:
+         copy:
             src: build/make_install_media/{{ inventory_hostname }}/autoinstall.iso
             dest: /root/autoinstall.iso
 
