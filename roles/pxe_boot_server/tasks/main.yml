@@ -1,6 +1,9 @@
 ---
   - name: Install a tftp server
     apt:
-        name: tftpd-hpa
+        name: "{{ item }}"
         state: present
+    loop:
+      - tftpd-hpa
+      - rsync
 
