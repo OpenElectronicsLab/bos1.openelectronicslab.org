@@ -1,7 +1,8 @@
 BUILDDIR=build
 CONFIGDIR=config
 SSHKEYSDIR=../../../secrets/ssh-keys
-INITRD=preseeded_initrd.gz
+MACHINENAME=ihavenoname
+INITRD=$(MACHINENAME)_initrd.gz
 
 TARGET_ISO=$(BUILDDIR)/autoinstall.iso
 TFTP_COMPLETE_TAG=$(BUILDDIR)/tftp/autoinstall.txt
@@ -17,7 +18,7 @@ clean:
 #########################################################
 # ISO target
 #########################################################
-DEBIAN_ISO_URL=https://cdimage.debian.org/mirror/cdimage/archive/10.3.0/amd64/iso-cd/debian-10.3.0-amd64-netinst.iso
+DEBIAN_ISO_URL=https://cdimage.debian.org/mirror/cdimage/archive/10.6.0/amd64/iso-cd/debian-10.6.0-amd64-netinst.iso
 ISO_EXTRACTED_TAG=$(BUILDDIR)/iso/README.txt
 INITRD_ISO_TAG=$(BUILDDIR)/initrd.iso/init
 
@@ -152,7 +153,7 @@ $(BUILDDIR)/initrd.pxe/authorized_keys : $(INITRD_PXE_TAG) \
 	cat $(AUTHORIZED_KEY_FILES) > $@
 
 # create a pxelinux.cfg to boot using the preseed file
-$(BUILDDIR)/tftp/pxelinux.cfg/default: pxelinux.cfg.autoinstall $(TFTP_TAG)
+$(BUILDDIR)/tftp/pxelinux.cfg/$(MACHINENAME): pxelinux.cfg.autoinstall $(TFTP_TAG)
 	cp $< $@
 	sed -i -e 's/INITRD/$(INITRD)/g' $@
 
@@ -167,7 +168,7 @@ $(BUILDDIR)/tftp/debian-installer/amd64/$(INITRD) : \
 		| gzip > ../tftp/debian-installer/amd64/$(INITRD)
 
 $(TFTP_COMPLETE_TAG) : $(BUILDDIR)/tftp/debian-installer/amd64/$(INITRD) \
-	$(BUILDDIR)/tftp/pxelinux.cfg/default
+	$(BUILDDIR)/tftp/pxelinux.cfg/$(MACHINENAME)
 	echo "Configured for autoinstall on $$(date)" > $@
 
 # Boot a qemu virtual machine using the new network boot files to test them

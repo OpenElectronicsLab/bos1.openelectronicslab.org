@@ -1,12 +1,22 @@
 # TODO
 
+## before we ship to DC steps
+- boletus images
+- boletus PXE boot
+- basic boletus ansible setup
+- static IP ansible support
+- infiniband switch basic test
+- check all luks keys
+- final check of hardware
+- usb key check
+
+## other
 - debug ipmi\_kvm\_docker issue with the javaws console console redirect
   - consider: https://github.com/sunfoxcz/ipmiview
   - see also: https://github.com/ixs/kvm-cli
 
 ## supporting physical machines
 - morchella wireguard and kvm setup
-- morchella DHCP server setup
 - PXE boot setup
 - boletus PXE boot
 - boletus ansible setup
@@ -15,6 +25,8 @@
 - boletus firewall/reverse proxy setup (keepalived + haproxy?)
 - virtual machine hypervisor (kvm/virt-lib?)
 - network storage setup (ceph?)
+- encryption unlock to listen on multiple cards
+- fix qemu pxeboot test for (machine name)
 
 ## virtual machine infrastructure
 - clustering setup (kubernetes?)

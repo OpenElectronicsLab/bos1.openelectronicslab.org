@@ -5,6 +5,14 @@
 [morchella]
 morchella0
 
+# Physical servers connected to morchella for IPMI via second ethernet port
+# and to each other via infiniband.
+# They are serving as VM and container hosts.
+[boletus]
+boletus0
+boletus1
+boletus2
+boletus3
 
 # Functional machine groups:
 
@@ -16,3 +24,4 @@ morchella
 # using ssh
 [luks_encrypted_machines:children]
 morchella
+boletus

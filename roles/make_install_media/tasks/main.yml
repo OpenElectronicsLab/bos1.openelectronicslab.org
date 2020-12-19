@@ -19,5 +19,6 @@
         CONFIGDIR={{ local_build_dir }}/config
         BUILDDIR={{ local_build_dir }}
         SSHKEYSDIR={{ playbook_dir }}/secrets/ssh-keys
+        MACHINENAME={{ inventory_hostname_short }}
     register: make_result
     changed_when: 'not ("make: Nothing to be done" in make_result.stdout)'
