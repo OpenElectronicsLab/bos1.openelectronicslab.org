@@ -16,12 +16,3 @@ luks_password: !vault |
           3339353864366437320a333938306539303565393266356236366637363832653061633861366562
           34303634656334366237646664346630396135316430336332333438653838353338643034333065
           3034623132613262366262303665623333333338373365613135
-
-ssh_jump_host: kendrickshaw.org
-
-boot_drive: /dev/sdb
-usb_boot_drive: /dev/sda
-
-primary_interface: enp3s0f1
-primary_interface_ip: "{{ oel_subnets.bos1_public.hosts.boletus2.ip }}"
-primary_interface_subnet: "{{ oel_subnets.bos1_public }}"

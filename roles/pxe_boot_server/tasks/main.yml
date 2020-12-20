@@ -7,3 +7,52 @@
       - tftpd-hpa
       - rsync
 
+  - name: Copy basic Debian setup files to the tftp server
+    synchronize:
+        src: "{{ playbook_dir }}/build/make_install_media/{{
+            inventory_hostname }}/tftp/"
+        dest: /srv/tftp/
+        archive: no
+        recursive: yes
+        checksum: yes
+        links: yes
+        perms: yes
+
+  - name: Copy custom initrd files for each machine
+    synchronize:
+        src: "{{ playbook_dir }}/build/make_install_media/{{
+            hostvars[item].inventory_hostname }}/tftp/debian-installer/amd64/{{
+            hostvars[item].inventory_hostname_short }}_initrd.gz"
+        dest: /srv/tftp/debian-installer/amd64/
+        archive: no
+        checksum: yes
+        links: yes
+        perms: yes
+    when: hostvars[item].pxe_mac is defined
+    with_inventory_hostnames:
+      - all
+
+  - name: Copy custom pxelinux.cfg files for each machine
+    synchronize:
+        src: "{{ playbook_dir }}/build/make_install_media/{{
+            hostvars[item].inventory_hostname
+            }}/tftp/debian-installer/amd64/pxelinux.cfg/{{
+            hostvars[item].inventory_hostname_short }}"
+        dest: /srv/tftp/debian-installer/amd64/pxelinux.cfg/
+        archive: no
+        checksum: yes
+        links: yes
+        perms: yes
+    when: hostvars[item].pxe_mac is defined
+    with_inventory_hostnames:
+      - all
+
+  - name: link the mac address to the PXE config file for each machine
+    file:
+        path: "/srv/tftp/debian-installer/amd64/pxelinux.cfg/01-{{
+            hostvars[item].pxe_mac | lower | replace(':','-') }}"
+        src: "./{{ hostvars[item].inventory_hostname_short }}"
+        state: link
+    when: hostvars[item].pxe_mac is defined
+    with_inventory_hostnames:
+      - all

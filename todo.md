@@ -1,8 +1,7 @@
 # TODO
 
 ## before we ship to DC steps
-- boletus images
-- boletus PXE boot
+- Force debian installer not to use entire drive for root partition on boletus
 - basic boletus ansible setup
 - static IP ansible support
 - infiniband switch basic test
@@ -14,6 +13,9 @@
 - debug ipmi\_kvm\_docker issue with the javaws console console redirect
   - consider: https://github.com/sunfoxcz/ipmiview
   - see also: https://github.com/ixs/kvm-cli
+- reproducible ISO builds
+- reproducible tftp builds
+- set BIOS and IPMI passwords
 
 ## supporting physical machines
 - morchella wireguard and kvm setup

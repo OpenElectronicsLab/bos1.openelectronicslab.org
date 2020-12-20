@@ -1,0 +1,33 @@
+---
+  - hosts: boletus
+    become: true
+    gather_facts: false
+    tasks:
+       - name: set the machine to PXE boot on next reboot
+         command: ipmitool
+            -H {{ inventory_hostname_short
+                }}-ipmi.management.bos1.openelectronicslab.org
+                -U ADMIN -P ADMIN
+                chassis bootdev pxe
+         delegate_to: morchella0
+
+       - name: power down the machine
+         command: ipmitool
+            -H {{ inventory_hostname_short
+                }}-ipmi.management.bos1.openelectronicslab.org
+                -U ADMIN -P ADMIN
+                chassis power off
+         delegate_to: morchella0
+
+       - name: wait for the machine to power down
+         command: sleep 15
+         delegate_to: morchella0
+         run_once: True
+
+       - name: power on the machine
+         command: ipmitool
+            -H {{ inventory_hostname_short
+                }}-ipmi.management.bos1.openelectronicslab.org
+                -U ADMIN -P ADMIN
+                chassis power on
+         delegate_to: morchella0

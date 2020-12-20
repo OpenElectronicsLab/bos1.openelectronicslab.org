@@ -1,4 +1,7 @@
 ---
+# jump to Kendrick's network until machines are in the datacenter
+ssh_jump_host: kendrickshaw.org
+
 # Use the current username with "admin" appended as the default remote
 # username (with passwordless sudo).
 ansible_user: "{{ lookup('env', 'USER') }}admin"
