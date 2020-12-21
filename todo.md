@@ -9,13 +9,14 @@
 
 ## other
 - debug git.openelectronicslab.org backup failure
-- debug ipmi\_kvm\_docker issue with the javaws console console redirect
+- debug `pmi_kvm_docker` issue with the javaws console console redirect
   - consider: https://github.com/sunfoxcz/ipmiview
   - see also: https://github.com/ixs/kvm-cli
 - reproducible ISO builds
 - reproducible tftp builds
 - set BIOS and IPMI passwords
 - safety checks for commands like `reinstall_os_via_pxe`
+- group vars hackiness around `pxe_mac` and `pxe_file` variables
 
 ## supporting physical machines
 - morchella wireguard and kvm setup

@@ -500,7 +500,7 @@ d-i preseed/late_command string in-target mkdir /root/.ssh ; \
     cp /authorized_keys /target/root/.ssh/authorized_keys ; \
     in-target chown -R root:root /root/.ssh ; \
     echo 'DROPBEAR_OPTIONS="-p 23 -s -j -k"' >> /target/etc/dropbear-initramfs/config ; \
-    echo 'IP={{ primary_interface_ip }}::{{ primary_interface_subnet.gateway }}:{{ primary_interface_subnet.netmask }}:{{ inventory_hostname }}:{{ primary_interface }}:off' \
+    echo 'IP={{ primary_interface_ip }}::{{ primary_interface_subnet.gateway }}:{{ primary_interface_subnet.netmask }}:{{ inventory_hostname_short }}:{{ primary_interface }}:off' \
         >> /target/etc/dropbear-initramfs/config ; \
     cat /authorized_keys | \
         sed -e 's/^/no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="\/bin\/cryptroot-unlock" /g' - \
