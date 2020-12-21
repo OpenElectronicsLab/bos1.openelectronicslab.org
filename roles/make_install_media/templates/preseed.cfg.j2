@@ -233,6 +233,16 @@ d-i partman-crypto/weak_passphrase boolean true
 #              64 512 300% linux-swap                          \
 #                      method{ swap } format{ }                \
 #              .
+# The full recipe format is documented in the file partman-auto-recipe.txt
+# included in the 'debian-installer' package or available from D-I source
+# repository. This also documents how to specify settings such as file
+# system labels, volume group names and which physical devices to include
+# in a volume group.
+
+# NB: a swap partition seems to be required for an unattended autoinstall on
+# buster, all space needs to be formated and all partitions mounted.  To work
+# around this, we use any extra space for a swap partition and then delete it
+# after installation.
 d-i partman-auto/choose_recipe select full-disk-encryption
 d-i partman-auto/expert_recipe string                         \
       full-disk-encryption ::                                 \
@@ -242,11 +252,6 @@ d-i partman-auto/expert_recipe string                         \
                       use_filesystem{ } filesystem{ ext4 }    \
                       mountpoint{ /boot }                     \
               .                                               \
-              1000 2000 4096 linux-swap                       \
-                      $lvmok{ } lv_name{ swap }               \
-                      in_vg { crypt }                         \
-                      method{ swap } format{ }                \
-              .                                               \
               1000 10000 100000 ext4                          \
                       $lvmok{ } lv_name{ root }               \
                       in_vg { crypt }                         \
@@ -254,12 +259,12 @@ d-i partman-auto/expert_recipe string                         \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext4 }    \
                       mountpoint{ / }                         \
+              .                                               \
+              100 100 1000000000 linux-swap                   \
+                      $lvmok{ } lv_name{ swap }               \
+                      in_vg { crypt }                         \
+                      method{ swap } format{ }                \
               .
-# The full recipe format is documented in the file partman-auto-recipe.txt
-# included in the 'debian-installer' package or available from D-I source
-# repository. This also documents how to specify settings such as file
-# system labels, volume group names and which physical devices to include
-# in a volume group.
 
 # This makes partman automatically partition without confirmation, provided
 # that you told it what to do using one of the methods above.
