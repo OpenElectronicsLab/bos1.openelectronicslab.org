@@ -1,10 +1,5 @@
 # TODO
 
-## before we ship to DC steps
-- infiniband switch basic test
-- final check of hardware
-- rebuild all machines (and usb key check)
-
 ## other
 - debug git.openelectronicslab.org backup failure
 - debug `pmi_kvm_docker` issue with the javaws console console redirect
@@ -30,6 +25,11 @@
 - network storage setup (ceph?)
 - encryption unlock to listen on multiple cards
 - fix qemu pxeboot test for (machine name)
+- infiniband setup
+    - `sudo modprobe ib_ipoib`
+    - `sudo apt install -y opensm`
+    - `sudo ip addr add 10.0.0.10/24 dev ibp2s0`
+    - `sudo ip link set ibp2s0 up`
 
 ## virtual machine infrastructure
 - clustering setup (kubernetes?)

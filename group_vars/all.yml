@@ -1,6 +1,6 @@
 ---
 # jump to Kendrick's network until machines are in the datacenter
-ssh_jump_host: kendrickshaw.org
+#ssh_jump_host: kendrickshaw.org
 
 # Use the current username with "admin" appended as the default remote
 # username (with passwordless sudo).
@@ -8,7 +8,7 @@ ansible_user: "{{ lookup('env', 'USER') }}admin"
 
 # If a jump host is specified, add the appropriate command line parameters for
 # ssh.
-ansible_ssh_common_args: "-oProxyJump={{ ssh_jump_host | default(omit) }}"
+#ansible_ssh_common_args: "-oProxyJump={{ ssh_jump_host | default(omit) }}"
 
 # administrative users
 admin_users:
@@ -24,34 +24,34 @@ admin_users:
 oel_subnets:
     bos1_public:
         name: bos1.openelectronicslab.org
-        #subnet: 154.3.222.72
-        #netmask: 255.255.255.248
-        #broadcast: 153.3.222.79
-        #gateway: 154.3.222.73
-        subnet: 192.168.1.0
-        netmask: 255.255.255.0
-        broadcast: 192.168.1.255
-        gateway: 192.168.1.1
+        subnet: 154.3.222.72
+        netmask: 255.255.255.248
+        broadcast: 153.3.222.79
+        gateway: 154.3.222.73
+        #subnet: 192.168.1.0
+        #netmask: 255.255.255.0
+        #broadcast: 192.168.1.255
+        #gateway: 192.168.1.1
         dns:
           - 1.1.1.1
           - 1.0.0.1
         hosts:
             morchella0:
-                #ip: 154.3.222.74
-                ip: 192.168.1.68
+                ip: 154.3.222.74
+                #ip: 192.168.1.68
             boletus0: # /dev/enp3s0f1
-                #ip: 154.3.222.75
-                ip: 192.168.1.64
+                ip: 154.3.222.75
+                #ip: 192.168.1.64
                 mac: 00:25:90:76:08:2d
             boletus1:
-                #ip: 154.3.222.76
-                ip: 192.168.1.65
+                ip: 154.3.222.76
+                #ip: 192.168.1.65
             boletus2:
-                #ip: 154.3.222.77
-                ip: 192.168.1.66
+                ip: 154.3.222.77
+                #ip: 192.168.1.66
             boletus3:
-                #ip: 154.3.222.78
-                ip: 192.168.1.67
+                ip: 154.3.222.78
+                #ip: 192.168.1.67
     bos1_management:
         name: management.bos1.openelectronicslab.org
         subnet: 172.16.0.0

@@ -5,7 +5,7 @@
   - name: test the admin account
     block:
       - wait_for_connection:
-            timeout: 1
+            timeout: 3
     rescue:
       - set_fact:
             working_admin_account: false
@@ -84,6 +84,13 @@
             inventory_hostname_short }}:{{
             primary_interface }}:off
     notify: rebuild initramfs
+
+  - name: add the machine name to /etc/hosts
+    lineinfile:
+        path: /etc/hosts
+        regexp: '\b{{ inventory_hostname }}\b'
+        line: "{{ primary_interface_ip }} {{ inventory_hostname }} {{
+            inventory_hostname_short }}"
 
   - name: Set the dropbear authorized keys
     authorized_key:
