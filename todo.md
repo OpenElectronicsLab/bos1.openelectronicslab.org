@@ -1,8 +1,6 @@
 # TODO
 
 ## before we ship to DC steps
-- Force debian installer not to use entire drive for root partition on boletus
-- basic boletus ansible setup
 - static IP ansible support
 - infiniband switch basic test
 - check all luks keys
@@ -16,6 +14,7 @@
 - reproducible ISO builds
 - reproducible tftp builds
 - set BIOS and IPMI passwords
+- safety checks for commands like `reinstall_os_via_pxe`
 
 ## supporting physical machines
 - morchella wireguard and kvm setup

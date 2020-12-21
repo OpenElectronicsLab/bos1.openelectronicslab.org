@@ -1,6 +1,6 @@
 ---
 boot_drive: /dev/sdb
-usb_boot_drive: /dev/sda
+usb_boot_drive: /dev/sdd
 
 primary_interface: enp3s0f1
 primary_interface_ip: "{{ oel_subnets.bos1_public.hosts[inventory_hostname_short].ip }}"

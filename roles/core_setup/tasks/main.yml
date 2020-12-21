@@ -1,6 +1,7 @@
 ---
   - set_fact:
         working_admin_account: true
+
   - name: test the admin account
     block:
       - wait_for_connection:
@@ -8,6 +9,7 @@
     rescue:
       - set_fact:
             working_admin_account: false
+
   - import_tasks: admin_account_setup.yml
     when: working_admin_account
   - import_tasks: admin_account_setup.yml
@@ -15,17 +17,20 @@
     vars:
         ansible_user: root
         become: false
+
   - name: Remove any root authorized keys (should use admin user)
     file:
         path: /root/.ssh/authorized_keys
         state: absent
+
   - name: Set root password
     user:
         name: root
         password: "{{ root_password | string
-		| password_hash('sha512', 65534
-		| random(seed=inventory_hostname) | string)
-		| default('*') }}"
+            | password_hash('sha512', 65534
+            | random(seed=inventory_hostname) | string)
+            | default('*') }}"
+
   - name: Enable unattended upgrades
     apt:
         name: "{{ item }}"
@@ -33,9 +38,27 @@
     loop:
         - unattended-upgrades
         - apt-listchanges
+
   - name: Apply settings for unattended upgrades
     copy:
         src: "files/etc_apt_apt.conf.d_02periodic"
         dest: /etc/apt/apt.conf.d/02periodic
         owner: root
         group: root
+
+  - name: Disable swap
+    command: swapoff -a
+    changed_when: False  # TODO: could check if swap was enabled
+
+  - name: Remove swap from /etc/fstab
+    replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+
+  - name: remove swap logical volume
+    lvol:
+        vg: "{{ inventory_hostname_short }}-vg"
+        lv: swap
+        force: yes
+        state: absent
