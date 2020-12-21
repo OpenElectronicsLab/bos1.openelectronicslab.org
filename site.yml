@@ -1,5 +1,11 @@
 ---
-    # First unlock any machines that have rebooted
+    # create the install media on the local machine
+  - hosts: all
+    gather_facts: false
+    roles:
+       - make_install_media
+
+    # unlock any machines that have rebooted
   - hosts: luks_encrypted_machines
     gather_facts: false
     roles:
@@ -10,7 +16,7 @@
         add_to_known_hosts__skip_if_connect_fails: true
       - unlock_luks
 
-    # Next, make sure that all of the machines have admin accounts set up and
+    # Make sure that all of the machines have admin accounts set up and
     # automatic security patches enabled.
   - hosts: all
     gather_facts: false
@@ -30,8 +36,8 @@
             subnet: "{{ oel_subnets.bos1_management }}"
       - router
       - dhcp_server
+      - pxe_boot_server
       #- ipmi_viewer
-      # pxe_boot_server
     tasks: # TODO: should be replaced with roles
       - name: additional packages
         apt:
