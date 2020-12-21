@@ -22,7 +22,8 @@
     gather_facts: false
     become: true
     roles:
-      - role: core_setup
+      - core_setup
+      - update_luks_config
 
     # Set up morchella as a NAT and PXE boot server
   - hosts: morchella

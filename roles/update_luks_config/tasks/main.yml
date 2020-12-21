@@ -1,0 +1,44 @@
+  - name: generate the old LUKS keyfile
+    copy:
+        dest: /root/default_luks_password
+        content: temp
+
+  - name: generate the new LUKS keyfile
+    copy:
+        dest: /root/luks_password
+        content: "{{ luks_password }}"
+
+  - name: identify the partition with the encrypted root drive
+    shell: >
+        echo $(cat /etc/crypttab
+        | cut -f 2 -d' '
+        | sed -e's@UUID=@/dev/disk/by-uuid/@g' -)
+    register: luks_device_path
+    changed_when: false
+    # TODO: handle the case where we have more than one encrypted drive
+
+
+  - name: Check if the temporary luks password is still set
+    command: >
+        cryptsetup luksOpen
+        {{ luks_device_path.stdout }}
+        --test-passphrase
+        --key-file /root/default_luks_password
+    register: luks_temp_password_result
+    changed_when: false
+    failed_when: false
+
+  - name: Change the luks encryption password if needed
+    block:
+      - name: add the new LUKS password
+        command: >
+            cryptsetup luksAddKey
+            {{ luks_device_path.stdout }}
+            /root/luks_password
+            --key-file /root/default_luks_password
+      - name: add the new LUKS password
+        command: >
+            cryptsetup luksRemoveKey
+            {{ luks_device_path.stdout }}
+            --key-file /root/default_luks_password
+    when: luks_temp_password_result.rc == 0

@@ -18,7 +18,8 @@
         user: "{{ item.username }}admin"
         state: present
         exclusive: yes
-        key: "{{ lookup('file', 'secrets/ssh-keys/' + item.username + '.keys') }}"
+        key: "{{ lookup('file',
+                 'secrets/ssh-keys/' + item.username + '.keys') }}"
     loop: "{{ admin_users }}"
   - name: ensure sudo is installed
     apt:

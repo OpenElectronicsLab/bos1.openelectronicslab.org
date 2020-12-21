@@ -84,3 +84,14 @@
             inventory_hostname_short }}:{{
             primary_interface }}:off
     notify: rebuild initramfs
+
+  - name: Set the dropbear authorized keys
+    authorized_key:
+        user: root
+        state: present
+        path: /etc/dropbear-initramfs/authorized_keys
+        key_options: 'no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="/bin/cryptroot-unlock"'
+        key: "{{ lookup('file',
+                 'secrets/ssh-keys/' + item.username + '.keys') }}"
+    loop: "{{ admin_users }}"
+    notify: rebuild initramfs

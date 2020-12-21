@@ -17,6 +17,7 @@
         checksum: yes
         links: yes
         perms: yes
+        use_ssh_args: yes
 
   - name: Copy custom initrd files for each machine
     synchronize:
@@ -28,6 +29,7 @@
         checksum: yes
         links: yes
         perms: yes
+        use_ssh_args: yes
     when: hostvars[item].pxe_mac is defined
     with_inventory_hostnames:
       - all
@@ -43,6 +45,7 @@
         checksum: yes
         links: yes
         perms: yes
+        use_ssh_args: yes
     when: hostvars[item].pxe_mac is defined
     with_inventory_hostnames:
       - all

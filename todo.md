@@ -1,11 +1,9 @@
 # TODO
 
 ## before we ship to DC steps
-- static IP ansible support
 - infiniband switch basic test
-- check all luks keys
 - final check of hardware
-- usb key check
+- rebuild all machines (and usb key check)
 
 ## other
 - debug git.openelectronicslab.org backup failure
@@ -17,6 +15,8 @@
 - set BIOS and IPMI passwords
 - safety checks for commands like `reinstall_os_via_pxe`
 - group vars hackiness around `pxe_mac` and `pxe_file` variables
+- cleanup luks unlock ansible to not fail and recover but rather to test
+  and store return codes
 
 ## supporting physical machines
 - morchella wireguard and kvm setup
