@@ -8,6 +8,7 @@
 - usb key check
 
 ## other
+- debug git.openelectronicslab.org backup failure
 - debug ipmi\_kvm\_docker issue with the javaws console console redirect
   - consider: https://github.com/sunfoxcz/ipmiview
   - see also: https://github.com/ixs/kvm-cli
@@ -47,6 +48,7 @@
 - jupyter, tensorflow, gpu gpu hacking env
 
 ## migration
+- move git.openelectronicslab.org into new infra
 - move logicgate.nl into our infra
 - create logicgate email
 - transform venus into cloud node
