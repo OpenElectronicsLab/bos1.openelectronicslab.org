@@ -3,7 +3,7 @@
 # based on this stackoverflow answer:
 # https://serverfault.com/questions/327255/using-supermicro-ipmi-behind-a-proxy
 
-MORCHELLA_SSH="-J $USER@kendrickshaw.org "$USER"admin@morchella0"
+MORCHELLA_SSH=""$USER"admin@morchella0.bos1.openelectronicslab.org"
 MORCHELLA_MANAGEMENT_IP=172.16.0.1
 TARGET_MACHINE=$1-ipmi.management.bos1.openelectronicslab.org
 
