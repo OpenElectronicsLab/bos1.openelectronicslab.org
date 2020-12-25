@@ -1,0 +1,13 @@
+---
+  - name: install infiniband packages
+    apt:
+        name: "{{ item }}"
+        state: present
+    loop:
+      # required packages
+      - opensm
+      - rdma-core
+      # diagnostic tools
+      - ibverbs-utils
+      - infiniband-diags
+      - rdmacm-utils

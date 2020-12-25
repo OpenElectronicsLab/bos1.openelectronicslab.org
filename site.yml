@@ -25,6 +25,12 @@
       - core_setup
       - update_luks_config
 
+    # install infiniband drivers and utilities on boletus hosts
+  - hosts: boletus
+    become: true
+    roles:
+      - infiniband_setup
+
     # Set up morchella as a NAT and PXE boot server
   - hosts: morchella
     become: true
