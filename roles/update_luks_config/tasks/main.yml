@@ -9,14 +9,14 @@
         content: "{{ luks_password }}"
 
   - name: identify the partition with the encrypted root drive
+    # this is a bit fragile, not robust to comments, or changes in order
+    # TODO: handle the case where we have more than one encrypted drive
     shell: >
-        echo $(cat /etc/crypttab
+        echo $(head -n1 /etc/crypttab
         | cut -f 2 -d' '
         | sed -e's@UUID=@/dev/disk/by-uuid/@g' -)
     register: luks_device_path
     changed_when: false
-    # TODO: handle the case where we have more than one encrypted drive
-
 
   - name: Check if the temporary luks password is still set
     command: >
@@ -42,6 +42,24 @@
             {{ luks_device_path.stdout }}
             --key-file /root/default_luks_password
     when: luks_temp_password_result.rc == 0
+
+#  - name: read the /etc/crypttab
+#    command: cat /etc/crypttab
+#    register: crypttab_result
+#    changed_when: false
+#
+#  - name: setup additional LUKS drives
+#    command: >
+#        cryptsetup luksFormat {{ item.value }} /root/luks_password
+#    when: not item.value in crypttab_result.stdout
+#    with_dict: luks_additional
+#
+#  - name: Add additional LUKS volumes to the crypttab
+#    lineinfile:
+#        path: /etc/crypttab
+#        regex: "^{{ item.key }}_crypt"
+#        # SSD drives should include the "discard" option
+#        line: "{{ item.key }}_crypt {{ item.value }} /root/luks_password luks"
 
   - name: configure the dropbear adapter
     lineinfile:
