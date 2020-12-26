@@ -63,42 +63,11 @@
         force: yes
         state: absent
 
-  - name: configure the primary ethernet adapter
-    copy:
-        dest: /etc/network/interfaces.d/50-{{ primary_interface }}
-        content: |
-            auto {{ primary_interface }}
-            iface {{ primary_interface }} inet static
-                address {{ primary_interface_ip }}
-                broadcast {{ primary_interface_subnet.broadcast }}
-                netmask {{ primary_interface_subnet.netmask }}
-                gateway {{ primary_interface_subnet.gateway }}
-
-  - name: configure the dropbear adapter
-    lineinfile:
-        path: /etc/dropbear-initramfs/config
-        regexp: '^IP='
-        line: IP={{ primary_interface_ip }}::{{
-            primary_interface_subnet.gateway }}:{{
-            primary_interface_subnet.netmask }}:{{
-            inventory_hostname_short }}:{{
-            primary_interface }}:off
-    notify: rebuild initramfs
-
   - name: add the machine name to /etc/hosts
     lineinfile:
         path: /etc/hosts
         regexp: '\b{{ inventory_hostname }}\b'
-        line: "{{ primary_interface_ip }} {{ inventory_hostname }} {{
+        line: "{{ network_interfaces[primary_interface].subnet
+            .hosts[inventory_hostname_short].ip }} {{
+            inventory_hostname }} {{
             inventory_hostname_short }}"
-
-  - name: Set the dropbear authorized keys
-    authorized_key:
-        user: root
-        state: present
-        path: /etc/dropbear-initramfs/authorized_keys
-        key_options: 'no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="/bin/cryptroot-unlock"'
-        key: "{{ lookup('file',
-                 'secrets/ssh-keys/' + item.username + '.keys') }}"
-    loop: "{{ admin_users }}"
-    notify: rebuild initramfs

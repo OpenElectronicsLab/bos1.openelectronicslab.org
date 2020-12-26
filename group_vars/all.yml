@@ -93,10 +93,10 @@ oel_subnets:
             boletus3-ipmi:
                 ip: 172.16.0.9
                 mac: 00:25:90:76:06:0c
-    bos1_backend:
-        name: backend.bos1.openelectronicslab.org
+    bos1_backhaul:
+        name: backhaul.bos1.openelectronicslab.org
         subnet: 172.16.8.0
-        netmask: 255.255.248.0
+        netmask: 255.255.255.0
         broadcast: 172.16.15.255
         gateway: 172.16.4.1
         dns:

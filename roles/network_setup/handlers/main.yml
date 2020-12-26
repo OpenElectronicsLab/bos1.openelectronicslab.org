@@ -1,0 +1,8 @@
+---
+    # restart any network interfaces whose config file has changed
+  - name: restart network interfaces
+    shell: >
+        ifdown {{ item.item.key }};
+        ifup {{ item.item.key }}
+    when: item.changed
+    loop: "{{ network_interface_changes.results }}"

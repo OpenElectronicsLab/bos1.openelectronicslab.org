@@ -23,13 +23,26 @@
     become: true
     roles:
       - core_setup
-      - update_luks_config
 
     # install infiniband drivers and utilities on boletus hosts
   - hosts: boletus
     become: true
     roles:
       - infiniband_setup
+
+    # Additional core setup tasks
+  - hosts: all
+    become: true
+    roles:
+      - network_setup
+
+    # Make sure that all of the machines have admin accounts set up and
+    # automatic security patches enabled.
+  - hosts: luks_encrypted_machines
+    become: true
+    roles:
+      - update_luks_config
+      - network_setup
 
     # Set up morchella as a NAT and PXE boot server
   - hosts: morchella

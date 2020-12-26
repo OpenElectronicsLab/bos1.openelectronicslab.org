@@ -19,12 +19,22 @@ luks_password: !vault |
 boot_drive: /dev/sda
 usb_boot_drive: /dev/sdb
 
+network_interfaces:
+    enp5s0:
+        subnet: "{{ oel_subnets.bos1_public }}"
+    # enp3s0f0 bridged to bos1_management
+    # enp3s0f1 bridged to bos1_management
+    # enp4s0f0 bridged to bos1_management
+    # enp4s0f1 bridged to bos1_management
+    # enp6s0 bridged to bos1_management
+primary_interface: enp5s0
+
 router_downstream_interfaces:
   - enp3s0f0
   - enp3s0f1
   - enp4s0f0
   - enp4s0f1
-  - enp5s0f0
+  - enp6s0
 router_upstream_interface: enp5s0
 router_bridge_name: br0
 router_downstream_address: "{{ oel_subnets.bos1_management.gateway }}"
@@ -34,7 +44,3 @@ router_downstream_broadcast: "{{ oel_subnets.bos1_management.broadcast }}"
 dhcp_interfaces: "{{ router_bridge_name }}"
 dhcp_subnet: "{{ oel_subnets.bos1_management }}"
 dhcp_range: "{{ oel_subnets.bos1_management.hosts.morchella0.dhcp_range }}"
-
-primary_interface: enp5s0
-primary_interface_ip: "{{ oel_subnets.bos1_public.hosts.morchella0.ip }}"
-primary_interface_subnet: "{{ oel_subnets.bos1_public }}"

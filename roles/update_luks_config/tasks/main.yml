@@ -42,3 +42,27 @@
             {{ luks_device_path.stdout }}
             --key-file /root/default_luks_password
     when: luks_temp_password_result.rc == 0
+
+  - name: configure the dropbear adapter
+    lineinfile:
+        path: /etc/dropbear-initramfs/config
+        regexp: '^IP='
+        line: IP={{
+            network_interfaces[primary_interface].subnet
+            .hosts[inventory_hostname_short].ip }}::{{
+            network_interfaces[primary_interface].subnet.gateway }}:{{
+            network_interfaces[primary_interface].subnet.netmask }}:{{
+            inventory_hostname_short }}:{{
+            primary_interface }}:off
+    notify: rebuild initramfs
+
+  - name: Set the dropbear authorized keys
+    authorized_key:
+        user: root
+        state: present
+        path: /etc/dropbear-initramfs/authorized_keys
+        key_options: 'no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="/bin/cryptroot-unlock"'
+        key: "{{ lookup('file',
+                 'secrets/ssh-keys/' + item.username + '.keys') }}"
+    loop: "{{ admin_users }}"
+    notify: rebuild initramfs

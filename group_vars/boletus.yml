@@ -2,8 +2,13 @@
 boot_drive: /dev/sdb
 usb_boot_drive: /dev/sdd
 
+network_interfaces:
+    #enp3s0f0: # disabled for security
+    #   subnet: "{{ oel_subnets.bos1_management }}"
+    enp3s0f1:
+        subnet: "{{ oel_subnets.bos1_public }}"
+    ibp2s0:
+        subnet: "{{ oel_subnets.bos1_backhaul }}"
 primary_interface: enp3s0f1
-primary_interface_ip: "{{ oel_subnets.bos1_public.hosts[inventory_hostname_short].ip }}"
-primary_interface_subnet: "{{ oel_subnets.bos1_public }}"
 
 pxe_mac: "{{ oel_subnets.bos1_management.hosts[inventory_hostname_short].mac }}"

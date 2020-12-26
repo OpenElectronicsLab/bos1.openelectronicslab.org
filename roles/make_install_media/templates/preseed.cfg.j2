@@ -52,10 +52,15 @@ d-i netcfg/disable_autoconfig boolean true
 # Static network configuration.
 #
 # IPv4
-d-i netcfg/get_ipaddress string {{ primary_interface_ip }}
-d-i netcfg/get_netmask string {{ primary_interface_subnet.netmask }}
-d-i netcfg/get_gateway string {{ primary_interface_subnet.gateway }}
-d-i netcfg/get_nameservers string {{ primary_interface_subnet.dns[0] }}
+d-i netcfg/get_ipaddress string {{
+    network_interfaces[primary_interface].subnet
+        .hosts[inventory_hostname_short].ip }}
+d-i netcfg/get_netmask string {{
+    network_interfaces[primary_interface].subnet.netmask }}
+d-i netcfg/get_gateway string {{
+    network_interfaces[primary_interface].subnet.gateway }}
+d-i netcfg/get_nameservers string {{
+    network_interfaces[primary_interface].subnet.dns[0] }}
 d-i netcfg/confirm_static boolean true
 #
 # IPv6 example
@@ -122,7 +127,9 @@ d-i passwd/make-user boolean false
 # or encrypted using a crypt(3)  hash.
 # NOTE: Ansible idempotent password hash generation based on example at
 # https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html
-d-i passwd/root-password-crypted password {{ root_password | string | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}
+d-i passwd/root-password-crypted password {{ root_password | string
+    | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string)
+    }}
 
 # To create a normal user account.
 #d-i passwd/user-fullname string my_fullname
@@ -499,8 +506,14 @@ d-i preseed/late_command string in-target mkdir /root/.ssh ; \
     in-target chmod go-rwx /root/.ssh ; \
     cp /authorized_keys /target/root/.ssh/authorized_keys ; \
     in-target chown -R root:root /root/.ssh ; \
-    echo 'DROPBEAR_OPTIONS="-p 23 -s -j -k"' >> /target/etc/dropbear-initramfs/config ; \
-    echo 'IP={{ primary_interface_ip }}::{{ primary_interface_subnet.gateway }}:{{ primary_interface_subnet.netmask }}:{{ inventory_hostname_short }}:{{ primary_interface }}:off' \
+    echo 'DROPBEAR_OPTIONS="-p 23 -s -j -k"' \
+        >> /target/etc/dropbear-initramfs/config ; \
+    echo 'IP={{ network_interfaces[primary_interface].subnet
+        .hosts[inventory_hostname_short].ip }}::{{
+        network_interfaces[primary_interface].subnet.gateway }}:{{
+        network_interfaces[primary_interface].subnet.netmask }}:{{
+        inventory_hostname_short }}:{{
+        primary_interface }}:off' \
         >> /target/etc/dropbear-initramfs/config ; \
     cat /authorized_keys | \
         sed -e 's/^/no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="\/bin\/cryptroot-unlock" /g' - \
@@ -514,14 +527,18 @@ d-i preseed/late_command string in-target mkdir /root/.ssh ; \
         /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
     echo 'iface {{ primary_interface }} inet static' >> \
         /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
-    echo '    address {{ primary_interface_ip }}' >> \
+    echo '    address {{ network_interfaces[primary_interface].subnet
+        .hosts[inventory_hostname_short].ip }}' >> \
         /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
-    echo '    netmask {{ primary_interface_subnet.netmask }}' >> \
+    echo '    netmask {{ network_interfaces[primary_interface].subnet.netmask
+        }}' >> \
         /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
-    echo '    gateway {{ primary_interface_subnet.gateway }}' >> \
+    echo '    gateway {{ network_interfaces[primary_interface].subnet.gateway
+        }}' >> \
         /target/etc/network/interfaces.d/50-{{ primary_interface }}; \
-    echo 'domain {{ primary_interface_subnet.name }}' > /etc/resolv.conf; \
-    {% for dns in primary_interface_subnet.dns %}
+    echo 'domain {{ network_interfaces[primary_interface].subnet.name
+        }}' > /etc/resolv.conf; \
+    {% for dns in network_interfaces[primary_interface].subnet.dns %}
     echo 'nameserver {{ dns }}' >> /etc/resolv.conf; \
     {% endfor -%}
     echo 'late commands completed'
