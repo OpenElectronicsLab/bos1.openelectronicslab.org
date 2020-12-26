@@ -16,8 +16,8 @@ luks_password: !vault |
           64363035636135666266396535623334646262616162636532643766333562656438653838373439
           3834643937363631323666393931393530653337393164643334
 
-boot_drive: /dev/sda
-usb_boot_drive: /dev/sdb
+installer_target_drive: /dev/sda
+usb_key: /dev/sdb
 
 network_interfaces:
     enp5s0:

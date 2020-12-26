@@ -1,6 +1,11 @@
 ---
-boot_drive: /dev/sdb
-usb_boot_drive: /dev/sdd
+# During boot, /dev/sda is the USB and /dev/sdb is the SSD
+# after boot, USB becomes /dev/sdd and SSD becomes /dev/sda
+installer_target_drive: /dev/sdb
+usb_key: /dev/sdd
+luks_rust:
+  - /dev/sdb
+  - /dev/sdc
 
 network_interfaces:
     #enp3s0f0: # disabled for security
