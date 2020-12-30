@@ -12,12 +12,26 @@
         src: templates/preseed.cfg.j2
         dest: "{{ local_build_dir }}/config/preseed.cfg"
 
+  - name: Download base installation media
+    delegate_to: 127.0.0.1
+    run_once: true
+    command: make downloads
+        --directory {{ role_path }}/files
+        CONFIGDIR={{ local_build_dir }}/config
+        BUILDDIR={{ local_build_dir }}
+        DOWNLOADDIR={{ local_download_dir }}
+        SSHKEYSDIR={{ playbook_dir }}/secrets/ssh-keys
+        MACHINENAME={{ inventory_hostname_short }}
+    register: download_result
+    changed_when: 'not ("make: Nothing to be done" in download_result.stdout)'
+
   - name: Build the install media on the local machine
     delegate_to: 127.0.0.1
     command: make
         --directory {{ role_path }}/files
         CONFIGDIR={{ local_build_dir }}/config
         BUILDDIR={{ local_build_dir }}
+        DOWNLOADDIR={{ local_download_dir }}
         SSHKEYSDIR={{ playbook_dir }}/secrets/ssh-keys
         MACHINENAME={{ inventory_hostname_short }}
     register: make_result

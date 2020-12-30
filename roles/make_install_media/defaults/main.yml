@@ -1,2 +1,4 @@
 ---
-local_build_dir: "{{ playbook_dir }}/build/make_install_media/{{ inventory_hostname }}"
+local_download_dir: "{{ playbook_dir }}/build/make_install_media/download"
+local_build_dir: "{{ playbook_dir }}/build/make_install_media/{{
+    inventory_hostname }}"

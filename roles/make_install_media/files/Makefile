@@ -1,5 +1,6 @@
-BUILDDIR=build
-CONFIGDIR=config
+BUILDDIR=$(PWD)/build
+CONFIGDIR=$(PWD)/config
+DOWNLOADDIR=$(PWD)/download
 SSHKEYSDIR=../../../secrets/ssh-keys
 MACHINENAME=ihavenoname
 INITRD=$(MACHINENAME)_initrd.gz
@@ -15,6 +16,19 @@ all: $(TARGET_ISO) $(TFTP_COMPLETE_TAG)
 clean:
 	rm -rf $(BUILDDIR)
 
+downloads: $(DOWNLOADDIR)/debian_original.iso \
+	$(DOWNLOADDIR)/netboot.tar.gz
+
+# create build directory
+$(BUILDDIR)/.gitignore :
+	mkdir -pv $(BUILDDIR)
+	echo '*' > $@
+
+# create download directory
+$(DOWNLOADDIR)/.gitignore :
+	mkdir -pv $(DOWNLOADDIR)
+	echo '*' > $@
+
 #########################################################
 # ISO target
 #########################################################
@@ -22,20 +36,15 @@ DEBIAN_ISO_URL=https://cdimage.debian.org/mirror/cdimage/archive/10.6.0/amd64/is
 ISO_EXTRACTED_TAG=$(BUILDDIR)/iso/README.txt
 INITRD_ISO_TAG=$(BUILDDIR)/initrd.iso/init
 
-# create target
-$(BUILDDIR)/.gitignore :
-	mkdir -pv $(BUILDDIR)
-	echo '*' > $@
-
 # download the base install image
-$(BUILDDIR)/debian_original.iso : $(BUILDDIR)/.gitignore
+$(DOWNLOADDIR)/debian_original.iso : $(DOWNLOADDIR)/.gitignore
 	wget $(DEBIAN_ISO_URL) -O $@
 	touch $@
 
 # extract the contents of the image
-$(ISO_EXTRACTED_TAG) : $(BUILDDIR)/debian_original.iso
+$(ISO_EXTRACTED_TAG) : $(DOWNLOADDIR)/debian_original.iso $(BUILDDIR)/.gitignore
 	mkdir -pv $(BUILDDIR)/iso
-	cd $(BUILDDIR)/iso && 7z x ../debian_original.iso
+	cd $(BUILDDIR)/iso && 7z x $(DOWNLOADDIR)/debian_original.iso
 	touch $@
 
 # update the grub.cfg to include a menu option for a preseeded install
@@ -116,14 +125,14 @@ TFTP_TAG=$(BUILDDIR)/tftp/version.info
 INITRD_PXE_TAG=$(BUILDDIR)/initrd.pxe/init
 
 # download the base netboot image
-$(BUILDDIR)/netboot.tar.gz : $(BUILDDIR)/.gitignore
+$(DOWNLOADDIR)/netboot.tar.gz : $(DOWNLOADDIR)/.gitignore
 	wget $(DEBIAN_NETBOOT_URL) -O $@
 	touch $@
 
 # extract the netboot image
-$(TFTP_TAG) : $(BUILDDIR)/netboot.tar.gz grub.cfg
+$(TFTP_TAG) : $(DOWNLOADDIR)/netboot.tar.gz grub.cfg $(BUILDDIR)/.gitignore
 	mkdir -pv $(BUILDDIR)/tftp
-	cd $(BUILDDIR)/tftp && tar -xzf ../netboot.tar.gz
+	cd $(BUILDDIR)/tftp && tar -xzf $(DOWNLOADDIR)/netboot.tar.gz
 	ln -svf debian-installer/amd64/grubx64.efi \
 		$(BUILDDIR)/tftp/grubx64.efi
 	ln -svf debian-installer/amd64/bootnetx64.efi \
