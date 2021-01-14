@@ -44,7 +44,7 @@ $(DOWNLOADDIR)/debian_original.iso : $(DOWNLOADDIR)/.gitignore
 # extract the contents of the image
 $(ISO_EXTRACTED_TAG) : $(DOWNLOADDIR)/debian_original.iso $(BUILDDIR)/.gitignore
 	mkdir -pv $(BUILDDIR)/iso
-	cd $(BUILDDIR)/iso && 7z x $(DOWNLOADDIR)/debian_original.iso
+	cd $(BUILDDIR)/iso && 7z -y x $(DOWNLOADDIR)/debian_original.iso
 	touch $@
 
 # update the grub.cfg to include a menu option for a preseeded install
