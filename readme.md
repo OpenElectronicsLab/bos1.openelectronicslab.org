@@ -325,7 +325,9 @@ Current plan for development:
   - transform venus into cloud node
   - move tdf web content into our infra
   - move tdf email into our infra
-  - spin-down tdf
+  - current shared tdf will be replaced, old hardware will spin-down soon
+     - new hardware has IPMI and second unit; potential to be a 'sea1' location
+     - let's chat with keithr
   - move kendrickshaw.org website
 
 ### improvements
@@ -334,3 +336,4 @@ Current plan for development:
   - replace the "temp" passphrase with a secret
   - switch from iptables to nftables syntax in ansible scripts
   - add wireguard VPN accesses to management network etc.
+  - establish a non-sucky way to repo-sync with big-name git repository sites
