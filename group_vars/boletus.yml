@@ -17,3 +17,13 @@ network_interfaces:
 primary_interface: enp3s0f1
 
 pxe_mac: "{{ oel_subnets.bos1_management.hosts[inventory_hostname_short].mac }}"
+
+kvm_lvm_pools:
+    ssd0_pool:
+        device: /dev/mapper/sdb2_crypt
+        volume_group: "{{ inventory_hostname_short }}-vg"
+
+kvm_volumes:
+    test_volume:
+        pool: ssd0_pool
+        size: 8G

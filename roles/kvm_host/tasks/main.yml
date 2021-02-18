@@ -1,0 +1,46 @@
+---
+  - name: install required packages
+    apt:
+        name: "{{ item }}"
+        state: present
+    loop:
+      - qemu-kvm
+      - libvirt-daemon-system
+      - virtinst
+      - libguestfs-tools
+
+  - name: list existing kvm storage pools
+    command: virsh pool-list --all
+    register: virsh_pool_list
+    changed_when: false
+
+  - name: create lvm-based kvm storage pools
+    command: virsh pool-define-as {{ item.key }} logical
+                --source-dev {{ item.value.device }}
+                --source-name {{ item.value.volume_group }}
+                --target /dev/{{ item.value.volume_group }}
+    when: item.key not in virsh_pool_list.stdout
+    with_dict: "{{ kvm_lvm_pools }}"
+
+  - name: start kvm storage pools
+    command: virsh pool-start {{ item.key }}
+    when: item.key not in virsh_pool_list.stdout
+    with_dict: "{{ kvm_lvm_pools }}"
+
+  - name: set lvm-based kvm storage pools to autostart
+    command: virsh pool-autostart {{ item.key }}
+    when: item.key not in virsh_pool_list.stdout
+    with_dict: "{{ kvm_lvm_pools }}"
+
+  - name: check to see if the kvm volumes exist
+    shell: virsh vol-list {{ item.value.pool }} | grep -e " {{ item.key }} "
+    register: kvm_vol_list
+    failed_when: false
+    changed_when: false
+    with_dict: "{{ kvm_volumes }}"
+
+  - name: create the kvm volumes
+    command: virsh vol-create-as {{ item[0].value.pool }} {{ item[0].key }}
+        {{ item[0].value.size }}
+    when: item[1].rc != 0
+    loop: "{{ kvm_volumes | dict2items | zip(kvm_vol_list.results) | list }}"
