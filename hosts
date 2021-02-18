@@ -25,3 +25,8 @@ morchella
 [luks_encrypted_machines:children]
 morchella
 boletus
+
+
+# machines that host kvm virtual machines
+[kvm_hosts:children]
+boletus

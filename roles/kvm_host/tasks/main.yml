@@ -8,6 +8,15 @@
       - libvirt-daemon-system
       - virtinst
       - libguestfs-tools
+      - bridge-utils
+      - nftables
+
+  - name: Add admin users to the 'libvirt' group
+    user:
+        name: "{{ item.username }}admin"
+        groups: libvirt
+        append: yes
+    loop: "{{ admin_users }}"
 
   - name: list existing kvm storage pools
     command: virsh pool-list --all
@@ -44,3 +53,74 @@
         {{ item[0].value.size }}
     when: item[1].rc != 0
     loop: "{{ kvm_volumes | dict2items | zip(kvm_vol_list.results) | list }}"
+
+  - name: Configure bridge networks
+    copy:
+        dest: /etc/network/interfaces.d/60-{{ item.key }}
+        content: |
+            auto {{ item.key }}
+            iface {{ item.key }} inet static
+                address {{ item.value.subnet.gateway }}
+                broadcast {{ item.value.subnet.broadcast }}
+                netmask {{ item.value.subnet.netmask }}
+                bridge_ports none
+    register: configure_bridge
+    with_dict: "{{ bridges }}"
+
+  - name: restart bridge
+    command: bash -c "
+        ifdown --ignore-errors {{ item.item.key }} ;
+        ifup --ignore-errors {{ item.item.key }}
+        "
+    when: item.changed
+    loop: "{{ configure_bridge.results }}"
+
+  - name: Enable IPv4 forwarding in /etc/sysctl.conf
+    lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^\s*net.ipv4.ip_forward\s*='
+        line: net.ipv4.ip_forward=1
+    register: enable_forwarding
+
+  - name: If needed, enable forwarding in the running kernel
+    command: sysctl -w net.ipv4.ip_forward=1
+    when: enable_forwarding.changed
+
+  - name: Add hosts on local bridges to known hosts
+    include_role:
+        role: add_subnet_to_hosts_file
+    vars:
+        subnet: "{{ bridge_iter.value.subnet }}"
+    with_dict: "{{ bridges }}"
+    loop_control:
+        loop_var: bridge_iter
+
+#  - name: Set up NAT rules for traffic on {{ router_upstream_interface }}
+#    iptables:
+#        table: nat
+#        chain: POSTROUTING
+#        out_interface: "{{ router_upstream_interface }}"
+#        jump: MASQUERADE
+#        action: append
+#    notify: save iptables
+#
+#  - name: Forward traffic from {{ router_bridge_name }} to
+#        {{ router_upstream_interface }}
+#    iptables:
+#        chain: FORWARD
+#        in_interface: "{{ router_bridge_name }}"
+#        out_interface: "{{ router_upstream_interface }}"
+#        jump: ACCEPT
+#    notify: save iptables
+#
+#  - name: Forward established traffic from {{ router_upstream_interface }} to
+#        {{ router_bridge_name }}
+#    iptables:
+#        chain: FORWARD
+#        in_interface: "{{ router_upstream_interface }}"
+#        out_interface: "{{ router_bridge_name }}"
+#        ctstate:
+#          - ESTABLISHED
+#          - RELATED
+#        jump: ACCEPT
+#    notify: save iptables

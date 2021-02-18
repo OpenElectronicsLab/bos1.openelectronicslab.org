@@ -12,6 +12,7 @@
         groups: admin
         shell: /bin/bash
         password: '*'
+        append: yes
     loop: "{{ admin_users }}"
   - name: set up authorized admin keys
     authorized_key:

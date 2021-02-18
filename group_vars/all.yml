@@ -28,30 +28,22 @@ oel_subnets:
         netmask: 255.255.255.248
         broadcast: 153.3.222.79
         gateway: 154.3.222.73
-        #subnet: 192.168.1.0
-        #netmask: 255.255.255.0
-        #broadcast: 192.168.1.255
-        #gateway: 192.168.1.1
         dns:
           - 1.1.1.1
           - 1.0.0.1
         hosts:
             morchella0:
                 ip: 154.3.222.74
-                #ip: 192.168.1.68
             boletus0: # /dev/enp3s0f1
                 ip: 154.3.222.75
-                #ip: 192.168.1.64
                 mac: 00:25:90:76:08:2d
             boletus1:
                 ip: 154.3.222.76
-                #ip: 192.168.1.65
             boletus2:
                 ip: 154.3.222.77
-                #ip: 192.168.1.66
             boletus3:
                 ip: 154.3.222.78
-                #ip: 192.168.1.67
+
     bos1_management:
         name: management.bos1.openelectronicslab.org
         subnet: 172.16.0.0
@@ -93,21 +85,75 @@ oel_subnets:
             boletus3-ipmi:
                 ip: 172.16.0.9
                 mac: 00:25:90:76:06:0c
+
     bos1_backhaul:
         name: backhaul.bos1.openelectronicslab.org
-        subnet: 172.16.8.0
+        subnet: 172.16.1.0
         netmask: 255.255.255.0
-        broadcast: 172.16.15.255
+        broadcast: 172.16.1.255
+        gateway: 172.16.1.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
+            boletus0:
+                ip: 172.16.1.10
+            boletus1:
+                ip: 172.16.1.11
+            boletus2:
+                ip: 172.16.1.12
+            boletus3:
+                ip: 172.16.1.13
+
+    private_boletus0_vpn_bos1:
+        name: private.boletus0.vpn.bos1.openelectronicslab.org
+        subnet: 172.16.4.0
+        netmask: 255.255.255.0
+        broadcast: 172.16.4.255
         gateway: 172.16.4.1
         dns:
           - 1.1.1.1
           - 1.0.0.1
         hosts:
             boletus0:
-                ip: 172.16.8.10
+                ip: 172.16.4.1
+
+    private_boletus1_vpn_bos1:
+        name: private.boletus1.vpn.bos1.openelectronicslab.org
+        subnet: 172.16.5.0
+        netmask: 255.255.255.0
+        broadcast: 172.16.5.255
+        gateway: 172.16.5.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
             boletus1:
-                ip: 172.16.8.11
+                ip: 172.16.5.1
+
+    private_boletus2_vpn_bos1:
+        name: private.boletus2.vpn.bos1.openelectronicslab.org
+        subnet: 172.16.6.0
+        netmask: 255.255.255.0
+        broadcast: 172.16.6.255
+        gateway: 172.16.6.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
             boletus2:
-                ip: 172.16.8.12
+                ip: 172.16.6.1
+
+    private_boletus3_vpn_bos1:
+        name: private.boletus3.vpn.bos1.openelectronicslab.org
+        subnet: 172.16.7.0
+        netmask: 255.255.255.0
+        broadcast: 172.16.7.255
+        gateway: 172.16.7.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
             boletus3:
-                ip: 172.16.8.13
+                ip: 172.16.7.1
+

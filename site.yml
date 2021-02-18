@@ -29,6 +29,9 @@
     become: true
     roles:
       - infiniband_setup
+      - role: add_subnet_to_hosts_file
+        vars:
+            subnet: "{{ oel_subnets.bos1_backhaul }}"
 
     # Additional core setup tasks
   - hosts: all
@@ -67,3 +70,9 @@
           - socat # needed for current IPMI UDP tunneling
           - psmisc # for killall, used by IPMI tunneling script
           - ipmitool # useful utility, should go in a role
+
+    # set up the virtual machine hosts
+  - hosts: kvm_hosts
+    become: true
+    roles:
+      - kvm_host
