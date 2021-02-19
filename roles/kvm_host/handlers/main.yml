@@ -1,0 +1,3 @@
+---
+  - name: nftables changed
+    command: /etc/nftables.conf

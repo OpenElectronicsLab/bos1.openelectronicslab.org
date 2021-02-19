@@ -95,6 +95,36 @@
     loop_control:
         loop_var: bridge_iter
 
+  - name: Add basic nat table
+    blockinfile:
+        insertafter: "flush ruleset"
+        path: /etc/nftables.conf
+        marker: "# Ansible-managed NAT table {mark}"
+        block: |
+
+            table ip nat {
+                chain prerouting {
+                    type nat hook prerouting priority -100;
+                }
+                chain postrouting {
+                    type nat hook postrouting priority 100;
+                }
+            }
+    notify: nftables changed
+
+  - name: Add internet SNAT rules for bridges
+    lineinfile:
+        path: /etc/nftables.conf
+        regexp:
+        line:
+            '        ip saddr {{ item.value.subnet.gateway }}-{{
+            item.value.subnet.broadcast }} oif {{ primary_interface }} snat
+                {{ network_interfaces[primary_interface].subnet
+                    .hosts[inventory_hostname_short].ip }};'
+        insertafter: type nat hook postrouting priority 100;
+    with_dict: "{{ bridges }}"
+    notify: nftables changed
+
 #  - name: Set up NAT rules for traffic on {{ router_upstream_interface }}
 #    iptables:
 #        table: nat
