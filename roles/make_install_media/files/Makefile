@@ -32,7 +32,7 @@ $(DOWNLOADDIR)/.gitignore :
 #########################################################
 # ISO target
 #########################################################
-DEBIAN_ISO_URL=https://cdimage.debian.org/mirror/cdimage/archive/10.6.0/amd64/iso-cd/debian-10.6.0-amd64-netinst.iso
+DEBIAN_ISO_URL=https://cdimage.debian.org/mirror/cdimage/archive/10.7.0/amd64/iso-cd/debian-10.7.0-amd64-netinst.iso
 ISO_EXTRACTED_TAG=$(BUILDDIR)/iso/README.txt
 INITRD_ISO_TAG=$(BUILDDIR)/initrd.iso/init
 

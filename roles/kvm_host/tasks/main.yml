@@ -10,6 +10,7 @@
       - libguestfs-tools
       - bridge-utils
       - nftables
+      - rsync
 
   - name: Add admin users to the 'libvirt' group
     user:
@@ -125,20 +126,21 @@
     with_dict: "{{ bridges }}"
     notify: nftables changed
 
-#  - name: Create the install media directory
-#
-#  - name: Copy custom pxelinux.cfg files for each machine
-#    synchronize:
-#        src: "{{ playbook_dir }}/build/make_install_media/{{
-#            hostvars[item].inventory_hostname
-#            }}/tftp/debian-installer/amd64/pxelinux.cfg/{{
-#            hostvars[item].inventory_hostname_short }}"
-#        dest: /srv/tftp/debian-installer/amd64/pxelinux.cfg/
-#        archive: no
-#        checksum: yes
-#        links: yes
-#        perms: yes
-#        use_ssh_args: yes
-#    when: hostvars[item].pxe_mac is defined
-#    with_inventory_hostnames:
-#      - all
+  - name: Create the install media directory
+    file:
+        path: /media/install-media
+        state: directory
+
+  - name: Copy custom pxelinux.cfg files for each machine
+    synchronize:
+        src: "{{ playbook_dir }}/build/make_install_media/{{
+            hostvars[item].inventory_hostname
+            }}/autoinstall.iso"
+        dest: /media/install-media/{{ hostvars[item].inventory_hostname_short
+            }}.iso
+        archive: no
+        checksum: yes
+        use_ssh_args: yes
+#    when: (the vm matches the host)
+    with_inventory_hostnames:
+      - kvm_guests

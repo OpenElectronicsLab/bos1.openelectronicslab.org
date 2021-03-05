@@ -71,3 +71,12 @@
             .hosts[inventory_hostname_short].ip }} {{
             inventory_hostname }} {{
             inventory_hostname_short }}"
+
+  - name: Install basic admin tools
+    apt:
+        name: "{{ item }}"
+        state: present
+    loop:
+        - vim-nox
+        - net-tools
+        - rsync

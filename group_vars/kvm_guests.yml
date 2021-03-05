@@ -3,4 +3,4 @@
 # encrypted).
 full_disk_encryption: false
 
-installer_target_drive: /dev/sda
+installer_target_drive: /dev/vda
