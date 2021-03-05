@@ -131,7 +131,7 @@
         path: /media/install-media
         state: directory
 
-  - name: Copy custom pxelinux.cfg files for each machine
+  - name: Copy install media files for each virtual machine
     synchronize:
         src: "{{ playbook_dir }}/build/make_install_media/{{
             hostvars[item].inventory_hostname
@@ -144,3 +144,36 @@
 #    when: (the vm matches the host)
     with_inventory_hostnames:
       - kvm_guests
+
+    # $ sudo virsh list --all
+    # Id   Name      State
+    # -------------------------
+    #  6    testvm3   running
+
+  - name: Check for existence of VM
+    shell: virsh list --all | grep -q "{{
+        hostvars[item].inventory_hostname_short }}"
+    register: vm_exists
+    failed_when: false
+    changed_when: false
+    loop: "{{ guest_vms }}"
+
+  - debug:
+        var: vm_exists
+
+  - name: create the VMs
+    command: virt-install
+        --connect qemu:///system
+        --virt-type kvm
+        --cdrom /media/install-media/{{
+            hostvars[item.item].inventory_hostname_short }}.iso
+        --name {{ hostvars[item.item].inventory_hostname_short }}
+        --memory 8192
+        --vcpus 2
+        --disk vol={{ hostvars[item.item].root_volume }}
+        --noautoconsole
+        --network=bridge:br0
+        --os-variant debian10
+    when: vm_exists is iterable and item.rc != 0
+    loop: "{{ vm_exists.results }}"
+

@@ -10,6 +10,8 @@ ansible_user: "{{ lookup('env', 'USER') }}admin"
 # ssh.
 #ansible_ssh_common_args: "-oProxyJump={{ ssh_jump_host | default(omit) }}"
 
+guest_vms: []
+
 # administrative users
 admin_users:
   - username: kms15
@@ -106,7 +108,7 @@ oel_subnets:
                 ip: 172.16.1.13
 
     bos1_vpn_boletus0_private:
-        name: private.boletus0.vpn.bos1.openelectronicslab.org
+        name: private.vpn.boletus0.bos1.openelectronicslab.org
         subnet: 172.16.4.0
         netmask: 255.255.255.0
         broadcast: 172.16.4.255
@@ -119,7 +121,7 @@ oel_subnets:
                 ip: 172.16.4.1
 
     bos1_vpn_boletus1_private:
-        name: private.boletus1.vpn.bos1.openelectronicslab.org
+        name: private.vpn.boletus1.bos1.openelectronicslab.org
         subnet: 172.16.5.0
         netmask: 255.255.255.0
         broadcast: 172.16.5.255
@@ -132,7 +134,7 @@ oel_subnets:
                 ip: 172.16.5.1
 
     bos1_vpn_boletus2_private:
-        name: private.boletus2.vpn.bos1.openelectronicslab.org
+        name: private.vpn.boletus2.bos1.openelectronicslab.org
         subnet: 172.16.6.0
         netmask: 255.255.255.0
         broadcast: 172.16.6.255
@@ -145,7 +147,7 @@ oel_subnets:
                 ip: 172.16.6.1
 
     bos1_vpn_boletus3_private:
-        name: private.boletus3.vpn.bos1.openelectronicslab.org
+        name: private.vpn.boletus3.bos1.openelectronicslab.org
         subnet: 172.16.7.0
         netmask: 255.255.255.0
         broadcast: 172.16.7.255

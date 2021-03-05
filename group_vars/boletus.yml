@@ -24,10 +24,7 @@ kvm_lvm_pools:
         device: /dev/mapper/sdb2_crypt
         volume_group: "{{ inventory_hostname_short }}-vg"
 
-kvm_volumes:
-    test_volume:
-        pool: ssd0_pool
-        size: 8G
+kvm_volumes: {}
 
 bridges:
     br0:
