@@ -14,6 +14,9 @@ boletus1.bos1.openelectronicslab.org
 boletus2.bos1.openelectronicslab.org
 boletus3.bos1.openelectronicslab.org
 
+[boletus3_guests]
+testvm3.private.boletus3.vpn.bos1.openelectronicslab.org
+
 # Functional machine groups:
 
 # machines providing firewalls for IPMI ports
@@ -26,7 +29,9 @@ morchella
 morchella
 boletus
 
-
 # machines that host kvm virtual machines
 [kvm_hosts:children]
 boletus
+
+[kvm_guests:children]
+boletus3_guests

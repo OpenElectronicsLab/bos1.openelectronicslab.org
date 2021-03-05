@@ -127,9 +127,13 @@ d-i passwd/make-user boolean false
 # or encrypted using a crypt(3)  hash.
 # NOTE: Ansible idempotent password hash generation based on example at
 # https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html
+{% if root_password is defined %}
 d-i passwd/root-password-crypted password {{ root_password | string
     | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string)
     }}
+{% else %}
+d-i passwd/root-password-crypted password *
+{% endif %}
 
 # To create a normal user account.
 #d-i passwd/user-fullname string my_fullname
@@ -389,7 +393,8 @@ tasksel tasksel/first multiselect standard
 # Whether to upgrade packages after debootstrap.
 # Allowed values: none, safe-upgrade, full-upgrade
 #d-i pkgsel/upgrade select none
-d-i pkgsel/include string openssh-server dropbear-initramfs
+d-i pkgsel/include string openssh-server {% if full_disk_encryption
+    %} dropbear-initramfs {% endif %}
 
 ### Description: Allow password authentication?
 #   By default, the SSH server will allow authenticating using a password.
@@ -506,6 +511,7 @@ d-i preseed/late_command string in-target mkdir /root/.ssh ; \
     in-target chmod go-rwx /root/.ssh ; \
     cp /authorized_keys /target/root/.ssh/authorized_keys ; \
     in-target chown -R root:root /root/.ssh ; \
+    {% if full_disk_encryption %}
     echo 'DROPBEAR_OPTIONS="-p 23 -s -j -k"' \
         >> /target/etc/dropbear-initramfs/config ; \
     echo 'IP={{ network_interfaces[primary_interface].subnet
@@ -518,6 +524,7 @@ d-i preseed/late_command string in-target mkdir /root/.ssh ; \
     cat /authorized_keys | \
         sed -e 's/^/no-port-forwarding,no-agent-forwarding,no-x11-forwarding,command="\/bin\/cryptroot-unlock" /g' - \
         > /target/etc/dropbear-initramfs/authorized_keys ; \
+    {% endif %}
     echo PasswordAuthentication no >> /target/etc/ssh/sshd_config ; \
     echo GRUB_TERMINAL=console >> /target/etc/default/grub ; \
     in-target update-initramfs -u ; \

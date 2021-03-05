@@ -125,32 +125,20 @@
     with_dict: "{{ bridges }}"
     notify: nftables changed
 
-#  - name: Set up NAT rules for traffic on {{ router_upstream_interface }}
-#    iptables:
-#        table: nat
-#        chain: POSTROUTING
-#        out_interface: "{{ router_upstream_interface }}"
-#        jump: MASQUERADE
-#        action: append
-#    notify: save iptables
+#  - name: Create the install media directory
 #
-#  - name: Forward traffic from {{ router_bridge_name }} to
-#        {{ router_upstream_interface }}
-#    iptables:
-#        chain: FORWARD
-#        in_interface: "{{ router_bridge_name }}"
-#        out_interface: "{{ router_upstream_interface }}"
-#        jump: ACCEPT
-#    notify: save iptables
-#
-#  - name: Forward established traffic from {{ router_upstream_interface }} to
-#        {{ router_bridge_name }}
-#    iptables:
-#        chain: FORWARD
-#        in_interface: "{{ router_upstream_interface }}"
-#        out_interface: "{{ router_bridge_name }}"
-#        ctstate:
-#          - ESTABLISHED
-#          - RELATED
-#        jump: ACCEPT
-#    notify: save iptables
+#  - name: Copy custom pxelinux.cfg files for each machine
+#    synchronize:
+#        src: "{{ playbook_dir }}/build/make_install_media/{{
+#            hostvars[item].inventory_hostname
+#            }}/tftp/debian-installer/amd64/pxelinux.cfg/{{
+#            hostvars[item].inventory_hostname_short }}"
+#        dest: /srv/tftp/debian-installer/amd64/pxelinux.cfg/
+#        archive: no
+#        checksum: yes
+#        links: yes
+#        perms: yes
+#        use_ssh_args: yes
+#    when: hostvars[item].pxe_mac is defined
+#    with_inventory_hostnames:
+#      - all

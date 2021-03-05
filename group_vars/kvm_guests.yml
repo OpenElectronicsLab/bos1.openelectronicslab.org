@@ -1,0 +1,6 @@
+---
+# Turn off disk encryption by default (since the host's disk should already be
+# encrypted).
+full_disk_encryption: false
+
+installer_target_drive: /dev/sda

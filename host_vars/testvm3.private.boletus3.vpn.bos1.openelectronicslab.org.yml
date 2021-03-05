@@ -1,0 +1,4 @@
+network_interfaces:
+    eth0:
+        subnet: "{{ oel_subnets.bos1_vpn_boletus3_private }}"
+primary_interface: eth0

@@ -32,4 +32,4 @@ kvm_volumes:
 bridges:
     br0:
         subnet: "{{ oel_subnets[
-            'private_' + inventory_hostname_short + '_vpn_bos1'] }}"
+            'bos1_vpn_' + inventory_hostname_short + '_private'] }}"

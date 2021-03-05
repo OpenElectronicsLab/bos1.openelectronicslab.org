@@ -105,7 +105,7 @@ oel_subnets:
             boletus3:
                 ip: 172.16.1.13
 
-    private_boletus0_vpn_bos1:
+    bos1_vpn_boletus0_private:
         name: private.boletus0.vpn.bos1.openelectronicslab.org
         subnet: 172.16.4.0
         netmask: 255.255.255.0
@@ -118,7 +118,7 @@ oel_subnets:
             boletus0:
                 ip: 172.16.4.1
 
-    private_boletus1_vpn_bos1:
+    bos1_vpn_boletus1_private:
         name: private.boletus1.vpn.bos1.openelectronicslab.org
         subnet: 172.16.5.0
         netmask: 255.255.255.0
@@ -131,7 +131,7 @@ oel_subnets:
             boletus1:
                 ip: 172.16.5.1
 
-    private_boletus2_vpn_bos1:
+    bos1_vpn_boletus2_private:
         name: private.boletus2.vpn.bos1.openelectronicslab.org
         subnet: 172.16.6.0
         netmask: 255.255.255.0
@@ -144,7 +144,7 @@ oel_subnets:
             boletus2:
                 ip: 172.16.6.1
 
-    private_boletus3_vpn_bos1:
+    bos1_vpn_boletus3_private:
         name: private.boletus3.vpn.bos1.openelectronicslab.org
         subnet: 172.16.7.0
         netmask: 255.255.255.0
@@ -156,4 +156,6 @@ oel_subnets:
         hosts:
             boletus3:
                 ip: 172.16.7.1
+            testvm3:
+                ip: 172.16.7.2
 
