@@ -28,8 +28,14 @@
         name: root
         password: "{{ root_password | string
             | password_hash('sha512', 65534
-            | random(seed=inventory_hostname) | string)
-            | default('*') }}"
+            | random(seed=inventory_hostname) | string) }}"
+    when: root_password is defined
+
+  - name: disable root password
+    user:
+        name: root
+        password: "*"
+    when: root_password is not defined
 
   - name: Enable unattended upgrades
     apt:
@@ -62,6 +68,7 @@
         lv: swap
         force: yes
         state: absent
+    when: full_disk_encryption
 
   - name: add the machine name to /etc/hosts
     lineinfile:

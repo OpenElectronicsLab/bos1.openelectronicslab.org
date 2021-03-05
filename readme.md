@@ -231,12 +231,6 @@ remotely unlocking the drive during boot.
 
 Current plan for development:
 
-  - turn off luks for VMs
-  - detect if the vm exists on vm\_host
-  - create vm on vm\_host machine if it does not exist
-  - set up jump-hosting for ansible to mess with VMs
-  - run ansible on the test3 VM
-
   - Phase 1: Build a foundation
     - Boletus running debian binary blobs only
     - Support for VMs on boletus with fixed assignments between vms and

@@ -1,16 +1,19 @@
 ---
-# jump to Kendrick's network until machines are in the datacenter
-#ssh_jump_host: kendrickshaw.org
-
 # Use the current username with "admin" appended as the default remote
 # username (with passwordless sudo).
 ansible_user: "{{ lookup('env', 'USER') }}admin"
+
+# jump host example
+#ssh_jump_host: kendrickshaw.org
 
 # If a jump host is specified, add the appropriate command line parameters for
 # ssh.
 #ansible_ssh_common_args: "-oProxyJump={{ ssh_jump_host | default(omit) }}"
 
 guest_vms: []
+
+# default to full disk encryption
+full_disk_encryption: true
 
 # administrative users
 admin_users:
