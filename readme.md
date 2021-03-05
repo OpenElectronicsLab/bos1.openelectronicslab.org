@@ -271,7 +271,6 @@ Current plan for development:
       - learn how to "nice" jobs (pre-emptable)
 
 ### other
-  - debug git.openelectronicslab.org backup failure
   - debug `pmi_kvm_docker` issue with the javaws console console redirect
     - consider: https://github.com/sunfoxcz/ipmiview
     - see also: https://github.com/ixs/kvm-cli
