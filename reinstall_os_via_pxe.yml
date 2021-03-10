@@ -9,7 +9,7 @@
                 }}-ipmi.management.bos1.openelectronicslab.org
                 -U ADMIN -P ADMIN
                 chassis bootdev pxe
-         delegate_to: morchella0
+         delegate_to: morchella0.bos1.openelectronicslab.org
 
        - name: power down the machine
          command: ipmitool
@@ -17,11 +17,11 @@
                 }}-ipmi.management.bos1.openelectronicslab.org
                 -U ADMIN -P ADMIN
                 chassis power off
-         delegate_to: morchella0
+         delegate_to: morchella0.bos1.openelectronicslab.org
 
        - name: wait for the machine to power down
          command: sleep 15
-         delegate_to: morchella0
+         delegate_to: morchella0.bos1.openelectronicslab.org
          run_once: True
 
        - name: power on the machine
@@ -30,4 +30,4 @@
                 }}-ipmi.management.bos1.openelectronicslab.org
                 -U ADMIN -P ADMIN
                 chassis power on
-         delegate_to: morchella0
+         delegate_to: morchella0.bos1.openelectronicslab.org
