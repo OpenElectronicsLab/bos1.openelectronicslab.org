@@ -24,11 +24,12 @@
     roles:
       - core_setup
 
-    # install infiniband drivers and utilities on boletus hosts
+    # setup infiniband and ipmi on boletus hosts
   - hosts: boletus
     become: true
     roles:
       - infiniband_setup
+      - ipmi_setup
       - role: add_subnet_to_hosts_file
         vars:
             subnet: "{{ oel_subnets.bos1_backhaul }}"

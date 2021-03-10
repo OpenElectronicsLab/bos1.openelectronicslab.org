@@ -19,6 +19,12 @@ primary_interface: enp3s0f1
 pxe_mac: "{{ oel_subnets.bos1_management.hosts[
     inventory_hostname_short].mac }}"
 
+ipmi_lan_channel: 1
+ipmi_lan_ip: "{{ oel_subnets.bos1_management.hosts[
+    inventory_hostname_short + '-ipmi'].ip }}"
+ipmi_lan_netmask: "{{ oel_subnets.bos1_management.netmask }}"
+ipmi_lan_gateway: "{{ oel_subnets.bos1_management.gateway }}"
+
 kvm_lvm_pools:
     ssd0_pool:
         device: /dev/mapper/sdb2_crypt

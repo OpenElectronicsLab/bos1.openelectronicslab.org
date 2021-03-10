@@ -1,0 +1,34 @@
+---
+
+  - name: install IPMITool
+    apt:
+        name: ipmitool
+        state: present
+
+  - name: get the current lan settings for the BMC
+    command: ipmitool lan print {{ ipmi_lan_channel }}
+    register: ipmi_lan_info
+    changed_when: false
+
+  - name: use a static IP address for the BMC
+    command: ipmitool lan set {{ ipmi_lan_channel }} ipsrc static
+    when: "ipmi_lan_ip is defined and
+        not 'IP Address Source       : Static Address' in ipmi_lan_info.stdout"
+
+  - name: set the static IP address for the BMC
+    command: ipmitool lan set {{ ipmi_lan_channel }} ipaddr {{ ipmi_lan_ip }}
+    when: "ipmi_lan_ip is defined and
+        not ( 'IP Address              : ' +  ipmi_lan_ip ) in
+            ipmi_lan_info.stdout"
+
+  - name: set the netmask for the BMC
+    command: ipmitool lan set {{ ipmi_lan_channel }} netmask {{ ipmi_lan_netmask }}
+    when: "ipmi_lan_ip is defined and
+        not ( 'Subnet Mask             : ' +  ipmi_lan_netmask ) in
+            ipmi_lan_info.stdout"
+
+  - name: set the gateway for the BMC
+    command: ipmitool lan set {{ ipmi_lan_channel }} defgw ipaddr {{ ipmi_lan_gateway }}
+    when: "ipmi_lan_ip is defined and
+        not ( 'Default Gateway IP      : ' +  ipmi_lan_gateway ) in
+            ipmi_lan_info.stdout"
