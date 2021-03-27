@@ -26,15 +26,39 @@
             [Interface]
             PrivateKey = {{ wireguard_private_key | trim }}
             ListenPort = 55820
-            Address = {{ wireguard_private_subnet.hosts[inventory_hostname_short].ip }}
+            Address = {{
+                wireguard_private_subnet.hosts[inventory_hostname_short].ip
+                }}/{{ wireguard_private_subnet.CIDR }}
+            DNS = {{ wireguard_private_subnet.dns[0] }}
 
             {% for host in groups['all'] %}
-            {% if hostvars[host].wg_public_key is defined %}
+            {% if hostvars[host].wg_public_key is defined and
+                host != inventory_hostname %}
 
             # {{ host }}
             [Peer]
             PublicKey = {{ hostvars[host].wg_public_key.stdout }}
+            Endpoint = {{
+                wireguard_public_subnet.hosts[
+                    hostvars[host].inventory_hostname_short].ip
+            }}:55820
+            AllowedIPs = {{
+                wireguard_private_subnet.hosts[
+                    hostvars[host].inventory_hostname_short].ip
+            }}/32
             {% endif %}
             {% endfor %}
 
+  - name: create the Debian network interface config for wg0
+    copy:
+        dest: /etc/network/interfaces.d/70-wg0
+        content: |
+            auto wg0
+            iface wg0 inet static
+                address {{
+                    wireguard_private_subnet.hosts[inventory_hostname_short].ip
+                }}/{{ wireguard_private_subnet.CIDR }}
+                pre-up ip link add wg0 type wireguard
+                pre-up wg setconf wg0 /etc/wireguard/server.conf
+                post-down ip link del wg0
 
