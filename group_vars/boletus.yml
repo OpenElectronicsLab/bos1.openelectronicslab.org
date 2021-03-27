@@ -16,6 +16,9 @@ network_interfaces:
         subnet: "{{ oel_subnets.bos1_backhaul }}"
 primary_interface: enp3s0f1
 
+wireguard_public_subnet: "{{ oel_subnets.bos1_backhaul }}"
+wireguard_private_subnet: "{{ oel_subnets.bos1_wg_backhaul }}"
+
 pxe_mac: "{{ oel_subnets.bos1_management.hosts[
     inventory_hostname_short].mac }}"
 

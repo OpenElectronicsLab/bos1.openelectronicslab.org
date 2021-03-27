@@ -110,6 +110,26 @@ oel_subnets:
             boletus3:
                 ip: 172.16.1.13
 
+    bos1_wg_backhaul:
+        name: wg-backhaul.bos1.openelectronicslab.org
+        subnet: 172.16.2.0
+        netmask: 255.255.255.0
+        CIDR: 24
+        broadcast: 172.16.2.255
+        gateway: 172.16.2.1
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
+            boletus0:
+                ip: 172.16.2.10
+            boletus1:
+                ip: 172.16.2.11
+            boletus2:
+                ip: 172.16.2.12
+            boletus3:
+                ip: 172.16.2.13
+
     bos1_vpn_boletus0_private:
         name: private.vpn.boletus0.bos1.openelectronicslab.org
         subnet: 172.16.4.0

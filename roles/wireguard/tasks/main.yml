@@ -1,0 +1,40 @@
+---
+  - name: make sure debian backports is available
+    apt_repository:
+        repo: deb http://deb.debian.org/debian buster-backports main
+        state: present
+
+  - name: install wireguard
+    apt:
+        name: wireguard
+        state: present
+
+  - name: create the private key file (for convenience)
+    copy:
+        dest: /etc/wireguard/wireguard-private.key
+        content: "{{ wireguard_private_key | trim }}"
+
+  - name: generate the public key
+    shell: cat /etc/wireguard/wireguard-private.key | wg pubkey
+    changed_when: false
+    register: wg_public_key
+
+  - name: generate the wireguard config file
+    copy:
+        dest: /etc/wireguard/server.conf
+        content: |
+            [Interface]
+            PrivateKey = {{ wireguard_private_key | trim }}
+            ListenPort = 55820
+            Address = {{ wireguard_private_subnet.hosts[inventory_hostname_short].ip }}
+
+            {% for host in groups['all'] %}
+            {% if hostvars[host].wg_public_key is defined %}
+
+            # {{ host }}
+            [Peer]
+            PublicKey = {{ hostvars[host].wg_public_key.stdout }}
+            {% endif %}
+            {% endfor %}
+
+
