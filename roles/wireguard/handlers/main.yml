@@ -1,0 +1,6 @@
+---
+  - name: restart wireguard
+    command: bash -c "
+        ifdown --ignore-errors wg0 ;
+        ifup --ignore-errors wg0
+        "

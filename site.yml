@@ -24,7 +24,7 @@
     roles:
       - core_setup
 
-    # setup infiniband and ipmi on boletus hosts
+    # setup infiniband, wireguard, and ipmi on boletus hosts
   - hosts: boletus
     become: true
     roles:
@@ -33,6 +33,9 @@
       - role: add_subnet_to_hosts_file
         vars:
             subnet: "{{ oel_subnets.bos1_backhaul }}"
+      - role: add_subnet_to_hosts_file
+        vars:
+            subnet: "{{ oel_subnets.bos1_wg_backhaul }}"
 
     # Additional core setup tasks
   - hosts: all

@@ -8,6 +8,16 @@
     apt:
         name: wireguard
         state: present
+    register: wireguard_installed
+
+  - name: update the kernel and related packages
+    apt:
+        #name: linux-image-amd64
+        #state: latest
+        upgrade: yes
+        update_cache: yes
+    when: wireguard_installed.changed
+
 
   - name: create the private key file (for convenience)
     copy:
@@ -26,10 +36,6 @@
             [Interface]
             PrivateKey = {{ wireguard_private_key | trim }}
             ListenPort = 55820
-            Address = {{
-                wireguard_private_subnet.hosts[inventory_hostname_short].ip
-                }}/{{ wireguard_private_subnet.CIDR }}
-            DNS = {{ wireguard_private_subnet.dns[0] }}
 
             {% for host in groups['all'] %}
             {% if hostvars[host].wg_public_key is defined and
@@ -48,6 +54,7 @@
             }}/32
             {% endif %}
             {% endfor %}
+    notify: restart wireguard
 
   - name: create the Debian network interface config for wg0
     copy:
@@ -60,5 +67,7 @@
                 }}/{{ wireguard_private_subnet.CIDR }}
                 pre-up ip link add wg0 type wireguard
                 pre-up wg setconf wg0 /etc/wireguard/server.conf
+                pre-up ip link set mtu 1420 up dev wg0
                 post-down ip link del wg0
+    notify: restart wireguard
 
