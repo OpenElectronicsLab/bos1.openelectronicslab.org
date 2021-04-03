@@ -21,9 +21,14 @@ kvm_volumes:
     testvm3_root:
         pool: ssd0_pool
         size: 8G
+    kubeworker3_root:
+        pool: ssd0_pool
+        size: 100G
 
 guest_vms:
   - testvm3.private.vpn.boletus3.bos1.openelectronicslab.org
+  - kubeworker3.private.vpn.boletus3.bos1.openelectronicslab.org
+
 wireguard_private_key: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0
           64353530636130316363393438323962393333623739623932663263613031343837333533316462

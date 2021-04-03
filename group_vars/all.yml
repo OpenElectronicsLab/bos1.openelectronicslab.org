@@ -142,6 +142,10 @@ oel_subnets:
         hosts:
             boletus0:
                 ip: 172.16.4.1
+            kubecontroller0:
+                ip: 172.16.4.3
+            kubeworker0:
+                ip: 172.16.4.4
 
     bos1_vpn_boletus1_private:
         name: private.vpn.boletus1.bos1.openelectronicslab.org
@@ -155,6 +159,10 @@ oel_subnets:
         hosts:
             boletus1:
                 ip: 172.16.5.1
+            kubecontroller1:
+                ip: 172.16.5.3
+            kubeworker1:
+                ip: 172.16.5.4
 
     bos1_vpn_boletus2_private:
         name: private.vpn.boletus2.bos1.openelectronicslab.org
@@ -168,6 +176,10 @@ oel_subnets:
         hosts:
             boletus2:
                 ip: 172.16.6.1
+            kubecontroller2:
+                ip: 172.16.6.3
+            kubeworker2:
+                ip: 172.16.6.4
 
     bos1_vpn_boletus3_private:
         name: private.vpn.boletus3.bos1.openelectronicslab.org
@@ -183,4 +195,6 @@ oel_subnets:
                 ip: 172.16.7.1
             testvm3:
                 ip: 172.16.7.2
+            kubeworker3:
+                ip: 172.16.7.4
 

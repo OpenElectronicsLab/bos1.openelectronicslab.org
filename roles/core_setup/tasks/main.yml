@@ -73,7 +73,7 @@
   - name: add the machine name to /etc/hosts
     lineinfile:
         path: /etc/hosts
-        regexp: '\b{{ inventory_hostname }}\b'
+        regexp: '\s{{ inventory_hostname }}\b'
         line: "{{ network_interfaces[primary_interface].subnet
             .hosts[inventory_hostname_short].ip }} {{
             inventory_hostname }} {{

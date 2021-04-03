@@ -3,6 +3,34 @@
 This is a repository for configuration files for the servers in the
 bos1.openelectronicslab.org subdomain.
 
+
+## General layout
+
+<!--
+* Next Cloud
+  - containers running on kubernetes
+
+* Kubernetes
+  - k3s version
+-->
+
+* kubeworker0 - kubeworker3
+  - VMs, paired to boletus0 - boletus3
+
+* kubecontroller0 - kubecontroller2
+  - VMs, paired to boletus0 - boletus2
+
+* testvm3 - running on boletus3
+
+* boletus0 - boletus3.bos1.openelectroncslab.org
+  - act as KVM hosts
+  - 16 core (32ht), 256GB RAM
+  - 7 TB SSD, 2x16TB hard disk
+
+* morchella0.bos1.openelectroncslab.org: management machine
+  - 6 ethernet ports: 1 to top of rack, 4 to boletus machines, 1 unused
+  - minimal ram & storage, no IPMI
+
 ## Directory structure
 
   - `group-vars`: Ansible variable definitions for groups of machines.
@@ -240,7 +268,13 @@ Current plan for development:
     - Distributed storage via ceph running on VMs (using Rook?)
       - space reserved on each Boletus machine for this purpose
       - encryption at rest (via ceph?)
-    - Kubernetes running via distro (k3s?)
+    - Kubernetes running via distro (k3s?) in 7 VMs
+      - set up 3 controler vms and 4 worker vms
+      - Get routing working between vms
+      - install k3s on vms
+      - join up machines into cluster
+    - VIP from ToR switch to cluster (e.g: ha proxy)
+    - Distributed storage on cluster using Rook
     - Next cloud running in a way that will automatically recover
       (within 5 minutes is fine) from the failure of any boletus machine
       (e.g. by running in a container on kubernetes using shared ceph storage)

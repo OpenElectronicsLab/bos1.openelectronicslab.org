@@ -1,9 +1,9 @@
 network_interfaces:
     enp1s0:
-        subnet: "{{ oel_subnets.bos1_vpn_boletus3_private }}"
+        subnet: "{{ oel_subnets.bos1_vpn_boletus2_private }}"
 primary_interface: enp1s0
-root_volume: ssd0_pool/testvm3_root
+root_volume: ssd0_pool/kubecontroller2_root
 ssh_jump_host: "{{ lookup('env', 'USER')
-    }}admin@boletus3.bos1.openelectronicslab.org"
+    }}admin@boletus2.bos1.openelectronicslab.org"
 ansible_ssh_common_args: "-oServerAliveInterval=3 -oProxyJump={{ ssh_jump_host | default(omit) }}"
 
