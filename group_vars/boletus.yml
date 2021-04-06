@@ -23,8 +23,10 @@ network_interfaces:
     #   subnet: "{{ oel_subnets.bos1_management }}"
     enp3s0f1:
         subnet: "{{ oel_subnets.bos1_public0 }}"
+        provide_nat: true
     ibp2s0:
         subnet: "{{ oel_subnets.bos1_backhaul }}"
+        provide_nat: true
 primary_interface: enp3s0f1
 
 wireguard_public_subnet: "{{ oel_subnets.bos1_backhaul }}"

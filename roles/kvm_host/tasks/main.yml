@@ -100,12 +100,16 @@
                 }
                 chain postrouting {
                     type nat hook postrouting priority 100;
-                    {% for bridgename, bridgevals in bridges.items() -%}
-                    ip saddr {{ bridgevals.subnet.gateway }}-{{
-                        bridgevals.subnet.broadcast }} oif {{ primary_interface
-                        }} snat {{ network_interfaces[primary_interface].subnet
+            {% for bridgename, bridgevals in bridges.items() %}
+            {% for ifname, ifvals in network_interfaces.items() %}
+            {% if ifvals.provide_nat %}
+                    ip saddr {{ bridgevals.subnet.subnet }}/{{
+                        bridgevals.subnet.CIDR }} oif {{ ifname
+                        }} snat {{ network_interfaces[ifname].subnet
                     .hosts[inventory_hostname_short].ip }};
-                {% endfor -%}
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
                 }
             }
     notify: nftables changed
