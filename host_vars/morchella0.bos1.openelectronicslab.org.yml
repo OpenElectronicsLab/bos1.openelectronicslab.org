@@ -21,7 +21,7 @@ usb_key: /dev/sdb
 
 network_interfaces:
     enp5s0:
-        subnet: "{{ oel_subnets.bos1_public }}"
+        subnet: "{{ oel_subnets.bos1_public0 }}"
     # enp3s0f0 bridged to bos1_management
     # enp3s0f1 bridged to bos1_management
     # enp4s0f0 bridged to bos1_management

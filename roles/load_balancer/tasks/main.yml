@@ -1,0 +1,34 @@
+---
+  - name: install keepalived
+    apt:
+        name: keepalived
+        state: present
+
+  - name: create keepalive config file
+    copy:
+        dest: /etc/keepalived/keepalived.conf
+        mode: 0600
+        content: |
+            global_defs {
+                lvs_sync_daemon {{
+                    load_balancers[load_balancer_lvs_sync].interface
+                    }} {{ load_balancer_lvs_sync }}
+            }
+
+            {% for lbname, lbvals in load_balancers.items() %}
+            vrrp_instance {{ lbname }} {
+                state {{ load_balancer_initial_state }}
+                interface {{ lbvals.interface }}
+                virtual_router_id {{ lbvals.virtual_router_id }}
+                priority {{ load_balancer_priority }}
+                advert_int 1
+                authentication {
+                    auth_type PASS
+                    auth_pass {{ load_balancer_password }}
+                }
+                virtual_ipaddress {
+                    {{ lbvals.virtual_ipaddress }}
+                }
+            }
+            {% endfor %}
+    notify: restart keepalived

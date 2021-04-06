@@ -59,7 +59,7 @@
     roles:
       - role: add_subnet_to_hosts_file
         vars:
-            subnet: "{{ oel_subnets.bos1_public }}"
+            subnet: "{{ oel_subnets.bos1_public0 }}"
       - role: add_subnet_to_hosts_file
         vars:
             subnet: "{{ oel_subnets.bos1_management }}"

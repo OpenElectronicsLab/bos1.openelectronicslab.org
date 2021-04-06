@@ -27,10 +27,11 @@ admin_users:
 # Put all of the subnets and IP addresses in one place to make it easier to
 # avoid collisions.
 oel_subnets:
-    bos1_public:
+    bos1_public0:
         name: bos1.openelectronicslab.org
         subnet: 154.3.222.72
         netmask: 255.255.255.248
+        CIDR: 29
         broadcast: 153.3.222.79
         gateway: 154.3.222.73
         dns:
@@ -49,10 +50,25 @@ oel_subnets:
             boletus3:
                 ip: 154.3.222.78
 
+    bos1_public1:
+        name: bos1.openelectronicslab.org
+        subnet: 154.3.222.72
+        netmask: 255.255.255.248
+        CIDR: 29
+        broadcast: 154.3.222.207
+        gateway: 154.3.222.201
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
+            boletuslb0:
+                ip: 154.3.222.202
+
     bos1_management:
         name: management.bos1.openelectronicslab.org
         subnet: 172.16.0.0
         netmask: 255.255.255.0
+        CIDR: 24
         broadcast: 172.16.0.255
         gateway: 172.16.0.1
         dns:
@@ -95,6 +111,7 @@ oel_subnets:
         name: backhaul.bos1.openelectronicslab.org
         subnet: 172.16.1.0
         netmask: 255.255.255.0
+        CIDR: 24
         broadcast: 172.16.1.255
         gateway: 172.16.1.1
         dns:
@@ -109,6 +126,8 @@ oel_subnets:
                 ip: 172.16.1.12
             boletus3:
                 ip: 172.16.1.13
+            boletuslb0:
+                ip: 172.16.1.40
 
     bos1_wg_backhaul:
         name: wg-backhaul.bos1.openelectronicslab.org
@@ -142,6 +161,7 @@ oel_subnets:
         name: private.vpn.boletus0.bos1.openelectronicslab.org
         subnet: 172.16.4.0
         netmask: 255.255.255.0
+        CIDR: 24
         broadcast: 172.16.4.255
         gateway: 172.16.4.1
         dns:
@@ -159,6 +179,7 @@ oel_subnets:
         name: private.vpn.boletus1.bos1.openelectronicslab.org
         subnet: 172.16.5.0
         netmask: 255.255.255.0
+        CIDR: 24
         broadcast: 172.16.5.255
         gateway: 172.16.5.1
         dns:
@@ -176,6 +197,7 @@ oel_subnets:
         name: private.vpn.boletus2.bos1.openelectronicslab.org
         subnet: 172.16.6.0
         netmask: 255.255.255.0
+        CIDR: 24
         broadcast: 172.16.6.255
         gateway: 172.16.6.1
         dns:
@@ -193,6 +215,7 @@ oel_subnets:
         name: private.vpn.boletus3.bos1.openelectronicslab.org
         subnet: 172.16.7.0
         netmask: 255.255.255.0
+        CIDR: 24
         broadcast: 172.16.7.255
         gateway: 172.16.7.1
         dns:
