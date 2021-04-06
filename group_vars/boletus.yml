@@ -7,6 +7,17 @@ luks_additional:
     rust_sdb: /dev/sdb
     rust_sdc: /dev/sdc
 
+visible_subnets:
+  - "{{ oel_subnets['bos1_public0'] }}"
+  - "{{ oel_subnets['bos1_public1'] }}"
+  - "{{ oel_subnets['bos1_management'] }}"
+  - "{{ oel_subnets['bos1_backhaul'] }}"
+  - "{{ oel_subnets['bos1_wg_backhaul'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus0_private'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus1_private'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus2_private'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus3_private'] }}"
+
 network_interfaces:
     #enp3s0f0: # disabled for security
     #   subnet: "{{ oel_subnets.bos1_management }}"

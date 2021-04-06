@@ -24,6 +24,11 @@ admin_users:
   - username: ace
     fullname: Stephanie Medlock
 
+# by default, machines can see the machines on public networks
+visible_subnets:
+  - "{{ oel_subnets['bos1_public0'] }}"
+  - "{{ oel_subnets['bos1_public1'] }}"
+
 # Put all of the subnets and IP addresses in one place to make it easier to
 # avoid collisions.
 oel_subnets:

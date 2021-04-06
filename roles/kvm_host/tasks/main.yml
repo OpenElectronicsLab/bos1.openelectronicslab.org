@@ -87,15 +87,6 @@
     command: sysctl -w net.ipv4.ip_forward=1
     when: enable_forwarding.changed
 
-  - name: Add hosts on local bridges to known hosts
-    include_role:
-        role: add_subnet_to_hosts_file
-    vars:
-        subnet: "{{ bridge_iter.value.subnet }}"
-    with_dict: "{{ bridges }}"
-    loop_control:
-        loop_var: bridge_iter
-
   - name: Add basic nat table
     blockinfile:
         insertafter: "flush ruleset"

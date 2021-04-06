@@ -24,6 +24,16 @@
     roles:
       - add_to_known_hosts
       - core_setup
+    tasks:
+      - name: Add names of machines in visible subnets to /etc/hosts
+        include_role:
+            role: add_subnet_to_hosts_file
+        vars:
+            subnet: "{{ subnet_iter }}"
+        loop: "{{ visible_subnets }}"
+        loop_control:
+            loop_var: subnet_iter
+
 
     # setup infiniband, wireguard, and ipmi on boletus hosts
   - hosts: boletus
@@ -32,12 +42,6 @@
       - infiniband_setup
       - ipmi_setup
       - wireguard
-      - role: add_subnet_to_hosts_file
-        vars:
-            subnet: "{{ oel_subnets.bos1_backhaul }}"
-      - role: add_subnet_to_hosts_file
-        vars:
-            subnet: "{{ oel_subnets.bos1_wg_backhaul }}"
 
     # Additional core setup tasks
   - hosts: all
@@ -57,12 +61,6 @@
   - hosts: morchella
     become: true
     roles:
-      - role: add_subnet_to_hosts_file
-        vars:
-            subnet: "{{ oel_subnets.bos1_public0 }}"
-      - role: add_subnet_to_hosts_file
-        vars:
-            subnet: "{{ oel_subnets.bos1_management }}"
       - router
       - dhcp_server
       - pxe_boot_server

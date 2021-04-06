@@ -19,6 +19,11 @@ luks_password: !vault |
 installer_target_drive: /dev/sda
 usb_key: /dev/sdb
 
+visible_subnets:
+  - "{{ oel_subnets['bos1_public0'] }}"
+  - "{{ oel_subnets['bos1_public1'] }}"
+  - "{{ oel_subnets['bos1_management'] }}"
+
 network_interfaces:
     enp5s0:
         subnet: "{{ oel_subnets.bos1_public0 }}"

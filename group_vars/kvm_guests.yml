@@ -4,3 +4,13 @@
 full_disk_encryption: false
 
 installer_target_drive: /dev/vda
+
+visible_subnets:
+  - "{{ oel_subnets['bos1_public0'] }}"
+  - "{{ oel_subnets['bos1_public1'] }}"
+  - "{{ oel_subnets['bos1_backhaul'] }}"
+  - "{{ oel_subnets['bos1_wg_backhaul'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus0_private'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus1_private'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus2_private'] }}"
+  - "{{ oel_subnets['bos1_vpn_boletus3_private'] }}"
