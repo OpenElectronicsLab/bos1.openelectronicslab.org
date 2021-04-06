@@ -54,12 +54,12 @@ bridges:
             'bos1_vpn_' + inventory_hostname_short + '_private'] }}"
 
 load_balancer_password: !vault |
-          $ANSIBLE_VAULT;1.2;AES256;vault0
-          64663832616163643532303234616438666263396633393337326534633761383661376461326237
-          3039633336323535643061653136303138343661666631350a643133323963623535356462376438
-          61336532306364636465656463396665663837396263626466626365306330633233303064396534
-          3161633333653062630a306432643132376237336634656666303439316530303761326635643734
-          6632
+  $ANSIBLE_VAULT;1.2;AES256;vault0
+  64663832616163643532303234616438666263396633393337326534633761383661376461326237
+  3039633336323535643061653136303138343661666631350a643133323963623535356462376438
+  61336532306364636465656463396665663837396263626466626365306330633233303064396534
+  3161633333653062630a306432643132376237336634656666303439316530303761326635643734
+  6632
 
 load_balancer_lvs_sync: boletuslb0_backhaul
 
@@ -67,10 +67,21 @@ load_balancers:
     boletuslb0_public:
         interface: enp3s0f1
         virtual_router_id: 51
-        virtual_ipaddress: "{{ oel_subnets.bos1_public1.hosts.boletuslb0.ip
-            }}/{{ oel_subnets.bos1_public1.CIDR }}"
+        virtual_ipaddress: "{{ oel_subnets.bos1_public1.hosts.boletuslb0.ip }}"
+        virtual_ip_CIDR: "{{ oel_subnets.bos1_public1.CIDR }}"
+        services:
+            kubeapi:
+                external_port: 6443
+                servers:
+                    kubecontroller0:
+                        kubecontroller0.private.vpn.boletus0.bos1.openelectronicslab.org:6443
+                    kubecontroller1:
+                        kubecontroller1.private.vpn.boletus1.bos1.openelectronicslab.org:6443
+                    kubecontroller2:
+                        kubecontroller2.private.vpn.boletus2.bos1.openelectronicslab.org:6443
     boletuslb0_backhaul:
         interface: ibp2s0
         virtual_router_id: 52
-        virtual_ipaddress: "{{ oel_subnets.bos1_backhaul.hosts.boletuslb0.ip
-            }}/{{ oel_subnets.bos1_backhaul.CIDR }}"
+        virtual_ipaddress: "{{ oel_subnets.bos1_backhaul.hosts.boletuslb0.ip }}"
+        virtual_ip_CIDR: "{{ oel_subnets.bos1_backhaul.CIDR }}"
+        services: {}

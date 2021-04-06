@@ -27,8 +27,72 @@
                     auth_pass {{ load_balancer_password }}
                 }
                 virtual_ipaddress {
-                    {{ lbvals.virtual_ipaddress }}
+                    {{ lbvals.virtual_ipaddress }}/{{ lbvals.virtual_ip_CIDR }}
                 }
             }
             {% endfor %}
     notify: restart keepalived
+
+  - name: install haproxy
+    apt:
+        name: haproxy
+        state: present
+
+  - name: Enable binding a port on a nonlocal ip address (the floating IP)
+    lineinfile:
+        path: /etc/sysctl.conf
+        regexp: '^\s*net.ipv4.ip_nonlocal_bind\s*='
+        line: net.ipv4.ip_nonlocal_bind=1
+    register: enable_nonlocal_bind
+
+  - name: If needed, enable forwarding in the running kernel
+    command: sysctl -w net.ipv4.ip_nonlocal_bind=1
+    when: enable_nonlocal_bind.changed
+
+  - name: create haproxy config file
+    copy:
+        dest: /etc/haproxy/haproxy.cfg
+        content: |
+            global
+                log /dev/log local0
+                log /dev/log local1 notice
+                daemon
+
+            defaults
+                mode http
+                log global
+                option httplog
+                option dontlognull
+                option http-server-close
+                option forwardfor except 127.0.0.0/8
+                option redispatch
+                retries 1
+                timeout http-request 10s
+                timeout queue 20s
+                timeout connect 5s
+                timeout client 20s
+                timeout server 20s
+                timeout http-keep-alive 10s
+                timeout check 10s
+
+            {% for lbname, lbvals in load_balancers.items() %}
+            {% for servicename, servicevals in lbvals.services.items() %}
+            frontend {{ servicename }}
+                bind {{ lbvals.virtual_ipaddress }}:{{
+                    servicevals.external_port }}
+                mode tcp
+                option tcplog
+                default_backend {{ servicename }}
+
+            backend {{ servicename }}
+                option httpchk GET /healthz
+                http-check expect status 200
+                mode tcp
+                option ssl-hello-chk
+                balance roundrobin
+            {% for servername, serveraddress in servicevals.servers.items() %}
+                    server {{ servername }} {{ serveraddress }} check
+            {% endfor %}
+            {% endfor %}
+            {% endfor %}
+    notify: restart haproxy

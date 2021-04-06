@@ -75,8 +75,9 @@
           - psmisc # for killall, used by IPMI tunneling script
           - ipmitool # useful utility, should go in a role
 
-    # set up the virtual machine hosts
-  - hosts: kvm_hosts
+    # set up remaining infrastructure on boletus servers
+  - hosts: boletus
     become: true
     roles:
       - kvm_host
+      - load_balancer
