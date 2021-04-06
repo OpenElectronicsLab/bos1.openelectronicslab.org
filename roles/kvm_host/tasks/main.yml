@@ -109,21 +109,14 @@
                 }
                 chain postrouting {
                     type nat hook postrouting priority 100;
+                    {% for bridgename, bridgevals in bridges.items() -%}
+                    ip saddr {{ bridgevals.subnet.gateway }}-{{
+                        bridgevals.subnet.broadcast }} oif {{ primary_interface
+                        }} snat {{ network_interfaces[primary_interface].subnet
+                    .hosts[inventory_hostname_short].ip }};
+                {% endfor -%}
                 }
             }
-    notify: nftables changed
-
-  - name: Add internet SNAT rules for bridges
-    lineinfile:
-        path: /etc/nftables.conf
-        regexp:
-        line:
-            '        ip saddr {{ item.value.subnet.gateway }}-{{
-            item.value.subnet.broadcast }} oif {{ primary_interface }} snat
-                {{ network_interfaces[primary_interface].subnet
-                    .hosts[inventory_hostname_short].ip }};'
-        insertafter: type nat hook postrouting priority 100;
-    with_dict: "{{ bridges }}"
     notify: nftables changed
 
   - name: Create the install media directory
