@@ -81,3 +81,7 @@
     roles:
       - kvm_host
       - load_balancer
+
+  - hosts: kubecontrollers
+    roles:
+      - kubernetes_controller

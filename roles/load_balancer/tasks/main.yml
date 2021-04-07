@@ -85,7 +85,7 @@
                 default_backend {{ servicename }}
 
             backend {{ servicename }}
-                option httpchk GET /healthz
+                option httpchk GET /ping
                 http-check expect status 200
                 mode tcp
                 option ssl-hello-chk

@@ -69,6 +69,13 @@ load_balancers:
         virtual_router_id: 51
         virtual_ipaddress: "{{ oel_subnets.bos1_public1.hosts.boletuslb0.ip }}"
         virtual_ip_CIDR: "{{ oel_subnets.bos1_public1.CIDR }}"
+        services: {}
+
+    boletuslb0_backhaul:
+        interface: ibp2s0
+        virtual_router_id: 52
+        virtual_ipaddress: "{{ oel_subnets.bos1_backhaul.hosts.boletuslb0.ip }}"
+        virtual_ip_CIDR: "{{ oel_subnets.bos1_backhaul.CIDR }}"
         services:
             kubeapi:
                 external_port: 6443
@@ -79,9 +86,3 @@ load_balancers:
                         kubecontroller1.private.vpn.boletus1.bos1.openelectronicslab.org:6443
                     kubecontroller2:
                         kubecontroller2.private.vpn.boletus2.bos1.openelectronicslab.org:6443
-    boletuslb0_backhaul:
-        interface: ibp2s0
-        virtual_router_id: 52
-        virtual_ipaddress: "{{ oel_subnets.bos1_backhaul.hosts.boletuslb0.ip }}"
-        virtual_ip_CIDR: "{{ oel_subnets.bos1_backhaul.CIDR }}"
-        services: {}

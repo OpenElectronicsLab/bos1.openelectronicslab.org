@@ -40,6 +40,10 @@ kubeworker1.private.vpn.boletus1.bos1.openelectronicslab.org
 kubeworker2.private.vpn.boletus2.bos1.openelectronicslab.org
 kubeworker3.private.vpn.boletus3.bos1.openelectronicslab.org
 
+[kubevms:children]
+kubecontrollers
+kubeworkers
+
 # machines with LUKS-encrypted root file systems that are unlocked
 # using ssh
 [luks_encrypted_machines:children]
