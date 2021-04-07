@@ -1,0 +1,30 @@
+---
+  - name: install curl
+    apt:
+        name: curl
+        state: present
+
+  - name: check for legacy iptables
+    shell: ls -l /etc/alternatives/iptables
+    register: alternatives_iptables
+    changed_when: false
+
+  - name: switch to legacy iptables
+    shell: |
+        iptables -F;
+        update-alternatives --set iptables /usr/sbin/iptables-legacy;
+        update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+    when: not 'legacy' in alternatives_iptables.stdout
+
+  - name: reboot after changing iptables to legacy
+    reboot:
+    when: not 'legacy' in alternatives_iptables.stdout
+
+  - name: Start kubernetes workers
+    shell:
+        cmd: export K3S_TOKEN={{ k3s_token }};
+            curl -sdL https://get.k3s.io | sh -s - agent --server
+              https://{{ kube_control_plane_ip }}:{{ kube_control_plane_port }}
+        creates: /usr/local/bin/k3s
+    failed_when: false # TODO: the command line can timeout while the process
+                       # continues and install eventually succeeds.

@@ -85,3 +85,7 @@
   - hosts: kubecontrollers
     roles:
       - kubernetes_controller
+
+  - hosts: kubeworkers
+    roles:
+      - kubernetes_worker
