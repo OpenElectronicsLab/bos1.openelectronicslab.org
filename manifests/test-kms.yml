@@ -68,8 +68,31 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-    name: ingress-kms
+    name: default-ingress
 spec:
+    rules:
+      - http: # default
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: test1-kms
+                        port:
+                            number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: test1-kms-ingress
+    annotations:
+        #kuberneties.io/ingress.class: traefik
+        cert-manager.io/cluster-issuer: letsencrypt-issuer
+spec:
+    tls:
+      - hosts:
+          - test1.kendrickshaw.org
+        secretName: test1-kendrickshaw-org-tls
     rules:
       - host: test1.kendrickshaw.org
         http:
@@ -81,17 +104,22 @@ spec:
                         name: test1-kms
                         port:
                             number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: test2-kms-ingress
+    annotations:
+        #kuberneties.io/ingress.class: traefik
+        cert-manager.io/cluster-issuer: letsencrypt-issuer
+spec:
+    tls:
+      - hosts:
+          - test2.kendrickshaw.org
+        secretName: test2-kendrickshaw-org-tls
+    rules:
       - host: test2.kendrickshaw.org
         http:
-            paths:
-              - pathType: Prefix
-                path: /
-                backend:
-                    service:
-                        name: test2-kms
-                        port:
-                            number: 80
-      - http: # default
             paths:
               - pathType: Prefix
                 path: /

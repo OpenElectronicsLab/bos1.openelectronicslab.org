@@ -60,7 +60,7 @@
         use_ssh_args: yes
 
   - name: apply the manifests
-    command: kubectl apply -f /var/lib/manifests/{{ item }}
+    command: kubectl apply -f {{ item }}
     run_once: true
     register: kube_apply_manifests
     changed_when: "'configured' in kube_apply_manifests.stdout or
