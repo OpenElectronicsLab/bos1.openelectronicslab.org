@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: test1-kms
+spec:
+    selector:
+        matchLabels:
+            app: test1-kms
+    replicas: 4
+    template:
+        metadata:
+            labels:
+                app: test1-kms
+        spec:
+            containers:
+              - name: test1-kms
+                image: nginx:1.18
+                ports:
+                  - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: test2-kms
+spec:
+    selector:
+        matchLabels:
+            app: test2-kms
+    replicas: 4
+    template:
+        metadata:
+            labels:
+                app: test2-kms
+        spec:
+            containers:
+              - name: test2-kms
+                image: httpd:2.4
+                ports:
+                  - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: test1-kms
+    labels:
+        run: test1-kms
+spec:
+    ports:
+      - port: 80
+        protocol: TCP
+    selector:
+        app: test1-kms
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: test2-kms
+    labels:
+        run: test2-kms
+spec:
+    ports:
+      - port: 80
+        protocol: TCP
+    selector:
+        app: test2-kms
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: ingress-kms
+spec:
+    rules:
+      - host: test1.kendrickshaw.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: test1-kms
+                        port:
+                            number: 80
+      - host: test2.kendrickshaw.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: test2-kms
+                        port:
+                            number: 80
+      - http: # default
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: test2-kms
+                        port:
+                            number: 80

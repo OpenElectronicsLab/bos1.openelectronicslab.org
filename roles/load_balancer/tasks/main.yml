@@ -80,19 +80,20 @@
             frontend {{ servicename }}
                 bind {{ lbvals.virtual_ipaddress }}:{{
                     servicevals.external_port }}
-                mode tcp
-                option tcplog
+                mode {{ servicevals.mode }}
+                option {{ servicevals.mode }}log
                 default_backend {{ servicename }}
 
             backend {{ servicename }}
-                option httpchk GET /ping
-                http-check expect status 200
-                mode tcp
-                option ssl-hello-chk
+                mode {{ servicevals.mode }}
+            {% for option in servicevals.options %}
+                {{ option }}
+            {% endfor %}
                 balance roundrobin
             {% for servername, serveraddress in servicevals.servers.items() %}
                     server {{ servername }} {{ serveraddress }} check
             {% endfor %}
+
             {% endfor %}
             {% endfor %}
     notify: restart haproxy

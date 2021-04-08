@@ -69,7 +69,21 @@ load_balancers:
         virtual_router_id: 51
         virtual_ipaddress: "{{ oel_subnets.bos1_public1.hosts.boletuslb0.ip }}"
         virtual_ip_CIDR: "{{ oel_subnets.bos1_public1.CIDR }}"
-        services: {}
+        services:
+            publichttp:
+                external_port: 80
+                mode: http
+                options:
+                  - option httpchk GET /
+                servers:
+                    kubeworker0:
+                        kubeworker0.private.vpn.boletus0.bos1.openelectronicslab.org:80
+                    kubeworker1:
+                        kubeworker1.private.vpn.boletus1.bos1.openelectronicslab.org:80
+                    kubeworker2:
+                        kubeworker2.private.vpn.boletus2.bos1.openelectronicslab.org:80
+                    kubeworker3:
+                        kubeworker3.private.vpn.boletus3.bos1.openelectronicslab.org:80
 
     boletuslb0_backhaul:
         interface: ibp2s0
@@ -79,6 +93,11 @@ load_balancers:
         services:
             kubeapi:
                 external_port: 6443
+                mode: tcp
+                options:
+                  - option httpchk GET /ping
+                  - http-check expect status 200
+                  - option ssl-hello-chk
                 servers:
                     kubecontroller0:
                         kubecontroller0.private.vpn.boletus0.bos1.openelectronicslab.org:6443
