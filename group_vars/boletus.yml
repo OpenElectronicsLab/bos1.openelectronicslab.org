@@ -4,8 +4,8 @@
 installer_target_drive: /dev/sdb
 usb_key: /dev/sdd
 luks_additional:
-    rust_sdb: /dev/sdb
-    rust_sdc: /dev/sdc
+    hdd_sdb: /dev/sdb
+    hdd_sdc: /dev/sdc
 
 visible_subnets:
   - "{{ oel_subnets['bos1_public0'] }}"
