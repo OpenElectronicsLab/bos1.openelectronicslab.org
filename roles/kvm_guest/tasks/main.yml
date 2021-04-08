@@ -1,0 +1,48 @@
+---
+  - name: Check to see if this VM has been created yet
+    delegate_to: "{{ kvm_host }}"
+    shell: virsh list --all | grep -q " {{ inventory_hostname_short }} "
+    register: vm_exists
+    failed_when: false
+    changed_when: false
+
+  - name: Create the VM
+    delegate_to: "{{ kvm_host }}"
+    command: virt-install
+        --connect qemu:///system
+        --virt-type kvm
+        --cdrom /media/install-media/{{ inventory_hostname_short }}.iso
+        --name {{ inventory_hostname_short }}
+        --memory {{ kvm_memory }}
+        --vcpus {{ kvm_vcpus }}
+        {% for volume in kvm_volumes_used %}
+        --disk vol={{ volume }}
+        {% endfor %}
+        --noautoconsole
+        --network=bridge:br0
+        --os-variant debian10
+        --wait -1
+    when: vm_exists.rc != 0
+
+  - name: set the VM to start automatically
+    delegate_to: "{{ kvm_host }}"
+    command: virsh autostart {{ inventory_hostname_short }}
+    when: vm_exists.rc != 0
+
+  - name: Check to see if this VM is running
+    delegate_to: "{{ kvm_host }}"
+    shell: virsh list --all |
+        grep -q " {{inventory_hostname_short }}  *running"
+    register: vm_running
+    failed_when: false
+    changed_when: false
+
+  - name: start the VM
+    delegate_to: "{{ kvm_host }}"
+    command: virsh start {{ inventory_hostname_short }}
+    when: vm_running.rc != 0
+
+  - name: Undo any damage caused by libvirt to the iptables
+    delegate_to: "{{ kvm_host }}"
+    command: /etc/nftables.conf
+    when: vm_exists.rc != 0 or vm_running.rc != 0

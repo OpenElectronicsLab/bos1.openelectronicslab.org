@@ -49,20 +49,9 @@
     failed_when: false # TODO: the command line can timeout while the process
                        # continues and install eventually succeeds.
 
-  - name: synchronize the manifests directory
-    synchronize:
-        src: "{{ playbook_dir }}/manifests"
-        dest: /var/lib/
-        archive: no
-        checksum: yes
-        recursive: yes
-        links: yes
-        use_ssh_args: yes
-
-  - name: apply the manifests
-    command: kubectl apply -f {{ item }}
-    run_once: true
-    register: kube_apply_manifests
-    changed_when: "'configured' in kube_apply_manifests.stdout or
-        'created' in kube_apply_manifests.stdout"
-    loop: "{{ kube_manifests }}"
+  - name: Allow admin users to access kubectl without sudo
+    file:
+        path: /etc/rancher/k3s/k3s.yaml
+        owner: root
+        group: admin
+        mode: '0660'

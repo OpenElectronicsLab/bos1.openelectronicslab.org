@@ -5,6 +5,17 @@ full_disk_encryption: false
 
 installer_target_drive: /dev/vda
 
+kvm_memory: 8192
+kvm_vcpus: 2
+
+network_interfaces:
+    enp1s0:
+        subnet: "{{ oel_subnets[
+            'bos1_vpn_' + hostvars[kvm_host].inventory_hostname_short + '_private'] }}"
+primary_interface: enp1s0
+ssh_jump_host: "{{ lookup('env', 'USER') }}admin@{{ kvm_host }}"
+ansible_ssh_common_args: "-oServerAliveInterval=3 -oProxyJump={{ ssh_jump_host | default(omit) }}"
+
 visible_subnets:
   - "{{ oel_subnets['bos1_public0'] }}"
   - "{{ oel_subnets['bos1_public1'] }}"

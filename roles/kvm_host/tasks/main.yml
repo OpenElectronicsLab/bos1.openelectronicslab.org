@@ -24,12 +24,22 @@
     register: virsh_pool_list
     changed_when: false
 
+  - name: list existing LVM volume groups
+    command: vgscan
+    register: lvm_vg_list
+    changed_when: false
+
   - name: create lvm-based kvm storage pools
     command: virsh pool-define-as {{ item.key }} logical
                 --source-dev {{ item.value.device }}
                 --source-name {{ item.value.volume_group }}
                 --target /dev/{{ item.value.volume_group }}
     when: item.key not in virsh_pool_list.stdout
+    with_dict: "{{ kvm_lvm_pools }}"
+
+  - name: build kvm storage pools
+    command: virsh pool-build {{ item.key }}
+    when: item.value.volume_group not in lvm_vg_list.stdout
     with_dict: "{{ kvm_lvm_pools }}"
 
   - name: start kvm storage pools
@@ -47,13 +57,14 @@
     register: kvm_vol_list
     failed_when: false
     changed_when: false
-    with_dict: "{{ kvm_volumes }}"
+    with_dict: "{{ kvm_volumes_provided }}"
 
   - name: create the kvm volumes
     command: virsh vol-create-as {{ item[0].value.pool }} {{ item[0].key }}
         {{ item[0].value.size }}
     when: item[1].rc != 0
-    loop: "{{ kvm_volumes | dict2items | zip(kvm_vol_list.results) | list }}"
+    loop: "{{ kvm_volumes_provided | dict2items | zip(kvm_vol_list.results)
+        | list }}"
 
   - name: Configure bridge networks
     copy:
@@ -129,56 +140,4 @@
         archive: no
         checksum: yes
         use_ssh_args: yes
-#    when: (the vm matches the host)
-    with_inventory_hostnames:
-      - kvm_guests
-
-    # $ sudo virsh list --all
-    # Id   Name      State
-    # -------------------------
-    #  6    testvm3   running
-
-  - name: Check for existence of VM
-    shell: virsh list --all | grep -q " {{
-        hostvars[item].inventory_hostname_short }} "
-    register: vm_exists
-    failed_when: false
-    changed_when: false
     loop: "{{ guest_vms }}"
-
-  - name: create the VMs
-    command: virt-install
-        --connect qemu:///system
-        --virt-type kvm
-        --cdrom /media/install-media/{{
-            hostvars[item.item].inventory_hostname_short }}.iso
-        --name {{ hostvars[item.item].inventory_hostname_short }}
-        --memory 8192
-        --vcpus 2
-        --disk vol={{ hostvars[item.item].root_volume }}
-        --noautoconsole
-        --network=bridge:br0
-        --os-variant debian10
-    when: item.rc != 0
-    loop: "{{ vm_exists.results }}"
-
-  - name: set the VMs to start automatically
-    command: virsh autostart {{
-            hostvars[item.item].inventory_hostname_short }}
-    when: item.rc != 0
-    loop: "{{ vm_exists.results }}"
-
-  - name: Check which VMs are running
-    shell: virsh list --all | grep -q " {{
-        hostvars[item].inventory_hostname_short }}  *running"
-    register: vm_running
-    failed_when: false
-    changed_when: false
-    loop: "{{ guest_vms }}"
-
-  - name: start the VMs
-    command: virsh start {{
-            hostvars[item.item].inventory_hostname_short }}
-    when: item.rc != 0
-    loop: "{{ vm_running.results }}"
-

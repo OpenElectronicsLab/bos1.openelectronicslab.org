@@ -45,8 +45,15 @@ kvm_lvm_pools:
     ssd0_pool:
         device: /dev/mapper/sdb2_crypt
         volume_group: "{{ inventory_hostname_short }}-vg"
+    hdd0_pool:
+        device: /dev/mapper/hdd_sdb_crypt
+        volume_group: hdd0-pool-vg
+    hdd1_pool:
+        device: /dev/mapper/hdd_sdc_crypt
+        volume_group: hdd1-pool-vg
 
-kvm_volumes: {}
+kvm_volumes_provided: {}
+guest_vms: "{{ groups[inventory_hostname_short + '_guests'] }}"
 
 bridges:
     br0:

@@ -17,17 +17,19 @@ luks_password: !vault |
           62326136386566303239393034396233626538356139386265623835636163353963386533336638
           3435633436393530326461653466333334333063643830303065
 
-kvm_volumes:
+kvm_volumes_provided:
     kubecontroller1_root:
         pool: ssd0_pool
         size: 50G
     kubeworker1_root:
         pool: ssd0_pool
         size: 100G
-
-guest_vms:
-  - kubecontroller1.private.vpn.boletus1.bos1.openelectronicslab.org
-  - kubeworker1.private.vpn.boletus1.bos1.openelectronicslab.org
+    ceph1_ssd0:
+        pool: ssd0_pool
+        size: 700G
+    ceph1_hdd0:
+        pool: hdd0_pool
+        size: 16000000000
 
 wireguard_private_key: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0
