@@ -34,6 +34,7 @@
     shell: export K3S_TOKEN={{ k3s_token }};
         curl -sdL https://get.k3s.io | sh -s - server --cluster-init
             --tls-san https://{{ kube_control_plane_ip }}
+            --node-taint CriticalAddonsOnly=true:NoExecute
     when: not 'status_code' in kube_control_plane_check
         # or kube_control_plane_check.status_code != 200
 
@@ -43,6 +44,7 @@
             curl -sdL https://get.k3s.io | sh -s - server --server
               https://{{ kube_control_plane_ip }}:{{ kube_control_plane_port }}
               --tls-san https://{{ kube_control_plane_ip }}
+              --node-taint CriticalAddonsOnly=true:NoExecute
         creates: /usr/local/bin/k3s
     failed_when: false # TODO: the command line can timeout while the process
                        # continues and install eventually succeeds.
