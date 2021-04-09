@@ -20,6 +20,11 @@
     reboot:
     when: not 'legacy' in alternatives_iptables.stdout
 
+  - name: Install LVM (for Rook OSDs)
+    apt:
+        name: lvm2
+        state: present
+
   - name: Start kubernetes workers
     shell:
         cmd: export K3S_TOKEN={{ k3s_token }};

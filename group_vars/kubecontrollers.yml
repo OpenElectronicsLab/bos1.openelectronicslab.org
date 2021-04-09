@@ -1,3 +1,12 @@
 ---
 kvm_memory: 16384
 kvm_vcpus: 2
+kube_manifests:
+  - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
+  - /var/lib/manifests/letsencrypt-issuer.yml
+  - /var/lib/manifests/test-kms.yml
+  - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/crds.yaml
+  - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/common.yaml
+  - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/operator.yaml
+  - /var/lib/manifests/rook-cluster.yml
+  - /var/lib/manifests/rook-ceph-tools.yml
