@@ -1,4 +1,5 @@
 ---
+# Deployment 1 with several Ngnix web server containers
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,6 +20,7 @@ spec:
                 ports:
                   - containerPort: 80
 ---
+# Deployment 2 with several Ngnix web server containers
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,32 +41,32 @@ spec:
                 ports:
                   - containerPort: 80
 ---
+# Define a service that that maps to port 80 on pods with the tag app:test1-kms
 apiVersion: v1
 kind: Service
 metadata:
-    name: test1-kms
-    labels:
-        run: test1-kms
+    name: test1-kms-service
 spec:
-    ports:
-      - port: 80
-        protocol: TCP
     selector:
         app: test1-kms
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: test2-kms
-    labels:
-        run: test2-kms
-spec:
     ports:
       - port: 80
         protocol: TCP
+---
+# Define a service that that maps to port 80 on pods with the tag app:test2-kms
+apiVersion: v1
+kind: Service
+metadata:
+    name: test2-kms-service
+spec:
     selector:
         app: test2-kms
+    ports:
+      - port: 80
+        protocol: TCP
 ---
+# Expose a default http Ingress (i.e. reverse proxy and load balancer) from the
+# outside world on port 80 to the Service 1 in the cluster.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -77,10 +79,14 @@ spec:
                 path: /
                 backend:
                     service:
-                        name: test1-kms
+                        name: test1-kms-service
                         port:
                             number: 80
 ---
+# Expose both a http Ingress on port 80 and an https Ingress on port 443 when
+# someone in the outside world connects to either of these ports with a
+# hostname of test1.kendrickshaw.org, mapping these to Service 1.  LetsEncrypt
+# is used to automatically acquire the appropriate TLS certificates.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -101,10 +107,15 @@ spec:
                 path: /
                 backend:
                     service:
-                        name: test1-kms
+                        name: test1-kms-service
                         port:
                             number: 80
 ---
+# Expose both a http Ingress on port 80 and an https Ingress on port 443 when
+# someone in the outside world connects to either of these ports with a
+# hostname of test2.kendrickshaw.org, mapping these to Service 2.
+# LetsEncrypt is used to automatically acquire the appropriate TLS
+# certificates.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -125,6 +136,6 @@ spec:
                 path: /
                 backend:
                     service:
-                        name: test2-kms
+                        name: test2-kms-service
                         port:
                             number: 80
