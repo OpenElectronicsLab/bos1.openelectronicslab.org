@@ -57,7 +57,7 @@ oel_subnets:
 
     bos1_public1:
         name: bos1.openelectronicslab.org
-        subnet: 154.3.222.72
+        subnet: 154.3.222.200
         netmask: 255.255.255.248
         CIDR: 29
         broadcast: 154.3.222.207
