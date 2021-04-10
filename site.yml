@@ -76,8 +76,8 @@
     gather_facts: false
     become: true
     roles:
-      - kvm_guest
       - add_to_known_hosts
+      - kvm_guest
       - core_setup
       - network_setup
     tasks:
