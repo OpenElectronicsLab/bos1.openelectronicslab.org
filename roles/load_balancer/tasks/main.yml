@@ -45,7 +45,7 @@
         line: net.ipv4.ip_nonlocal_bind=1
     register: enable_nonlocal_bind
 
-  - name: If needed, enable forwarding in the running kernel
+  - name: If needed, enable non-local binding in the running kernel
     command: sysctl -w net.ipv4.ip_nonlocal_bind=1
     when: enable_nonlocal_bind.changed
 
