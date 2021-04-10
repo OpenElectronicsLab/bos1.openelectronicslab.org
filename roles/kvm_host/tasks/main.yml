@@ -103,6 +103,8 @@
         insertafter: "flush ruleset"
         path: /etc/nftables.conf
         marker: "# Ansible-managed NAT table {mark}"
+        # Lack of indention of nested-for-loops so that the end file is not
+        # weirdly indented.
         block: |
 
             table ip nat {
