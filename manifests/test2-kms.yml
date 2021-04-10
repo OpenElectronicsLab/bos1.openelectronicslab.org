@@ -1,0 +1,124 @@
+---
+# Define a ceph filesystem
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: test2-kms-fs
+  namespace: rook-ceph
+spec:
+  metadataPool:
+    replicated:
+      size: 3
+  dataPools:
+    - replicated:
+        size: 3
+  preserveFilesystemOnDelete: true
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+---
+# Provision storage for the test2-kms-fs
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: test2-kms-fs-sc
+provisioner: rook-ceph.cephfs.csi.ceph.com
+parameters:
+  clusterID: rook-ceph
+  fsName: test2-kms-fs
+  pool: test2-kms-fs-data0
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+reclaimPolicy: Delete
+---
+# define a claim for some shared persistent storage (a persistent volume claim)
+# for use by the test2-kms deployment
+# TODO: Needed to manually create subvolumegroup csi with the following command:
+# kubectl exec -it rook-ceph-tools-<...> --namespace rook-ceph -- \
+#   ceph fs subvolumegroup create test2-kms-fs csi
+# Is this a bug in rook?  See https://github.com/rook/rook/issues/4012
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: test2-kms-fs-pvc
+spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+        requests:
+            storage: 1Gi
+    storageClassName: test2-kms-fs-sc
+---
+# Deployment 2 with several Ngnix web server containers with shared storage
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: test2-kms
+spec:
+    selector:
+        matchLabels:
+            app: test2-kms
+    replicas: 4
+    template:
+        metadata:
+            labels:
+                app: test2-kms
+        spec:
+            containers:
+              - name: test2-kms
+                image: httpd:2.4
+                ports:
+                  - containerPort: 80
+                volumeMounts:
+                  - name: httpdoc-volume
+                    mountPath: /usr/local/apache2/htdocs/
+            volumes:
+              - name: httpdoc-volume
+                persistentVolumeClaim:
+                    claimName: test2-kms-fs-pvc
+                    readOnly: false
+---
+# Define a service that that maps to port 80 on pods with the tag app:test2-kms
+apiVersion: v1
+kind: Service
+metadata:
+    name: test2-kms-service
+spec:
+    selector:
+        app: test2-kms
+    ports:
+      - port: 80
+        protocol: TCP
+---
+# Expose both a http Ingress on port 80 and an https Ingress on port 443 when
+# someone in the outside world connects to either of these ports with a
+# hostname of test2.kendrickshaw.org, mapping these to Service 2.
+# LetsEncrypt is used to automatically acquire the appropriate TLS
+# certificates.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: test2-kms-ingress
+    annotations:
+        #kuberneties.io/ingress.class: traefik
+        cert-manager.io/cluster-issuer: letsencrypt-issuer
+spec:
+    tls:
+      - hosts:
+          - test2.kendrickshaw.org
+        secretName: test2-kendrickshaw-org-tls
+    rules:
+      - host: test2.kendrickshaw.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: test2-kms-service
+                        port:
+                            number: 80

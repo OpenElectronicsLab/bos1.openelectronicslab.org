@@ -7,6 +7,7 @@
         archive: no
         checksum: yes
         recursive: yes
+        delete: yes
         links: yes
         use_ssh_args: yes
 

@@ -20,27 +20,6 @@ spec:
                 ports:
                   - containerPort: 80
 ---
-# Deployment 2 with several Ngnix web server containers
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-    name: test2-kms
-spec:
-    selector:
-        matchLabels:
-            app: test2-kms
-    replicas: 4
-    template:
-        metadata:
-            labels:
-                app: test2-kms
-        spec:
-            containers:
-              - name: test2-kms
-                image: httpd:2.4
-                ports:
-                  - containerPort: 80
----
 # Define a service that that maps to port 80 on pods with the tag app:test1-kms
 apiVersion: v1
 kind: Service
@@ -49,18 +28,6 @@ metadata:
 spec:
     selector:
         app: test1-kms
-    ports:
-      - port: 80
-        protocol: TCP
----
-# Define a service that that maps to port 80 on pods with the tag app:test2-kms
-apiVersion: v1
-kind: Service
-metadata:
-    name: test2-kms-service
-spec:
-    selector:
-        app: test2-kms
     ports:
       - port: 80
         protocol: TCP
@@ -108,34 +75,5 @@ spec:
                 backend:
                     service:
                         name: test1-kms-service
-                        port:
-                            number: 80
----
-# Expose both a http Ingress on port 80 and an https Ingress on port 443 when
-# someone in the outside world connects to either of these ports with a
-# hostname of test2.kendrickshaw.org, mapping these to Service 2.
-# LetsEncrypt is used to automatically acquire the appropriate TLS
-# certificates.
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-    name: test2-kms-ingress
-    annotations:
-        #kuberneties.io/ingress.class: traefik
-        cert-manager.io/cluster-issuer: letsencrypt-issuer
-spec:
-    tls:
-      - hosts:
-          - test2.kendrickshaw.org
-        secretName: test2-kendrickshaw-org-tls
-    rules:
-      - host: test2.kendrickshaw.org
-        http:
-            paths:
-              - pathType: Prefix
-                path: /
-                backend:
-                    service:
-                        name: test2-kms-service
                         port:
                             number: 80
