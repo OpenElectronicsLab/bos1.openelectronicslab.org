@@ -2,17 +2,31 @@
 
   - name: synchronize the manifests directory
     synchronize:
-        src: "{{ playbook_dir }}/manifests"
+        src: "files/manifests"
         dest: /var/lib/
         archive: no
         checksum: yes
         recursive: yes
-        delete: yes
         links: yes
         use_ssh_args: yes
 
+  - name: for manifests that are templates, generate them if needed
+    template:
+        src: '{{ item | regex_replace("^template://(.*)$",
+            "templates/manifests/\1.j2") }}'
+        dest: '{{ item | regex_replace("^template://(.*)$",
+            "/var/lib/manifests/\1") }}'
+    when: item is search("^template://")
+    loop: "{{ kube_manifests }}"
+
   - name: apply the manifests
-    command: kubectl apply -f {{ item }}
+    command: kubectl apply -f
+        {% if item is search("^template://") %}
+            {{ item | regex_replace("^template://(.*)$",
+                "/var/lib/manifests/\1") }}
+        {% else %}
+            {{ item }}
+        {% endif %}
     run_once: true
     register: kube_apply_manifests
     changed_when: "'configured' in kube_apply_manifests.stdout or
