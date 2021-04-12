@@ -1,0 +1,86 @@
+---
+# Secrets for the oel nextcloud instance
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: oel-nextcloud-secret
+data:
+    db_admin_password: {{ oel_nextcloud_db_admin_password | b64encode }}
+    db_password: {{ oel_nextcloud_db_password | b64encode }}
+    admin_password: {{ oel_nextcloud_admin_password | b64encode }}
+---
+# Persistent volume claim for block storage for the database
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: oel-nextcloud-db-pvc
+    labels:
+        app: nextcloud
+spec:
+    storageClassName: oel-ceph-block-sc
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 20Gi
+---
+# Deployment for the database
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: oel-nextcloud-db
+    labels:
+        app: nextcloud
+        tier: db
+spec:
+    selector:
+        matchLabels:
+            app: nextcloud
+            tier: db
+    template:
+        metadata:
+            labels:
+                app: nextcloud
+                tier: db
+        spec:
+            containers:
+              - name: mariadb
+                image: mariadb:10.5
+                env:
+                  - name: MYSQL_ROOT_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: oel-nextcloud-secret
+                            key: db_admin_password
+                ports:
+                  - containerPort: 3306
+                volumeMounts:
+                  - name: mariadb-persistent-storage
+                    mountPath: /var/lib/mysql
+            volumes:
+              - name: mariadb-persistent-storage
+                persistentVolumeClaim:
+                    claimName: oel-nextcloud-db-pvc
+    # destroy the old node before creating the new (to avoid two nodes
+    # accessing the storage at the same time):
+    strategy:
+        type: Recreate
+---
+# Define a service for the database
+apiVersion: v1
+kind: Service
+metadata:
+    name: oel-nextcloud-db-service
+    labels:
+        app: nextcloud
+spec:
+    selector:
+        app: test1-kms
+        tier: db
+    ports:
+      - port: 3306
+        protocol: TCP
+    # disable kubernetes's load balancing and proxying:
+    clusterIP: None
+

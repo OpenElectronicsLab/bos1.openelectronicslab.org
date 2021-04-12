@@ -13,7 +13,7 @@
   - name: for manifests that are templates, generate them if needed
     template:
         src: '{{ item | regex_replace("^template://(.*)$",
-            "templates/manifests/\1.j2") }}'
+            "templates/manifests/\1") }}'
         dest: '{{ item | regex_replace("^template://(.*)$",
             "/var/lib/manifests/\1") }}'
     when: item is search("^template://")
