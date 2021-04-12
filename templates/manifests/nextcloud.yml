@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Secret
 type: Opaque
 metadata:
-    name: oel-nextcloud-secret
+    name: nextcloud-secret
 data:
     db_admin_password: {{ oel_nextcloud_db_admin_password | b64encode }}
     db_password: {{ oel_nextcloud_db_password | b64encode }}
@@ -14,11 +14,11 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: oel-nextcloud-db-pvc
+    name: nextcloud-db-pvc
     labels:
         app: nextcloud
 spec:
-    storageClassName: oel-ceph-block-sc
+    storageClassName: ceph-block-sc
     accessModes:
         - ReadWriteOnce
     resources:
@@ -29,7 +29,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: oel-nextcloud-db
+    name: nextcloud-db
     labels:
         app: nextcloud
         tier: db
@@ -51,7 +51,7 @@ spec:
                   - name: MYSQL_ROOT_PASSWORD
                     valueFrom:
                         secretKeyRef:
-                            name: oel-nextcloud-secret
+                            name: nextcloud-secret
                             key: db_admin_password
                 ports:
                   - containerPort: 3306
@@ -61,7 +61,7 @@ spec:
             volumes:
               - name: mariadb-persistent-storage
                 persistentVolumeClaim:
-                    claimName: oel-nextcloud-db-pvc
+                    claimName: nextcloud-db-pvc
     # destroy the old node before creating the new (to avoid two nodes
     # accessing the storage at the same time):
     strategy:
@@ -71,7 +71,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: oel-nextcloud-db-service
+    name: nextcloud-db-service
     labels:
         app: nextcloud
 spec:

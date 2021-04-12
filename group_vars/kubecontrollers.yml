@@ -37,5 +37,5 @@ kube_manifests:
   - /var/lib/manifests/rook-ceph-tools.yml
   - /var/lib/manifests/test1-kms.yml
   - /var/lib/manifests/test2-kms.yml
-  - /var/lib/manifests/oel-storage-classes.yml
-  - template://oel-nextcloud.yml
+  - /var/lib/manifests/storage-classes.yml
+  - template://nextcloud.yml

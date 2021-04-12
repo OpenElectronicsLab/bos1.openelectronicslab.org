@@ -3,7 +3,7 @@
 apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
-  name: oel-ceph-block-pool
+  name: ceph-block-pool
   namespace: rook-ceph
 spec:
   failureDomain: host
@@ -14,11 +14,11 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-    name: oel-ceph-block-sc
+    name: ceph-block-sc
 provisioner: rook-ceph.rbd.csi.ceph.com
 parameters:
     clusterID: rook-ceph
-    pool: oel-ceph-block-pool
+    pool: ceph-block-pool
     imageFeatures: layering
     csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
     csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
@@ -32,7 +32,7 @@ reclaimPolicy: Delete
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
-  name: oel-ceph-filesystem
+  name: ceph-filesystem
   namespace: rook-ceph
 spec:
   metadataPool:
@@ -50,12 +50,12 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: oel-ceph-filesystem-sc
+  name: ceph-filesystem-sc
 provisioner: rook-ceph.cephfs.csi.ceph.com
 parameters:
   clusterID: rook-ceph
-  fsName: oel-ceph-filesystem
-  pool: oel-ceph-filesystem-data0
+  fsName: ceph-filesystem
+  pool: ceph-filesystem-data0
   csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
   csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
   csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
