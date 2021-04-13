@@ -1,40 +1,4 @@
 ---
-# Define a ceph filesystem
-apiVersion: ceph.rook.io/v1
-kind: CephFilesystem
-metadata:
-  name: test2-kms-fs
-  namespace: rook-ceph
-spec:
-  metadataPool:
-    replicated:
-      size: 3
-  dataPools:
-    - replicated:
-        size: 3
-  preserveFilesystemOnDelete: true
-  metadataServer:
-    activeCount: 1
-    activeStandby: true
----
-# Provision storage for the test2-kms-fs
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: test2-kms-fs-sc
-provisioner: rook-ceph.cephfs.csi.ceph.com
-parameters:
-  clusterID: rook-ceph
-  fsName: test2-kms-fs
-  pool: test2-kms-fs-data0
-  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
-  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
-  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
-  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
-reclaimPolicy: Delete
----
 # define a claim for some shared persistent storage (a persistent volume claim)
 # for use by the test2-kms deployment
 # TODO: Needed to manually create subvolumegroup csi with the following command:
@@ -51,7 +15,7 @@ spec:
     resources:
         requests:
             storage: 1Gi
-    storageClassName: test2-kms-fs-sc
+    storageClassName: ceph-filesystem-sc
 ---
 # Deployment 2 with several Ngnix web server containers with shared storage
 apiVersion: apps/v1

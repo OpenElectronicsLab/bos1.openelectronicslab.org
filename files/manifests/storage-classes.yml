@@ -29,6 +29,9 @@ parameters:
 reclaimPolicy: Delete
 ---
 # Define a ceph filesystem for OEL containers
+# TODO: Needed to manually create subvolumegroup csi with the following command:
+# kubectl exec -it rook-ceph-tools-<...> --namespace rook-ceph -- \
+#   ceph fs subvolumegroup create ceph-filesystem csi
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:

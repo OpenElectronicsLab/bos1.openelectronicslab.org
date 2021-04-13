@@ -35,7 +35,7 @@ kube_manifests:
   - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/operator.yaml
   - /var/lib/manifests/rook-cluster.yml
   - /var/lib/manifests/rook-ceph-tools.yml
+  - /var/lib/manifests/storage-classes.yml
   - /var/lib/manifests/test1-kms.yml
   - /var/lib/manifests/test2-kms.yml
-  - /var/lib/manifests/storage-classes.yml
   - template://nextcloud.yml

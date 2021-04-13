@@ -45,7 +45,7 @@ spec:
                 tier: db
         spec:
             containers:
-              - name: mariadb
+              - name: nextcloud-mariadb
                 image: mariadb:10.5
                 env:
                   - name: MYSQL_ROOT_PASSWORD
@@ -53,6 +53,15 @@ spec:
                         secretKeyRef:
                             name: nextcloud-secret
                             key: db_admin_password
+                  - name: MYSQL_DATABASE
+                    value: nextcloud
+                  - name: MYSQL_USER
+                    value: nextcloud
+                  - name: MYSQL_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: nextcloud-secret
+                            key: db_password
                 ports:
                   - containerPort: 3306
                 volumeMounts:
@@ -84,3 +93,137 @@ spec:
     # disable kubernetes's load balancing and proxying:
     clusterIP: None
 
+---
+# Persistent volume claim for file storage for /var/www/html of nextcloud
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: nextcloud-files-pvc
+    labels:
+        app: nextcloud
+        tier: frontend
+spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+        requests:
+            storage: 4Ti
+    storageClassName: ceph-filesystem-sc
+---
+# Deployment for the front-end nextcloud web servers
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nextcloud-frontend
+    labels:
+        app: nextcloud
+        tier: frontend
+spec:
+    selector:
+        matchLabels:
+            app: nextcloud
+            tier: frontend
+    replicas: 3
+    template:
+        metadata:
+            labels:
+                app: nextcloud
+                tier: frontend
+        spec:
+            containers:
+              - name: nextcloud-frontend
+                image: nextcloud:19
+                env:
+                  - name: MYSQL_DATABASE
+                    value: nextcloud
+                  - name: MYSQL_USER
+                    value: nextcloud
+                  - name: MYSQL_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: nextcloud-secret
+                            key: db_password
+                  - name: NEXTCLOUD_ADMIN_USER
+                    value: nextcloud_admin
+                  - name: NEXTCLOUD_ADMIN_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: nextcloud-secret
+                            key: admin_password
+                  - name: NEXTCLOUD_TRUSTED_DOMAINS
+                    value: nextcloud.kendrickshaw.org
+                        nextcloud.openelectronicslab.org
+                ports:
+                  - containerPort: 80
+                volumeMounts:
+                  - name: html-volume
+                    mountPath: /var/lib/www/html
+            volumes:
+              - name: html-volume
+                persistentVolumeClaim:
+                    claimName: nextcloud-files-pvc
+                    readOnly: false
+---
+# Service for the nextcloud front-end web servers
+apiVersion: v1
+kind: Service
+metadata:
+    name: nextcloud-service
+    labels:
+        app: nextcloud
+spec:
+    selector:
+        app: nextcloud
+        tier: frontend
+    ports:
+      - port: 80
+        protocol: TCP
+---
+# Ingress for nextcloud from nextcloud.kendrickshaw.org
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: nextcloud-kso-ingress
+    annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-issuer
+spec:
+    tls:
+      - hosts:
+          - nextcloud.kendrickshaw.org
+        secretName: nextcloud-kendrickshaw-org-tls
+    rules:
+      - host: nextcloud.kendrickshaw.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: nextcloud-service
+                        port:
+                            number: 80
+---
+# Ingress for nextcloud from nextcloud.openelectronicslab.org
+# TODO: turn on TLS support once DNS points at this server
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: nextcloud-oel-ingress
+#    annotations:
+#        cert-manager.io/cluster-issuer: letsencrypt-issuer
+spec:
+#    tls:
+#      - hosts:
+#          - nextcloud.openelectronicslab.org
+#        secretName: nextcloud-openelectronicslab-org-tls
+    rules:
+      - host: nextcloud.openelectronicslab.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: nextcloud-service
+                        port:
+                            number: 80
