@@ -59,8 +59,8 @@ kind: Ingress
 metadata:
     name: test1-kms-ingress
     annotations:
-        #kuberneties.io/ingress.class: traefik
         cert-manager.io/cluster-issuer: letsencrypt-issuer
+        traefik.ingress.kubernetes.io/redirect-entry-point: https
 spec:
     tls:
       - hosts:

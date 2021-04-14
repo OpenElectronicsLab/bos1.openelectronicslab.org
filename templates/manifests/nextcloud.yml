@@ -186,6 +186,7 @@ metadata:
     name: nextcloud-kso-ingress
     annotations:
         cert-manager.io/cluster-issuer: letsencrypt-issuer
+        traefik.ingress.kubernetes.io/redirect-entry-point: https
 spec:
     tls:
       - hosts:
@@ -211,6 +212,7 @@ metadata:
     name: nextcloud-oel-ingress
 #    annotations:
 #        cert-manager.io/cluster-issuer: letsencrypt-issuer
+#        traefik.ingress.kubernetes.io/redirect-entry-point: https
 spec:
 #    tls:
 #      - hosts:
