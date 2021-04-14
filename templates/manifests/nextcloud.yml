@@ -32,7 +32,6 @@ metadata:
     name: nextcloud-db
     labels:
         app: nextcloud
-        tier: db
 spec:
     selector:
         matchLabels:
@@ -85,13 +84,12 @@ metadata:
         app: nextcloud
 spec:
     selector:
-        app: test1-kms
+        app: nextcloud
         tier: db
     ports:
       - port: 3306
-        protocol: TCP
     # disable kubernetes's load balancing and proxying:
-    clusterIP: None
+    #clusterIP: None
 
 ---
 # Persistent volume claim for file storage for /var/www/html of nextcloud
@@ -117,13 +115,12 @@ metadata:
     name: nextcloud-frontend
     labels:
         app: nextcloud
-        tier: frontend
 spec:
     selector:
         matchLabels:
             app: nextcloud
             tier: frontend
-    replicas: 3
+    replicas: 1
     template:
         metadata:
             labels:
@@ -143,6 +140,9 @@ spec:
                         secretKeyRef:
                             name: nextcloud-secret
                             key: db_password
+                  - name: MYSQL_HOST
+                    value: nextcloud-db-service
+                    #value: nextcloud-db-service.default.svc.cluster.local
                   - name: NEXTCLOUD_ADMIN_USER
                     value: nextcloud_admin
                   - name: NEXTCLOUD_ADMIN_PASSWORD
@@ -157,7 +157,7 @@ spec:
                   - containerPort: 80
                 volumeMounts:
                   - name: html-volume
-                    mountPath: /var/lib/www/html
+                    mountPath: /var/www/html
             volumes:
               - name: html-volume
                 persistentVolumeClaim:
