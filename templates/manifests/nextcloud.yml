@@ -9,6 +9,7 @@ data:
     db_admin_password: {{ oel_nextcloud_db_admin_password | b64encode }}
     db_password: {{ oel_nextcloud_db_password | b64encode }}
     admin_password: {{ oel_nextcloud_admin_password | b64encode }}
+    redis_password: {{ oel_nextcloud_redis_password | b64encode }}
 ---
 # Persistent volume claim for block storage for the database
 apiVersion: v1
@@ -92,6 +93,53 @@ spec:
     #clusterIP: None
 
 ---
+# Deployment for the redis in-memory database
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nextcloud-redis
+    labels:
+        app: nextcloud
+spec:
+    selector:
+        matchLabels:
+            app: nextcloud
+            tier: redis
+    template:
+        metadata:
+            labels:
+                app: nextcloud
+                tier: redis
+        spec:
+            containers:
+              - name: nextcloud-redis
+                image: redis:6.2
+                args: ["--requirepass", "$(REDIS_PASSWORD)"]
+                env:
+                  - name: MASTER
+                    value: "true"
+                  - name: REDIS_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: nextcloud-secret
+                            key: redis_password
+                ports:
+                  - containerPort: 6379
+---
+# Define a service for redis
+apiVersion: v1
+kind: Service
+metadata:
+    name: nextcloud-redis-service
+    labels:
+        app: nextcloud
+spec:
+    selector:
+        app: nextcloud
+        tier: redis
+    ports:
+      - port: 6379
+---
 # Persistent volume claim for file storage for /var/www/html of nextcloud
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -142,7 +190,13 @@ spec:
                             key: db_password
                   - name: MYSQL_HOST
                     value: nextcloud-db-service
-                    #value: nextcloud-db-service.default.svc.cluster.local
+                  - name: REDIS_HOST
+                    value: nextcloud-redis-service
+                  - name: REDIS_HOST_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: nextcloud-secret
+                            key: redis_password
                   - name: NEXTCLOUD_ADMIN_USER
                     value: nextcloud_admin
                   - name: NEXTCLOUD_ADMIN_PASSWORD
