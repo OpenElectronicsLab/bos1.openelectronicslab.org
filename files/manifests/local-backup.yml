@@ -67,65 +67,67 @@ spec:
                     readOnly: false
 ---
 # A job that will do the backup
-apiVersion: batch/v1
-kind: Job
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
     name: local-backup
 spec:
-    completions: 1
-    template:
+    schedule: "0 5 * * *"
+    jobTemplate:
         spec:
-            restartPolicy: Never
-            containers:
-              - name: local-backup
-                image: debian:buster
-                env:
-                  - name: BORGFILE
-                    value: /var/lib/backups/backup.borg
-                  - name: MYSQL_DATABASE
-                    value: nextcloud
-                  - name: MYSQL_USER
-                    value: nextcloud
-                  - name: MYSQL_PASSWORD
-                    valueFrom:
-                        secretKeyRef:
-                            name: nextcloud-secret
-                            key: db_password
-                  - name: MYSQL_HOST
-                    value: nextcloud-db-service
-                command:
-                  - /bin/bash
-                  - -c
-                  - |
-                    apt-get update;
-                    apt-get install -y borgbackup mariadb-client;
-                    ISODATE=`date +%Y-%m-%dT%H%M%SZ`;
-                    # Create the BorgBackup database (if it does not exist yet)
-                    if [ ! -d $BORGFILE ]; then borg init -e none $BORGFILE; fi;
-                    # Dump the nextcloud database to a file
-                    mysqldump -h $MYSQL_HOST -u $MYSQL_USER \
-                        --password=$MYSQL_PASSWORD --single-transaction --quick
-                        $MYSQL_DATABASE > /tmp/nextcloud.sql;
-                    # Backup the nextcloud data
-                    borg create --stats --list --verbose --show-rc \
-                        $BORGFILE::nextcloud-$ISODATE \
-                        /tmp/nextcloud.sql /mnt/nextcloud;
-                    # Prune the nextcloud archives
-                    borg prune --prefix nextcloud- \
-                        --stats --list --verbose --show-rc \
-                        --keep-daily=7 --keep-weekly=8 \
-                        --keep-monthly=12 --keep-yearly=5 $BORGFILE;
-                volumeMounts:
-                  - name: backups-volume
-                    mountPath: /var/lib/backups/
-                  - name: nextcloud-html-volume
-                    mountPath: /mnt/nextcloud/var/www/html
-            volumes:
-              - name: nextcloud-html-volume
-                persistentVolumeClaim:
-                    claimName: nextcloud-files-pvc
-                    readOnly: false
-              - name: backups-volume
-                persistentVolumeClaim:
-                    claimName: local-backups-pvc
-                    readOnly: false
+            template:
+                spec:
+                    restartPolicy: Never
+                    containers:
+                      - name: local-backup
+                        image: debian:buster
+                        env:
+                          - name: BORGFILE
+                            value: /var/lib/backups/backup.borg
+                          - name: MYSQL_DATABASE
+                            value: nextcloud
+                          - name: MYSQL_USER
+                            value: nextcloud
+                          - name: MYSQL_PASSWORD
+                            valueFrom:
+                                secretKeyRef:
+                                    name: nextcloud-secret
+                                    key: db_password
+                          - name: MYSQL_HOST
+                            value: nextcloud-db-service
+                        command:
+                          - /bin/bash
+                          - -c
+                          - |
+                            apt-get update;
+                            apt-get install -y borgbackup mariadb-client;
+                            ISODATE=`date +%Y-%m-%dT%H%M%SZ`;
+                            # Create the BorgBackup database (if it does not exist yet)
+                            if [ ! -d $BORGFILE ]; then borg init -e none $BORGFILE; fi;
+                            # Dump the nextcloud database to a file
+                            mysqldump -h $MYSQL_HOST -u $MYSQL_USER \
+                                --password=$MYSQL_PASSWORD --single-transaction --quick
+                                $MYSQL_DATABASE > /tmp/nextcloud.sql;
+                            # Backup the nextcloud data
+                            borg create --stats --list --verbose --show-rc \
+                                $BORGFILE::nextcloud-$ISODATE \
+                                /tmp/nextcloud.sql /mnt/nextcloud;
+                            # Prune the nextcloud archives
+                            borg prune --prefix nextcloud- \
+                                --stats --list --verbose --show-rc \
+                                --keep-daily=7 --keep-weekly=8 \
+                                --keep-monthly=12 --keep-yearly=5 $BORGFILE;
+                        volumeMounts:
+                          - name: backups-volume
+                            mountPath: /var/lib/backups/
+                          - name: nextcloud-html-volume
+                            mountPath: /mnt/nextcloud/var/www/html
+                    volumes:
+                      - name: nextcloud-html-volume
+                        persistentVolumeClaim:
+                            claimName: nextcloud-files-pvc
+                            readOnly: false
+                      - name: backups-volume
+                        persistentVolumeClaim:
+                            claimName: local-backups-pvc
+                            readOnly: false

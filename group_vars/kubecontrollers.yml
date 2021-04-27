@@ -47,3 +47,4 @@ kube_manifests:
   - /var/lib/manifests/test1-kms.yml
   - /var/lib/manifests/test2-kms.yml
   - template://nextcloud.yml
+  - /var/lib/manifests/local-backup.yml
