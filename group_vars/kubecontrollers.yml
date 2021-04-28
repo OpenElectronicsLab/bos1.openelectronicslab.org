@@ -2,6 +2,9 @@
 kvm_memory: 16384
 kvm_vcpus: 2
 
+force_to_appear_as_ssd:
+  - vda
+
 kube_manifests:
   - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
   - /var/lib/manifests/letsencrypt-issuer.yml

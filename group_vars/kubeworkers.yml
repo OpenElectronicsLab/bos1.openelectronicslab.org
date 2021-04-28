@@ -1,3 +1,7 @@
 ---
 kvm_memory: 32768
 kvm_vcpus: 4
+
+force_to_appear_as_ssd:
+  - vda
+  - vdb

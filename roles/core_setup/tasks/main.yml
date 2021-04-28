@@ -87,3 +87,50 @@
         - vim-nox
         - net-tools
         - rsync
+
+  - name: Add service to force drives to appear as ssds
+    when: force_to_appear_as_ssd is defined
+    register: force_ssd_result
+    copy:
+        dest: /etc/init.d/force-to-appear-as-ssd.sh
+        mode: 0755
+        content: |
+            #!/bin/sh
+
+            ### BEGIN INIT INFO
+            # Provides:          force-to-appear-as-ssd
+            # Required-Start:       $local_fs
+            # Required-Stop:        $local_fs
+            # Default-Start:        2 3 4 5
+            # Default-Stop:         0 1 6
+            # Short-Description: Force drives to appear as ssds
+            # Description: Forces specific drives to appear as ssds. This is a
+            # workaround for virtio marking all devices as rotational storage
+            # (regardless of whether they are backed by ssds or hds). Ceph then
+            # refuses to use a "rotational" device as a metadata device,
+            # preventing the use of an ssd to store the metadata for an hd osd.
+            ### END INIT INFO
+
+            . /lib/lsb/init-functions
+
+            case "$1" in
+            start|restart|reload|force-reload)
+                    {% for drive in force_to_appear_as_ssd %}
+                    echo 0 > /sys/block/{{ drive }}/queue/rotational
+                    {% endfor %}
+                    exit 0
+                    ;;
+            stop)
+                    exit 0
+                    ;;
+            *)
+                    echo "Usage: force-to-appear-as-ssd.sh " \
+                        "{start|stop|restart|reload|force-reload|force-start}"
+                    exit 1
+                    ;;
+            esac
+
+  - name: Make sure service to force drives to appear as ssds is running
+    when: force_ssd_result.changed
+    shell:
+        cmd: systemctl daemon-reload && service force-to-appear-as-ssd.sh start
