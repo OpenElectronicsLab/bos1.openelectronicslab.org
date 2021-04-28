@@ -5,9 +5,6 @@ full_disk_encryption: false
 
 installer_target_drive: /dev/vda
 
-kvm_memory: 8192
-kvm_vcpus: 2
-
 network_interfaces:
     enp1s0:
         subnet: "{{ oel_subnets[
