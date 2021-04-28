@@ -109,6 +109,8 @@
             # (regardless of whether they are backed by ssds or hds). Ceph then
             # refuses to use a "rotational" device as a metadata device,
             # preventing the use of an ssd to store the metadata for an hd osd.
+            # Manually marking the ssd backed virtio device as a non-rotational
+            # device allows us to work around this.
             ### END INIT INFO
 
             . /lib/lsb/init-functions
@@ -133,4 +135,6 @@
   - name: Make sure service to force drives to appear as ssds is running
     when: force_ssd_result.changed
     shell:
-        cmd: systemctl daemon-reload && service force-to-appear-as-ssd.sh start
+        cmd: systemctl daemon-reload &&
+            update-rc.d force-to-appear-as-ssd.sh defaults &&
+            service force-to-appear-as-ssd.sh start
