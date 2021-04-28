@@ -29,7 +29,7 @@ kvm_volumes_provided:
         size: 700G
     ceph1_hdd0:
         pool: hdd0_pool
-        size: 16000000000
+        size: 14900G
 
 wireguard_private_key: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0
