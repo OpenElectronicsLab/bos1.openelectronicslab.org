@@ -55,3 +55,13 @@
         owner: root
         group: admin
         mode: '0660'
+
+  - name: Make sure the bash completion directory exists
+    file:
+        path: /etc/bash_completion.d
+        state: directory
+
+  - name: Set up bash completion for kubectl
+    shell:
+        cmd: kubectl completion bash >/etc/bash_completion.d/kubectl
+        creates: /etc/bash_completion.d/kubectl
