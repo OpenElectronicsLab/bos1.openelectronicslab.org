@@ -1,0 +1,246 @@
+---
+# Borg backup secrets
+apiVersion: v1
+kind: Secret
+metadata:
+    name: borg-backup-secrets
+type: Opaque
+data:
+    borg-passphrase: {{ oel_backups_borg_passphrase | b64encode }}
+---
+# A secret with the ssh-key used for remote backups
+apiVersion: v1
+kind: Secret
+metadata:
+    name: backups-ssh-private-key
+type: kubernetes.io/ssh-auth
+data:
+    ssh-privatekey: {{ oel_backups_ssh_key | b64encode }}
+---
+# Host keys for relevant hosts
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: ssh-host-keys
+data:
+    known_hosts: |
+        magellan.kendrickshaw.org,154.9.0.86 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBIMYap194PeBEBlOe1/tTbUwRdGgLOsLwbx+1d4Q34rpZoeQ7HElAgrBjpCRHtnDj+WEEyime7lxS8nNcq9GCko=
+---
+# A persistent volume for local backups
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: local-backups-pvc
+spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+        requests:
+            storage: 4Ti
+    storageClassName: ceph-filesystem-sc
+---
+# A toolbox environment for accessing backups
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backups-toolbox
+spec:
+    selector:
+        matchLabels:
+            app: backups-toolbox
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: backups-toolbox
+        spec:
+            containers:
+              - name: backups-toolbox
+                image: debian:buster
+                env:
+                  - name: BORG_PASSPHRASE
+                    valueFrom:
+                        secretKeyRef:
+                            name: borg-backup-secrets
+                            key: borg-passphrase
+                  - name: BORG_REPO
+                    value: /var/lib/backups/backup.borg
+                  - name: BORG_REPO_MAGELLAN
+                    value: openelectronicslab_backup@magellan.kendrickshaw.org:/mnt/storage/openelectronicslab_backups/bos1.borg
+                  - name: MYSQL_DATABASE
+                    value: nextcloud
+                  - name: MYSQL_USER
+                    value: nextcloud
+                  - name: MYSQL_PASSWORD
+                    valueFrom:
+                        secretKeyRef:
+                            name: nextcloud-secret
+                            key: db_password
+                  - name: MYSQL_HOST
+                    value: nextcloud-db-service
+                command:
+                  - /bin/bash
+                  - -c
+                  - |
+                    # install useful packages
+                    apt-get update;
+                    apt-get install -y borgbackup mariadb-client \
+                        openssh-client;
+
+                    # setup ssh
+                    mkdir /root/.ssh;
+                    chmod 0600 /root/ssh;
+                    ln -s /etc/ssh-known-hosts-keys/known_hosts /root/.ssh
+                    ln -s /root/ssh-private-keys/ssh-privatekey /root/.ssh/id_rsa
+
+                    # wait for someone to spawn a bash prompt in this container
+                    sleep 10000d
+                volumeMounts:
+                  - name: nextcloud-html-volume
+                    mountPath: /mnt/nextcloud/var/www/html
+                  - name: backups-volume
+                    mountPath: /var/lib/backups/
+                  - name: ssh-known-host-keys-volume
+                    mountPath: /etc/ssh-known-hosts-keys
+                    readOnly: true
+                  - name: backups-ssh-private-key
+                    mountPath: /root/ssh-private-keys
+            volumes:
+              - name: nextcloud-html-volume
+                persistentVolumeClaim:
+                    claimName: nextcloud-files-pvc
+                    readOnly: false
+              - name: backups-volume
+                persistentVolumeClaim:
+                    claimName: local-backups-pvc
+                    readOnly: false
+              - name: ssh-known-host-keys-volume
+                configMap:
+                    name: ssh-host-keys
+              - name: backups-ssh-private-key
+                secret:
+                    secretName: backups-ssh-private-key
+                    defaultMode: 0400
+---
+# A cron job that backs up the nextcloud data every day at 05:00Z
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+    name: scheduled-backup
+spec:
+    schedule: "0 5 * * *"
+    jobTemplate:
+        spec:
+            template:
+                spec:
+                    restartPolicy: Never
+                    containers:
+                      - name: scheduled-backup
+                        image: debian:buster
+                        env:
+                          - name: BORG_PASSPHRASE
+                            valueFrom:
+                                secretKeyRef:
+                                    name: borg-backup-secrets
+                                    key: borg-passphrase
+                          - name: BORG_REPO
+                            value: /var/lib/backups/backup.borg
+                          - name: BORG_REPO_MAGELLAN
+                            value: openelectronicslab_backup@magellan.kendrickshaw.org:/mnt/storage/openelectronicslab_backups/bos1.borg
+                          - name: MYSQL_DATABASE
+                            value: nextcloud
+                          - name: MYSQL_USER
+                            value: nextcloud
+                          - name: MYSQL_PASSWORD
+                            valueFrom:
+                                secretKeyRef:
+                                    name: nextcloud-secret
+                                    key: db_password
+                          - name: MYSQL_HOST
+                            value: nextcloud-db-service
+                        command:
+                          - /bin/bash
+                          - -c
+                          - |
+                            # Install required packages
+                            apt-get update;
+                            apt-get install -y borgbackup mariadb-client \
+                                openssh-client;
+
+                            # setup ssh
+                            mkdir /root/.ssh;
+                            chmod 0600 /root/ssh;
+                            ln -s /etc/ssh-known-hosts-keys/known_hosts /root/.ssh
+                            ln -s /root/ssh-private-keys/ssh-privatekey /root/.ssh/id_rsa
+
+                            ISODATE=`date +%Y-%m-%dT%H%M%SZ`;
+
+                            # Dump the nextcloud database to a file
+                            mysqldump -h $MYSQL_HOST -u $MYSQL_USER \
+                                --password=$MYSQL_PASSWORD \
+                                --single-transaction --quick \
+                                $MYSQL_DATABASE > /tmp/nextcloud.sql;
+
+                            #
+                            # Create a local backup:
+                            #
+
+                            # Create the borg database if it does not exist
+                            borg init --encryption repokey $BORG_REPO;
+
+                            # Backup the nextcloud data
+                            borg create --stats --list --verbose --show-rc \
+                                $BORG_REPO::nextcloud-$ISODATE \
+                                /tmp/nextcloud.sql /mnt/nextcloud;
+
+                            # Prune the nextcloud archives
+                            borg prune --prefix nextcloud- \
+                                --stats --list --verbose --show-rc \
+                                --keep-daily=7 --keep-weekly=8 \
+                                --keep-monthly=12 --keep-yearly=5 $BORG_REPO;
+
+                            #
+                            # Create Magellan backup:
+                            #
+
+                            # Create the borg database if it does not exist
+                            borg init --encryption repokey $BORG_REPO_MAGELLAN;
+
+                            # Backup the nextcloud data
+                            borg create --stats --list --verbose --show-rc \
+                                $BORG_REPO_MAGELLAN::nextcloud-$ISODATE \
+                                /tmp/nextcloud.sql /mnt/nextcloud;
+
+                            # Prune the nextcloud archives
+                            borg prune --prefix nextcloud- \
+                                --stats --list --verbose --show-rc \
+                                --keep-daily=7 --keep-weekly=8 \
+                                --keep-monthly=12 --keep-yearly=5 \
+                                $BORG_REPO_MAGELLAN;
+
+                        volumeMounts:
+                          - name: nextcloud-html-volume
+                            mountPath: /mnt/nextcloud/var/www/html
+                          - name: backups-volume
+                            mountPath: /var/lib/backups/
+                          - name: ssh-known-host-keys-volume
+                            mountPath: /etc/ssh-known-hosts-keys
+                            readOnly: true
+                          - name: backups-ssh-private-key
+                            mountPath: /root/ssh-private-keys
+                    volumes:
+                      - name: nextcloud-html-volume
+                        persistentVolumeClaim:
+                            claimName: nextcloud-files-pvc
+                            readOnly: false
+                      - name: backups-volume
+                        persistentVolumeClaim:
+                            claimName: local-backups-pvc
+                            readOnly: false
+                      - name: ssh-known-host-keys-volume
+                        configMap:
+                            name: ssh-host-keys
+                      - name: backups-ssh-private-key
+                        secret:
+                            secretName: backups-ssh-private-key
+                            defaultMode: 0400

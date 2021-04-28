@@ -259,7 +259,7 @@ remotely unlocking the drive during boot.
 
 Current plan for development:
 
-  - Phase 1: Build a foundation
+  - Phase 1: Build a foundation (done)
     - Boletus running debian binary blobs only
     - Support for VMs on boletus with fixed assignments between vms and
       physical machines.
@@ -303,6 +303,13 @@ Current plan for development:
     - ensure standard services use no more than 25% resources, so that anyone
       may use a different 25% use without need for discussion.
       - learn how to "nice" jobs (pre-emptable)
+
+### perfomance:
+  - Ceph is much slower than local storage and may benefit from tuning.  For
+    example, running `borg init -e none test.borg` in the ceph-provisioned
+    directory /var/lib/backups in the local-backups-toolbox container takes
+    (26.8, 23.9, 25.2) seconds vs (0.674, 0.665, 0.664) seconds when run
+    in /var/lib (in the containers local filesystem).
 
 ### other
   - debug `pmi_kvm_docker` issue with the javaws console console redirect
