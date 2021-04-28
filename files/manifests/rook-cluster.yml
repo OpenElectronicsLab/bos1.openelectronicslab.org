@@ -208,23 +208,23 @@ spec:
     - name: "kubeworker0"
       devices:
       - name: "vdc"
-#        config:
-#          metadataDevice: "vdb"
+        config:
+          metadataDevice: "vdb"
     - name: "kubeworker1"
       devices:
       - name: "vdc"
-#        config:
-#          metadataDevice: "vdb"
+        config:
+          metadataDevice: "vdb"
     - name: "kubeworker2"
       devices:
       - name: "vdc"
-#        config:
-#          metadataDevice: "vdb"
+        config:
+          metadataDevice: "vdb"
     - name: "kubeworker3"
       devices:
       - name: "vdc"
-#        config:
-#          metadataDevice: "vdb"
+        config:
+          metadataDevice: "vdb"
   # The section for configuring management of daemon disruptions during upgrade or fencing.
   disruptionManagement:
     # If true, the operator will create and manage PodDisruptionBudgets for OSD, Mon, RGW, and MDS daemons. OSD PDBs are managed dynamically
