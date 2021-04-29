@@ -9,10 +9,17 @@
                     item.value.subnet.hosts[inventory_hostname_short].ip }}
                 broadcast {{ item.value.subnet.broadcast }}
                 netmask {{ item.value.subnet.netmask }}
-                {%- if item.key == primary_interface %}
-
+            {% if item.key == primary_interface %}
                 gateway {{ item.value.subnet.gateway }}
-                {%- endif %}
+            {% endif %}
+            {% if item.value.mtu is defined %}
+                mtu {{ item.value.mtu }}
+            {% endif %}
+            {% if item.value.pre_up is defined %}
+            {% for line in item.value.pre_up %}
+                pre-up {{ line }}
+            {% endfor %}
+            {% endif %}
     register: network_interface_changes
     with_dict: "{{ network_interfaces }}"
     notify: restart network interfaces

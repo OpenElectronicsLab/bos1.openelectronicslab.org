@@ -27,6 +27,9 @@ network_interfaces:
     ibp2s0:
         subnet: "{{ oel_subnets.bos1_backhaul }}"
         provide_nat: true
+        pre_up:
+          - bash -c 'echo "connected" > /sys/class/net/ibp2s0/mode'
+        mtu: 65520
 primary_interface: enp3s0f1
 
 wireguard_public_subnet: "{{ oel_subnets.bos1_backhaul }}"
