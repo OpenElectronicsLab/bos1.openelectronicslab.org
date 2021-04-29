@@ -52,10 +52,14 @@
                 wireguard_private_subnet.hosts[
                     hostvars[host].inventory_hostname_short].ip
             }}/32
+            {%- if wireguard_private_subnet.hosts[
+                hostvars[host].inventory_hostname_short].subnets
+                is defined %}
             {%- for subnet in wireguard_private_subnet.hosts[
-                    hostvars[host].inventory_hostname_short].subnets -%}
+                hostvars[host].inventory_hostname_short].subnets -%}
             ,{{ subnet }}
             {%- endfor %}
+            {% endif %}
             {% endif %}
             {% endfor %}
     notify: restart wireguard
@@ -73,13 +77,15 @@
                 pre-up wg setconf wg0 /etc/wireguard/server.conf
                 pre-up ip link set mtu 1420 up dev wg0
                 post-down ip link del wg0
-                {% for hostname,hostvals in wireguard_private_subnet.hosts.items() -%}
-                {% if hostname != inventory_hostname_short -%}
-                {% for subnet in hostvals.subnets -%}
-                up ip route add {{ subnet }} dev wg0
-                down ip route del {{ subnet }} dev wg0
-                {% endfor -%}
-                {% endif -%}
-                {% endfor %}
+            {% for hostname,hostvals in
+                wireguard_private_subnet.hosts.items() %}
+            {% if hostname != inventory_hostname_short and
+                 hostvals.subnets is defined %}
+            {% for subnet in hostvals.subnets %}
+                post-up ip route add {{ subnet }} dev wg0
+                pre-down ip route del {{ subnet }} dev wg0
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
     notify: restart wireguard
 

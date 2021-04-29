@@ -20,6 +20,15 @@
                 pre-up {{ line }}
             {% endfor %}
             {% endif %}
+            {% for hostname,hostvals in item.value.subnet.hosts.items() %}
+            {% if hostname != inventory_hostname_short and
+                hostvals.subnets is defined%}
+            {% for subnet in hostvals.subnets %}
+                post-up ip route add {{ subnet }} via {{ hostvals.ip }}
+                pre-down ip route del {{ subnet }} via {{ hostvals.ip }}
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
     register: network_interface_changes
     with_dict: "{{ network_interfaces }}"
     notify: restart network interfaces

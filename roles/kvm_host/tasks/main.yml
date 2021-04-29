@@ -115,7 +115,7 @@
                     type nat hook postrouting priority 100;
             {% for bridgename, bridgevals in bridges.items() %}
             {% for ifname, ifvals in network_interfaces.items() %}
-            {% if ifvals.provide_nat %}
+            {% if ifvals.provide_nat is defined and ifvals.provide_nat %}
                     ip saddr {{ bridgevals.subnet.subnet }}/{{
                         bridgevals.subnet.CIDR }} oif {{ ifname
                         }} snat {{ network_interfaces[ifname].subnet

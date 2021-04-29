@@ -125,12 +125,20 @@ oel_subnets:
         hosts:
             boletus0:
                 ip: 172.16.1.10
+                subnets:
+                  - 172.16.4.0/24
             boletus1:
                 ip: 172.16.1.11
+                subnets:
+                  - 172.16.5.0/24
             boletus2:
                 ip: 172.16.1.12
+                subnets:
+                  - 172.16.6.0/24
             boletus3:
                 ip: 172.16.1.13
+                subnets:
+                  - 172.16.7.0/24
             boletuslb0:
                 ip: 172.16.1.40
 
@@ -147,20 +155,12 @@ oel_subnets:
         hosts:
             boletus0:
                 ip: 172.16.2.10
-                subnets:
-                  - 172.16.4.0/24
             boletus1:
                 ip: 172.16.2.11
-                subnets:
-                  - 172.16.5.0/24
             boletus2:
                 ip: 172.16.2.12
-                subnets:
-                  - 172.16.6.0/24
             boletus3:
                 ip: 172.16.2.13
-                subnets:
-                  - 172.16.7.0/24
 
     bos1_vpn_boletus0_private:
         name: private.vpn.boletus0.bos1.openelectronicslab.org
