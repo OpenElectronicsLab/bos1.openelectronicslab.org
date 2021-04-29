@@ -119,6 +119,7 @@ oel_subnets:
         CIDR: 24
         broadcast: 172.16.1.255
         gateway: 172.16.1.1
+        mtu: 65520
         dns:
           - 1.1.1.1
           - 1.0.0.1
@@ -149,6 +150,7 @@ oel_subnets:
         CIDR: 24
         broadcast: 172.16.2.255
         gateway: 172.16.2.1
+        mtu: 65460
         dns:
           - 1.1.1.1
           - 1.0.0.1
@@ -169,6 +171,7 @@ oel_subnets:
         CIDR: 24
         broadcast: 172.16.4.255
         gateway: 172.16.4.1
+        mtu: 65520
         dns:
           - 1.1.1.1
           - 1.0.0.1
@@ -187,6 +190,7 @@ oel_subnets:
         CIDR: 24
         broadcast: 172.16.5.255
         gateway: 172.16.5.1
+        mtu: 65520
         dns:
           - 1.1.1.1
           - 1.0.0.1
@@ -205,6 +209,7 @@ oel_subnets:
         CIDR: 24
         broadcast: 172.16.6.255
         gateway: 172.16.6.1
+        mtu: 65520
         dns:
           - 1.1.1.1
           - 1.0.0.1
@@ -223,6 +228,7 @@ oel_subnets:
         CIDR: 24
         broadcast: 172.16.7.255
         gateway: 172.16.7.1
+        mtu: 65520
         dns:
           - 1.1.1.1
           - 1.0.0.1

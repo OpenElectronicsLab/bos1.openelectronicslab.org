@@ -143,3 +143,33 @@
         checksum: yes
         use_ssh_args: yes
     loop: "{{ guest_vms }}"
+
+  - name: Create a libvirt hook to set the MTU size on the bridge networks
+    copy:
+        dest: /etc/libvirt/hooks/qemu
+        mode: 0755
+        content: |
+            #!/bin/bash
+
+            # There's no easy way to set the MTU for a vnet adapter until the
+            # VM is created, and you can't reliably set the MTU for a bridge
+            # until the first vnet adapter is added.  We thus just set the
+            # MTU's for all of the virtual adapters (and the bridge) whenever a
+            # VM is created.
+            #
+            # Workaround inspired from:
+            # https://blog.patshead.com/2018/03/ip-over-infiniband-and-kvm-virtual-machines.html
+
+            case "$2" in
+                started|restore)
+            {% for bridgename, bridgevals in bridges.items() %}
+            {% if bridgevals.subnet.mtu is defined %}
+                    for vnet in $(sudo bridge link | grep {{ bridgename }} | \
+                            sed -e "s/.*\(vnet[0-9]*\).*/\1/g"); do
+                        ip link set $vnet mtu {{ bridgevals.subnet.mtu }}
+                    done
+                    ip link set {{ bridgename }} mtu {{ bridgevals.subnet.mtu }}
+            {% endif %}
+            {% endfor %}
+                    ;;
+            esac

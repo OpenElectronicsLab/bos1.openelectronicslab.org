@@ -12,8 +12,8 @@
             {% if item.key == primary_interface %}
                 gateway {{ item.value.subnet.gateway }}
             {% endif %}
-            {% if item.value.mtu is defined %}
-                mtu {{ item.value.mtu }}
+            {% if item.value.subnet.mtu is defined %}
+                mtu {{ item.value.subnet.mtu }}
             {% endif %}
             {% if item.value.pre_up is defined %}
             {% for line in item.value.pre_up %}
