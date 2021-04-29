@@ -35,6 +35,7 @@
         curl -sdL https://get.k3s.io | sh -s - server --cluster-init
             --tls-san https://{{ kube_control_plane_ip }}
             --node-taint CriticalAddonsOnly=true:NoExecute
+            --write-kubeconfig-mode=640
     when: not 'status_code' in kube_control_plane_check
         # or kube_control_plane_check.status_code != 200
 
@@ -45,6 +46,7 @@
               https://{{ kube_control_plane_ip }}:{{ kube_control_plane_port }}
               --tls-san https://{{ kube_control_plane_ip }}
               --node-taint CriticalAddonsOnly=true:NoExecute
+              --write-kubeconfig-mode=640
         creates: /usr/local/bin/k3s
     failed_when: false # TODO: the command line can timeout while the process
                        # continues and install eventually succeeds.
@@ -54,7 +56,7 @@
         path: /etc/rancher/k3s/k3s.yaml
         owner: root
         group: admin
-        mode: '0660'
+        mode: '0640'
 
   - name: Make sure the bash completion directory exists
     file:
