@@ -177,7 +177,7 @@ spec:
         spec:
             containers:
               - name: nextcloud-frontend
-                image: nextcloud:19
+                image: nextcloud:20
                 env:
                   - name: MYSQL_DATABASE
                     value: nextcloud
@@ -207,6 +207,8 @@ spec:
                   - name: NEXTCLOUD_TRUSTED_DOMAINS
                     value: nextcloud.kendrickshaw.org
                         nextcloud.openelectronicslab.org
+                  - name: OVERWRITEPROTOCOL
+                    value: https
                 ports:
                   - containerPort: 80
                 volumeMounts:
