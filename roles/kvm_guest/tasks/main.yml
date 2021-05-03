@@ -15,6 +15,7 @@
         --name {{ inventory_hostname_short }}
         --memory {{ kvm_memory }}
         --vcpus {{ kvm_vcpus }}
+        --cpu host-passthrough,cache.mode=passthrough
         {% for volume in kvm_volumes_used %}
         --disk vol={{ volume }}
         {% endfor %}
