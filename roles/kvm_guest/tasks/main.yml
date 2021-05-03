@@ -21,6 +21,11 @@
         --noautoconsole
         --network=bridge:br0
         --os-variant debian10
+        {% if host_devices is defined %}
+        {% for device in host_devices %}
+        --host-device={{ device }}
+        {% endfor %}
+        {% endif %}
         --wait -1
     when: vm_exists.rc != 0
 

@@ -11,3 +11,8 @@ ssh_jump_host: "{{ lookup('env', 'USER')
 
 ansible_ssh_common_args: "-oServerAliveInterval=3 -oProxyJump={{ ssh_jump_host | default(omit) }}"
 
+host_devices:
+  # Quadro P1000 GPU video
+  - pci_0000_04_00_0
+  # Quadro P1000 GPU audio
+  - pci_0000_04_00_1

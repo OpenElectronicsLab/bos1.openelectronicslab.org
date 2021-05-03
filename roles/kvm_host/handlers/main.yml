@@ -1,3 +1,6 @@
 ---
   - name: nftables changed
     command: /etc/nftables.conf
+
+  - name: libvirt config changed
+    command: systemctl restart libvirtd
