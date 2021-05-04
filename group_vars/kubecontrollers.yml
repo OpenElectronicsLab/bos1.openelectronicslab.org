@@ -8,9 +8,9 @@ force_to_appear_as_ssd:
 kube_manifests:
   - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
   - /var/lib/manifests/letsencrypt-issuer.yml
-  - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/crds.yaml
-  - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/common.yaml
-  - https://raw.githubusercontent.com/rook/rook/release-1.5/cluster/examples/kubernetes/ceph/operator.yaml
+  - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/crds.yaml
+  - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/common.yaml
+  - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/operator.yaml
   - /var/lib/manifests/rook-cluster.yml
   - /var/lib/manifests/rook-ceph-tools.yml
   - /var/lib/manifests/storage-classes.yml
