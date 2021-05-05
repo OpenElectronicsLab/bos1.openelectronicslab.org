@@ -67,3 +67,19 @@
     shell:
         cmd: kubectl completion bash >/etc/bash_completion.d/kubectl
         creates: /etc/bash_completion.d/kubectl
+
+  - name: set up default KUBECONFIG path
+    copy:
+        dest: /etc/profile.d/k3s-kubeconfig-path.sh
+        content: |
+            # set the default kubectl config path to the k3s kubeconfig file
+            export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+        mode: '0644'
+
+  - name: Install the virtctl command for kubevirt
+    shell:
+        cmd: curl -L -o /usr/local/bin/virtctl
+            https://github.com/kubevirt/kubevirt/releases/download/{{
+            kubevirt_version }}/virtctl-{{ kubevirt_version }}-linux-amd64
+            && chmod a+x /usr/local/bin/virtctl
+        creates: /usr/local/bin/virtctl

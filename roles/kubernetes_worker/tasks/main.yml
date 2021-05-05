@@ -33,3 +33,20 @@
         creates: /usr/local/bin/k3s
     failed_when: false # TODO: the command line can timeout while the process
                        # continues and install eventually succeeds.
+
+  - name: install the libvirt daemon for kubevirt
+    apt:
+        name: libvirt-daemon-system
+        state: present
+
+    # See https://github.com/kubevirt/kubevirt/issues/4303
+  - name: Patch libvirtd apparmor profile for kubevirt conflict
+    lineinfile:
+        path: /etc/apparmor.d/usr.sbin.libvirtd
+        insertafter: '/usr/lib/xen-\*/bin/pygrub PUx,'
+        line: '  /usr/libexec/qemu-kvm PUx,'
+    register: libvirtd_apparmor_patch
+
+  - name: reload patched apparmor profile
+    command: apparmor_parser -r /etc/apparmor.d/usr.sbin.libvirtd
+    when: libvirtd_apparmor_patch.changed

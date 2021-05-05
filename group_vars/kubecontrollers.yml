@@ -5,6 +5,8 @@ kvm_vcpus: 2
 force_to_appear_as_ssd:
   - vda
 
+kubevirt_version: v0.40.0
+
 kube_manifests:
   - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
   - /var/lib/manifests/letsencrypt-issuer.yml
@@ -14,6 +16,8 @@ kube_manifests:
   - /var/lib/manifests/rook-cluster.yml
   - /var/lib/manifests/rook-ceph-tools.yml
   - /var/lib/manifests/storage-classes.yml
+  - https://github.com/kubevirt/kubevirt/releases/download/{{ kubevirt_version }}/kubevirt-operator.yaml
+  - https://github.com/kubevirt/kubevirt/releases/download/{{ kubevirt_version }}/kubevirt-cr.yaml
   - /var/lib/manifests/test1-kms.yml
   - /var/lib/manifests/test2-kms.yml
   - template://nextcloud.yml
