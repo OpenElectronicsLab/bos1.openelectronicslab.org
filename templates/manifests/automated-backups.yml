@@ -39,6 +39,25 @@ spec:
             storage: 4Ti
     storageClassName: ceph-filesystem-sc
 ---
+# A toolbox environment for Velero
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: velero-toolbox
+spec:
+    selector:
+        matchLabels:
+            app: velero-toolbox
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: velero-toolbox
+        spec:
+            containers:
+              - name: velero-toolbox
+                image: velero:velero
+---
 # A toolbox environment for accessing backups
 apiVersion: apps/v1
 kind: Deployment
