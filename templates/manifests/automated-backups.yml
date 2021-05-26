@@ -56,7 +56,13 @@ spec:
         spec:
             containers:
               - name: velero-toolbox
-                image: velero:velero
+                image: velero/velero:v1.6.0
+                command:
+                  - /bin/bash
+                  - -c
+                  - |
+                    # wait for someone to spawn a bash prompt in this container
+                    sleep 10000d
 ---
 # A toolbox environment for accessing backups
 apiVersion: apps/v1
