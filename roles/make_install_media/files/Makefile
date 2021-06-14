@@ -85,19 +85,24 @@ $(BUILDDIR)/iso/install.amd/$(INITRD) : \
 		$(BUILDDIR)/initrd.iso/preseed.cfg \
 		$(BUILDDIR)/initrd.iso/authorized_keys \
 		$(ISO_EXTRACTED_TAG)
-	cd $(BUILDDIR)/initrd.iso \
-		&& find . | fakeroot cpio -o -H newc \
-		| gzip > ../iso/install.amd/$(INITRD)
+	rm -rf $(BUILDDIR)/initrd.iso.tmp
+	cp -r $(BUILDDIR)/initrd.iso $(BUILDDIR)/initrd.iso.tmp
+	find $(BUILDDIR)/initrd.iso.tmp -exec touch --no-dereference --date="@0" \{\} \;
+	cd $(BUILDDIR)/initrd.iso.tmp \
+		&& find . | LC_ALL=C sort \
+		| fakeroot cpio -o -H newc --reproducible \
+		| gzip -n > ../iso/install.amd/$(INITRD)
 
 # generate the new iso install image
 $(TARGET_ISO) : $(BUILDDIR)/iso/boot/grub/grub.cfg \
 		$(BUILDDIR)/iso/isolinux/isolinux.cfg \
 		$(BUILDDIR)/iso/install.amd/$(INITRD)
-	genisoimage -o $(BUILDDIR)/temp.iso \
+	SOURCE_DATE_EPOCH=0 xorrisofs -o $(BUILDDIR)/temp.iso \
 		-b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -J -R \
-		-V "Automated debian installer" $(BUILDDIR)/iso
-	isohybrid $(BUILDDIR)/temp.iso # make USB-bootable
+		--set_all_file_dates 2020010203040506 \
+		-V "debAutoInstall" $(BUILDDIR)/iso
+	isohybrid --id 1 $(BUILDDIR)/temp.iso # make USB-bootable
 	mv $(BUILDDIR)/temp.iso $@
 
 # Boot a qemu virtual machine using the new iso install file to test it
@@ -171,14 +176,17 @@ $(BUILDDIR)/tftp/debian-installer/amd64/$(INITRD) : \
 		$(BUILDDIR)/initrd.pxe/preseed.cfg \
 		$(BUILDDIR)/initrd.pxe/authorized_keys \
 		$(TFTP_TAG)
-	cd $(BUILDDIR)/initrd.pxe \
-		&& find . \
-		| fakeroot cpio -o -H newc \
-		| gzip > ../tftp/debian-installer/amd64/$(INITRD)
+	rm -rf $(BUILDDIR)/initrd.pxe.tmp
+	cp -r $(BUILDDIR)/initrd.pxe $(BUILDDIR)/initrd.pxe.tmp
+	find $(BUILDDIR)/initrd.pxe.tmp -exec touch --no-dereference --date="@0" \{\} \;
+	cd $(BUILDDIR)/initrd.pxe.tmp \
+		&& find . | LC_ALL=C sort \
+		| fakeroot cpio -o -H newc --reproducible \
+		| gzip -n > ../tftp/debian-installer/amd64/$(INITRD)
 
 $(TFTP_COMPLETE_TAG) : $(BUILDDIR)/tftp/debian-installer/amd64/$(INITRD) \
 	$(BUILDDIR)/tftp/pxelinux.cfg/$(MACHINENAME)
-	echo "Configured for autoinstall on $$(date)" > $@
+	echo "Configured for autoinstall" > $@
 
 # Boot a qemu virtual machine using the new network boot files to test them
 # Command-line notes: 512 MiB RAM, 1 CPU, KVM acceleration, forward
