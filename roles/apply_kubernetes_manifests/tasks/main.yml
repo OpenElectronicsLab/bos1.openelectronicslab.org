@@ -29,6 +29,8 @@
         {% endif %}
     run_once: true
     register: kube_apply_manifests
-    changed_when: "'configured' in kube_apply_manifests.stdout or
-        'created' in kube_apply_manifests.stdout"
+    # note: 'configured' may also indicate a change, but often not; we accept
+    # the occasional false negative changed message rather than always
+    # reporting that the server has changed for some manifests.
+    changed_when: "'created' in kube_apply_manifests.stdout"
     loop: "{{ kube_manifests }}"
