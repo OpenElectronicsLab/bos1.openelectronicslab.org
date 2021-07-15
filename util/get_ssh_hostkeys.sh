@@ -3,8 +3,10 @@
 #set -x
 set -e
 
+SSHARGS="-J ${USER}admin@boletus0.bos1.openelectronicslab.org"
+
 for HOST in \
-    boletus3.bos1.openelectronicslab.org
+    testvm3.private.vpn.boletus3.bos1.openelectronicslab.org
 do
     echo ""
     echo "###################################################################"
@@ -12,13 +14,14 @@ do
     echo "###################################################################"
     mkdir -p hostkeys.tmp/$HOST
     # copy the hostkeys from the remote machine
-    ssh ${USER}admin@$HOST mkdir -p hostkeys.tmp
-    ssh ${USER}admin@$HOST sudo cp /etc/ssh/ssh_host_\*key\* hostkeys.tmp/
-    ssh ${USER}admin@$HOST sudo cp /etc/dropbear-initramfs/dropbear_\*host_key hostkeys.tmp/
-    ssh ${USER}admin@$HOST sudo chown ${USER}admin:${USER}admin hostkeys.tmp/\*
-    scp ${USER}admin@$HOST:hostkeys.tmp/* hostkeys.tmp/$HOST/
-    ssh ${USER}admin@$HOST shred -u hostkeys.tmp/\*
-    ssh ${USER}admin@$HOST rm -rf hostkeys.tmp
+    ssh ${USER}admin@$HOST $SSHARGS mkdir -p hostkeys.tmp
+    ssh ${USER}admin@$HOST $SSHARGS sudo cp /etc/ssh/ssh_host_\*key\* hostkeys.tmp/
+    ssh ${USER}admin@$HOST $SSHARGS sudo bash -c \
+        "\"cp /etc/dropbear-initramfs/dropbear_\*host_key hostkeys.tmp/ || /bin/true\""
+    ssh ${USER}admin@$HOST $SSHARGS sudo chown ${USER}admin:${USER}admin hostkeys.tmp/\*
+    scp $SSHARGS ${USER}admin@$HOST:hostkeys.tmp/* hostkeys.tmp/$HOST/
+    ssh ${USER}admin@$HOST $SSHARGS shred -u hostkeys.tmp/\*
+    ssh ${USER}admin@$HOST $SSHARGS rm -rf hostkeys.tmp
 
     # append the keys to the host variables for the given machine
     for KEYTYPE in ecdsa ed25519 rsa; do
