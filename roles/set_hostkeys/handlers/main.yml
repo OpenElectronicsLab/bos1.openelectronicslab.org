@@ -1,0 +1,9 @@
+---
+  - name: reload dropbear keys
+    command: update-initramfs -u
+
+  - name: restart sshd
+    service:
+        name: ssh
+        state: reloaded
+

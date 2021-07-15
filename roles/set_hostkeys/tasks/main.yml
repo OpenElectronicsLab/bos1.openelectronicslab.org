@@ -1,0 +1,53 @@
+---
+  - name: set the ssh private hostkeys
+    copy:
+        content: "{{ hostvars[inventory_hostname]
+            ['ssh_host_' + item + '_key'] }}"
+        dest: "/etc/ssh/ssh_host_{{ item }}_key"
+        mode: '0600'
+        owner: root
+        group: root
+    notify: restart sshd
+    loop:
+      - rsa
+      - ecdsa
+      - ed25519
+
+  - name: set the ssh public hostkeys
+    copy:
+        content: "{{ hostvars[inventory_hostname]
+            ['ssh_host_' + item + '_key_pub'] }}\n"
+        dest: "/etc/ssh/ssh_host_{{ item }}_key.pub"
+        mode: '0644'
+        owner: root
+        group: root
+    loop:
+      - rsa
+      - ecdsa
+      - ed25519
+
+  - name: copy the base64 dropbear ssh hostkeys
+    copy:
+        content: "{{ hostvars[inventory_hostname]
+            ['dropbear_' + item + '_host_key_base64'] }}"
+        dest: "/root/dropbear_{{ item }}_host_key.base64"
+        mode: '0600'
+        owner: root
+        group: root
+    when: hostvars[inventory_hostname]['dropbear_' + item + '_host_key_base64']
+            is defined
+    register: copy_base64_dropbear_hostkeys
+    loop:
+      - rsa
+      - ecdsa
+      - dss
+
+  - name: unpack the base64 dropbear ssh hostkeys
+    shell:
+        cmd: base64 -d /root/dropbear_{{ item.item }}_host_key.base64 >
+            /root/dropbear_{{ item.item }}_host_key  &&
+            chmod 0600 /root/dropbear_{{ item.item }}_host_key
+    when: item.changed
+    notify: reload dropbear keys
+    loop: "{{ copy_base64_dropbear_hostkeys.results }}"
+
