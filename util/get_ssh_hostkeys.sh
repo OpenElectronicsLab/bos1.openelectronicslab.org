@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #set -x
-#set -e
+set -e
 
 for HOST in \
-    boletus0.bos1.openelectronicslab.org
+    boletus3.bos1.openelectronicslab.org
 do
     echo ""
     echo "###################################################################"
@@ -39,9 +39,9 @@ do
             printf "\n" >> host_vars/$HOST.yml
             base64 $DROPBEAR_KEYFILE \
                 | ansible-vault encrypt_string \
-                    --stdin-name dropbear_${KEYTYPE}_host_key \
+                    --stdin-name dropbear_${KEYTYPE}_host_key_base64 \
                 >> host_vars/$HOST.yml
-            printf "\ndropbear_${KEYTYPE}_key_pub: " >> host_vars/$HOST.yml
+            printf "\ndropbear_${KEYTYPE}_host_key_pub: " >> host_vars/$HOST.yml
             dropbearkey -y -f $DROPBEAR_KEYFILE | head -2 | tail -1 \
                | cut -d' ' -f1-2 | sed -e "s/$/ root@$HOST/g" \
                 >> host_vars/$HOST.yml
@@ -50,4 +50,5 @@ do
 
     # clean up the hostkeys
     shred -u hostkeys.tmp/$HOST/*
+    echo "Finished processing host $HOST."
 done
