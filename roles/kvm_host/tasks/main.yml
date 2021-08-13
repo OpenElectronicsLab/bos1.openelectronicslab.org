@@ -66,6 +66,21 @@
     loop: "{{ kvm_volumes_provided | dict2items | zip(kvm_vol_list.results)
         | list }}"
 
+  - name: check to see if the libvirt default network exist
+    shell: virsh net-list --all | grep -e "default"
+    register: libvirt_net_list
+    failed_when: false
+    changed_when: false
+
+  - name: shut down the libvirt default network to keep it from changing iptables
+    command: virsh net-destroy default
+    failed_when: false
+    when: libvirt_net_list.rc == 0
+
+  - name: remove the libvirt default network to keep it from changing iptables
+    command: virsh net-undefine default
+    when: libvirt_net_list.rc == 0
+
   - name: Configure bridge networks
     copy:
         dest: /etc/network/interfaces.d/60-{{ item.key }}
