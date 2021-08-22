@@ -87,11 +87,14 @@ $(BUILDDIR)/iso/install.amd/$(INITRD) : \
 		$(ISO_EXTRACTED_TAG)
 	rm -rf $(BUILDDIR)/initrd.iso.tmp
 	cp -r $(BUILDDIR)/initrd.iso $(BUILDDIR)/initrd.iso.tmp
-	find $(BUILDDIR)/initrd.iso.tmp -exec touch --no-dereference --date="@0" \{\} \;
+	# set date to unix epoch for reproducible builds
+	find $(BUILDDIR)/initrd.iso.tmp -exec touch --no-dereference \
+		--date="@0" \{\} \;
+	# gzip --no-name prevents adding the timestamp (for reproducibility)
 	cd $(BUILDDIR)/initrd.iso.tmp \
 		&& find . | LC_ALL=C sort \
 		| fakeroot cpio -o -H newc --reproducible \
-		| gzip -n > ../iso/install.amd/$(INITRD)
+		| gzip --no-name > ../iso/install.amd/$(INITRD)
 
 # generate the new iso install image
 $(TARGET_ISO) : $(BUILDDIR)/iso/boot/grub/grub.cfg \
