@@ -143,7 +143,7 @@ oel_subnets:
             boletuslb0:
                 ip: 172.16.1.40
 
-    bos1_wg_backhaul:
+    bos1_wg_backhaul: # 55280 wireguard port
         name: wg-backhaul.bos1.openelectronicslab.org
         subnet: 172.16.2.0
         netmask: 255.255.255.0
@@ -240,3 +240,42 @@ oel_subnets:
             kubeworker3:
                 ip: 172.16.7.4
 
+    wg_ams1_bos1: # 55821 wireguard port
+        name: wg.ams1-bos1.openelectronicslab.org
+        subnet: 172.16.8.0
+        netmask: 255.255.255.0
+        CIDR: 24
+        broadcast: 172.16.8.255
+        gateway: 172.16.8.1
+        mtu: 1280
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
+            boletus0:
+                ip: 172.16.8.10
+            boletus1:
+                ip: 172.16.8.11
+            boletus2:
+                ip: 172.16.8.12
+            boletus3:
+                ip: 172.16.8.13
+            coprinus0:
+                ip: 172.16.8.20
+                subnets:
+                  - 172.16.9.0/24
+
+    ams1_vpn_coprinus0_private:
+        name: private.vpn.coprinus0.ams1.openelectronicslab.org
+        subnet: 172.16.9.0
+        netmask: 255.255.255.0
+        CIDR: 24
+        broadcast: 172.16.9.255
+        gateway: 172.16.9.1
+        mtu: 65520
+        dns:
+          - 1.1.1.1
+          - 1.0.0.1
+        hosts:
+            coprinus0:
+                ip: 172.16.9.1

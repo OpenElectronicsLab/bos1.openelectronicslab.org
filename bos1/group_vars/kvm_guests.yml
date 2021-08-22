@@ -22,3 +22,4 @@ visible_subnets:
   - "{{ oel_subnets['bos1_vpn_boletus1_private'] }}"
   - "{{ oel_subnets['bos1_vpn_boletus2_private'] }}"
   - "{{ oel_subnets['bos1_vpn_boletus3_private'] }}"
+  - "{{ oel_subnets['ams1_vpn_coprinus0_private'] }}"

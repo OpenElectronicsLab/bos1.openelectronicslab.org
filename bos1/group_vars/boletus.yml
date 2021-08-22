@@ -17,6 +17,7 @@ visible_subnets:
   - "{{ oel_subnets['bos1_vpn_boletus1_private'] }}"
   - "{{ oel_subnets['bos1_vpn_boletus2_private'] }}"
   - "{{ oel_subnets['bos1_vpn_boletus3_private'] }}"
+  - "{{ oel_subnets['ams1_vpn_coprinus0_private'] }}"
 
 network_interfaces:
     #enp3s0f0: # disabled for security
@@ -32,6 +33,9 @@ primary_interface: enp3s0f1
 
 wireguard_public_subnet: "{{ oel_subnets.bos1_backhaul }}"
 wireguard_private_subnet: "{{ oel_subnets.bos1_wg_backhaul }}"
+
+wireguard_ams1_bos1_public_subnet: "{{ oel_subnets.bos1_public0 }}"
+wireguard_ams1_bos1_private_subnet: "{{ oel_subnets.wg_ams1_bos1 }}"
 
 pxe_mac: "{{ oel_subnets.bos1_management.hosts[
     inventory_hostname_short].mac }}"

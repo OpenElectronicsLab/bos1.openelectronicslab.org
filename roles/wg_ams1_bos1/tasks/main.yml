@@ -1,0 +1,100 @@
+---
+  - name: make sure debian backports is available
+    apt_repository:
+        repo: deb http://deb.debian.org/debian buster-backports main
+        state: present
+
+  - name: install wireguard
+    apt:
+        name: wireguard
+        state: present
+    register: wireguard_installed
+
+  - name: update the kernel and related packages
+    apt:
+        #name: linux-image-amd64
+        #state: latest
+        upgrade: yes
+        update_cache: yes
+    when: wireguard_installed.changed
+
+
+  - name: create the private key file (for convenience)
+    copy:
+        dest: /etc/wireguard/wireguard-private.key
+        content: "{{ wireguard_private_key | trim }}"
+
+  - name: generate the public key
+    shell: cat /etc/wireguard/wireguard-private.key | wg pubkey
+    changed_when: false
+    register: wg_public_key
+
+  - name: generate the wireguard config file
+    copy:
+        dest: /etc/wireguard/wg_ams1_bos1.conf
+        content: |
+            [Interface]
+            PrivateKey = {{ wireguard_private_key | trim }}
+            ListenPort = 55821
+
+            {% for host in groups['all'] %}
+            {% if hostvars[host].wg_public_key is defined and
+                host != inventory_hostname %}
+            # {{ host }}
+            [Peer]
+            PublicKey = {{ hostvars[host].wg_public_key.stdout }}
+            Endpoint = {{
+                wireguard_ams1_bos1_public_subnet.hosts[
+                    hostvars[host].inventory_hostname_short].ip
+            }}:55821
+            AllowedIPs = {{
+                wireguard_ams1_bos1_private_subnet.hosts[
+                    hostvars[host].inventory_hostname_short].ip
+            }}/32
+            {%- if wireguard_ams1_bos1_private_subnet.hosts[
+                hostvars[host].inventory_hostname_short].subnets
+                is defined %}
+            {%- for subnet in wireguard_ams1_bos1_private_subnet.hosts[
+                hostvars[host].inventory_hostname_short].subnets -%}
+            ,{{ subnet }}
+            {%- endfor %}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+            # coprinus0.ams1.openelectronicslab.org
+            [Peer]
+            PublicKey = 5QXXcEGeY0PFLxunLJVubb/+5tMA/bn2ZO8S1LEemz0=
+            Endpoint = 87.233.128.195:55821
+            AllowedIPs = 172.16.8.20/32, 172.16.9.0/24
+    notify: restart wg_ams1_bos1
+
+  - name: create the Debian network interface config for wg_ams1_bos1
+    copy:
+        dest: /etc/network/interfaces.d/70-wg_ams1_bos1
+        content: |
+            auto wg_ams1_bos1
+            iface wg_ams1_bos1 inet static
+                address {{
+                    wireguard_ams1_bos1_private_subnet.hosts[inventory_hostname_short].ip
+                }}/{{ wireguard_ams1_bos1_private_subnet.CIDR }}
+                pre-up ip link add wg_ams1_bos1 type wireguard
+                pre-up wg setconf wg_ams1_bos1 /etc/wireguard/wg_ams1_bos1.conf
+            {% if wireguard_ams1_bos1_private_subnet.mtu is defined %}
+                pre-up ip link set mtu {{ wireguard_ams1_bos1_private_subnet.mtu
+                    }} up dev wg_ams1_bos1
+            {% else %}
+                pre-up ip link set mtu 1420 up dev wg_ams1_bos1
+            {% endif %}
+                post-down ip link del wg_ams1_bos1
+            {% for hostname,hostvals in
+                wireguard_ams1_bos1_private_subnet.hosts.items() %}
+            {% if hostname != inventory_hostname_short and
+                 hostvals.subnets is defined %}
+            {% for subnet in hostvals.subnets %}
+                post-up ip route add {{ subnet }} dev wg_ams1_bos1
+                pre-down ip route del {{ subnet }} dev wg_ams1_bos1
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+    notify: restart wg_ams1_bos1
+

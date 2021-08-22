@@ -1,0 +1,6 @@
+---
+  - name: restart wg_ams1_bos1
+    command: bash -c "
+        ifdown --ignore-errors wg_ams1_bos1 ;
+        ifup --ignore-errors wg_ams1_bos1
+        "

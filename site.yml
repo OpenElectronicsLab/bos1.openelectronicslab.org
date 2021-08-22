@@ -51,6 +51,7 @@
       - wireguard
       - kvm_host
       - load_balancer
+      - wg_ams1_bos1
 
     # Set up morchella as a NAT and PXE boot server
   - hosts: morchella
