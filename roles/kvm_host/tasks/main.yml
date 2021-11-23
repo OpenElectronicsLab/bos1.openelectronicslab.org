@@ -200,14 +200,14 @@
                         prepare)
                             # detach any host drivers
             {% for device in hostvars[vm].host_devices %}
-                            virsh nodedev-detach {{ device }}
+                            # virsh nodedev-detach {{ device }}
             {% endfor %}
                             ;;
 
                         release)
                             # reattach any host drivers
             {% for device in hostvars[vm].host_devices %}
-                            virsh nodedev-reattach {{ device }}
+                            # virsh nodedev-reattach {{ device }}
             {% endfor %}
                             ;;
                     esac
