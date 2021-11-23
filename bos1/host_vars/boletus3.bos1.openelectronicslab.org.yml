@@ -20,7 +20,7 @@ luks_password: !vault |
 kvm_volumes_provided:
     testvm3_root:
         pool: ssd0_pool
-        size: 8G
+        size: 100G
     kubeworker3_root:
         pool: ssd0_pool
         size: 100G
