@@ -18,6 +18,9 @@ luks_password: !vault |
           6332383530356438633861633230613364643139313238626334
 
 kvm_volumes_provided:
+    testvm0_root:
+        pool: ssd0_pool
+        size: 100G
     kubecontroller0_root:
         pool: ssd0_pool
         size: 50G

@@ -178,6 +178,8 @@ oel_subnets:
         hosts:
             boletus0:
                 ip: 172.16.4.1
+            testvm0:
+                ip: 172.16.4.2
             kubecontroller0:
                 ip: 172.16.4.3
             kubeworker0:
