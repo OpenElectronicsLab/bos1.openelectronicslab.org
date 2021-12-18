@@ -22,6 +22,7 @@ kube_manifests:
   - /var/lib/manifests/test2-kms.yml
   - template://nextcloud.yml
   - template://automated-backups.yml
+  - /var/lib/manifests/mumble.yml
 
 oel_nextcloud_db_admin_password: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0

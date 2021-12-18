@@ -1,0 +1,51 @@
+---
+# a container running a mumble server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: mumble
+spec:
+    selector:
+        matchLabels:
+            app: mumble
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: mumble
+        spec:
+            containers:
+              - name: mumble
+                image: debian:bullseye
+                env:
+                  - name: DEBIAN_FRONTEND
+                    value: noninteractive
+                command:
+                  - /bin/bash
+                  - -c
+                  - |
+                    # install useful packages
+                    apt-get update;
+                    apt-get install -y mumble-server;
+                    echo Starting mumble server;
+                    murmurd -fg -v -ini /etc/mumble-server.ini;
+                    echo Mumble server down;
+                ports:
+                  - containerPort: 64738
+---
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        app: mumble
+    name: mumble-service
+spec:
+    externalTrafficPolicy: Cluster
+    selector:
+        app: mumble
+    ports:
+      - nodePort: 31738
+        port: 64738
+        protocol: TCP
+        targetPort: 64738
+    type: NodePort
