@@ -1,0 +1,10 @@
+---
+#kubevirt_version: v0.40.0
+
+kube_manifests:
+  - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
+  - /var/lib/manifests/letsencrypt-issuer.yml
+  # - /var/lib/manifests/prometheus.yml
+  #- /var/lib/manifests/coprinus-storage-classes.yml
+  - /var/lib/manifests/test1-kms.yml
+  #- template://nextcloud.yml

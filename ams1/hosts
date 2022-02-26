@@ -1,0 +1,9 @@
+# Physical machines:
+
+# Physical server Supermicro X11SSH-F Serial Number: ZM173S022497
+[coprinus]
+coprinus0.ams1.openelectronicslab.org
+
+# Functional machine groups:
+[kubecontrollers]
+coprinus0.ams1.openelectronicslab.org

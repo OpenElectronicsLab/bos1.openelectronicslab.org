@@ -1,0 +1,4 @@
+---
+# Use the current username with "admin" appended as the default remote
+# username (with passwordless sudo).
+ansible_user: "{{ lookup('env', 'USER') }}admin"
