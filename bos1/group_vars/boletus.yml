@@ -37,6 +37,8 @@ wireguard_private_subnet: "{{ oel_subnets.bos1_wg_backhaul }}"
 wireguard_ams1_bos1_public_subnet: "{{ oel_subnets.bos1_public0 }}"
 wireguard_ams1_bos1_private_subnet: "{{ oel_subnets.wg_ams1_bos1 }}"
 
+grub_cmdline_linux: "console=ttyS1,115200 nomodeset"
+
 pxe_mac: "{{ oel_subnets.bos1_management.hosts[
     inventory_hostname_short].mac }}"
 

@@ -138,3 +138,17 @@
         cmd: systemctl daemon-reload &&
             update-rc.d force-to-appear-as-ssd.sh defaults &&
             service force-to-appear-as-ssd.sh start
+
+  - name: Set shared linux kernel parameters in grub
+    lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX='
+        line: 'GRUB_CMDLINE_LINUX="{{ grub_cmdline_linux }}"'
+    notify: update grub
+
+  - name: Set linux kernel parameters for default menu item in grub
+    lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ grub_cmdline_linux_default }}"'
+    notify: update grub
