@@ -177,7 +177,8 @@ spec:
         spec:
             containers:
               - name: nextcloud-frontend
-                image: nextcloud:20
+                image: nextcloud:stable
+                imagePullPolicy: Always
                 env:
                   - name: MYSQL_DATABASE
                     value: nextcloud
