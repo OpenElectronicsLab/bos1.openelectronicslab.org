@@ -2,6 +2,7 @@
 # Use the current username with "admin" appended as the default remote
 # username (with passwordless sudo).
 ansible_user: "{{ lookup('env', 'USER') }}admin"
+# ansible_user: "ericadmin"
 
 # jump host example
 #ssh_jump_host: kendrickshaw.org
@@ -222,6 +223,8 @@ oel_subnets:
                 ip: 172.16.6.3
             kubeworker2:
                 ip: 172.16.6.4
+            venus2:
+                ip: 172.16.6.5
 
     bos1_vpn_boletus3_private:
         name: private.vpn.boletus3.bos1.openelectronicslab.org

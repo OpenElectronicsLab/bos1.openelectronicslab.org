@@ -1,0 +1,10 @@
+---
+ - name: upload vnc setup script
+   copy:
+     src: files/vnc-server-setup.sh
+     dest: /sbin/vnc-server-setup.sh
+     owner: root
+     group: root
+     mode: '0744'
+ - name: run vnc setup scripts
+   command: /sbin/vnc-server-setup.sh

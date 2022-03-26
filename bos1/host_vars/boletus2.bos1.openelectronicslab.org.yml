@@ -30,6 +30,9 @@ kvm_volumes_provided:
     ceph2_hdd0:
         pool: hdd0_pool
         size: 14900G
+    venus2_root:
+        pool: ssd0_pool
+        size: 250G
 
 wireguard_private_key: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0
