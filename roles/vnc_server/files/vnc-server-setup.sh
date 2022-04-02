@@ -5,7 +5,7 @@ set -e
 
 apt update
 apt -y upgrade
-apt install -y \
+DEBIAN_FRONTEND=noninteractive apt -q install -y \
 	autocutsel \
 	build-essential \
 	dbus-x11 \
