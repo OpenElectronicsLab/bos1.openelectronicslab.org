@@ -33,9 +33,9 @@ After=syslog.target network.target
 
 [Service]
 Type=forking
-ExecStartPre=-/usr/bin/vncserver -kill :%i >/dev/null 2>&1
-ExecStart=/usr/bin/vncserver -depth 24 -geometry 1280x960 :%i
-ExecStop=/usr/bin/vncserver -kill :%i
+ExecStartPre=-/usr/bin/passwordless-vncserver -kill :%i >/dev/null 2>&1
+ExecStart=/usr/bin/passwordless-vncserver -depth 24 -geometry 1280x960 :%i
+ExecStop=/usr/bin/passwordless-vncserver -kill :%i
 #ExecReload=
 PIDFile=/home/oeldev/.vnc/%H:%i.pid
 User=oeldev
@@ -55,13 +55,11 @@ chmod -v 600 /home/oeldev/.vnc/passwd
 
 chown -Rv oeldev:oeldev /home/oeldev
 
-if [ -e /etc/tightvncserver.conf ]; then
-	if [ ! -e /etc/tightvncserver.conf.orig ]; then
-		cp -v /etc/tightvncserver.conf{,.orig}
-	fi
-	sed -i -e 's/^#\s*\$authType\s*=.*/$authType = ""/' \
-		/etc/tightvncserver.conf
-	diff -u /etc/tightvncserver.conf.orig /etc/tightvncserver.conf
+if [ ! -e /usr/bin/passwordless-vncserver ]; then
+	cp -v /usr/bin/vncserver /usr/bin/passwordless-vncserver
+	sed -i -e's/^\$authType\s*=[^;]*;/$authType = "";/' \
+		/usr/bin/passwordless-vncserver
+	diff -u /usr/bin/vncserver /usr/bin/passwordless-vncserver
 fi
 
 systemctl daemon-reload
