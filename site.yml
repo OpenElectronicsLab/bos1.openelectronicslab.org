@@ -106,3 +106,7 @@
     roles:
       - apply_kubernetes_manifests
 
+  - hosts: vnc_servers
+    become: true
+    roles:
+      - vnc_server
