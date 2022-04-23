@@ -59,7 +59,7 @@ if [ ! -e /usr/bin/passwordless-vncserver ]; then
 	cp -v /usr/bin/vncserver /usr/bin/passwordless-vncserver
 	sed -i -e's/^\$authType\s*=[^;]*;/$authType = "";/' \
 		/usr/bin/passwordless-vncserver
-	diff -u /usr/bin/vncserver /usr/bin/passwordless-vncserver
+	diff -u /usr/bin/vncserver /usr/bin/passwordless-vncserver || true
 fi
 
 systemctl daemon-reload
