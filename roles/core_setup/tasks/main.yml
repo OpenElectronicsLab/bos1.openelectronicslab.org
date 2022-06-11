@@ -88,6 +88,25 @@
         - net-tools
         - rsync
 
+  - name: add buster-backports if we're using debian buster
+    apt_repository:
+        repo: deb http://deb.debian.org/debian buster-backports main
+        state: present
+    when: ansible_distribution == "Debian" and ansible_distribution_version == "10"
+
+  - name: use the backports version of openssh on debian buster for u2f
+    apt:
+        name: "{{ item }}"
+        state: latest
+        default-release: buster-backports
+        update-cache: yes
+        cache_valid_time: 7200
+    loop:
+        - openssh-client
+        - openssh-server
+        - openssh-sftp-server
+    when: ansible_distribution == "Debian" and ansible_distribution_version == "10"
+
   - name: Add service to force drives to appear as ssds
     when: force_to_appear_as_ssd is defined
     register: force_ssd_result
