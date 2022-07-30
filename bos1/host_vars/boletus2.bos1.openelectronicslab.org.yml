@@ -33,6 +33,9 @@ kvm_volumes_provided:
     venus2_root:
         pool: ssd0_pool
         size: 250G
+    testvm2_root:
+        pool: ssd0_pool
+        size: 100G
 
 wireguard_private_key: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0

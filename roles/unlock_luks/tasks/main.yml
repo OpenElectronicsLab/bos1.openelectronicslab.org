@@ -5,6 +5,7 @@
       - name: check if the server is already available with the user account
         wait_for_connection:
             timeout: 5
+    tags: luks
     rescue:
       # computer locked or user accounts not yet created
       - block:

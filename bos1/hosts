@@ -30,6 +30,7 @@ kubeworker1.private.vpn.boletus1.bos1.openelectronicslab.org
 kubecontroller2.private.vpn.boletus2.bos1.openelectronicslab.org
 kubeworker2.private.vpn.boletus2.bos1.openelectronicslab.org
 venus2.private.vpn.boletus2.bos1.openelectronicslab.org
+testvm2.private.vpn.boletus2.bos1.openelectronicslab.org
 
 [boletus3_guests]
 kubeworker3.private.vpn.boletus3.bos1.openelectronicslab.org
