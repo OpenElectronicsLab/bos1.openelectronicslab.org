@@ -142,6 +142,12 @@
             }
     notify: nftables changed
 
+  - name: enable nftables service
+    service:
+        name: nftables.service
+        enabled: yes
+        state: started
+
   - name: Create the install media directory
     file:
         path: /media/install-media
