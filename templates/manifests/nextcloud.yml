@@ -156,6 +156,14 @@ spec:
             storage: 4Ti
     storageClassName: ceph-filesystem-sc
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nextcloud-php-config
+data:
+  zzz-oel-php-overrides.ini: |
+    memory_limit=4G
+---
 # Deployment for the front-end nextcloud web servers
 apiVersion: apps/v1
 kind: Deployment
@@ -215,11 +223,20 @@ spec:
                 volumeMounts:
                   - name: html-volume
                     mountPath: /var/www/html
+                  - name: php-config
+                    mountPath: /usr/local/etc/php/conf.d/zzz-oel-php-overrides.ini
+                    subPath: zzz-oel-php-overrides.ini
             volumes:
               - name: html-volume
                 persistentVolumeClaim:
                     claimName: nextcloud-files-pvc
                     readOnly: false
+              - name: php-config
+                configMap:
+                  name: nextcloud-php-config
+                  items:
+                    - key: zzz-oel-php-overrides.ini
+                      path: zzz-oel-php-overrides.ini
 ---
 # Service for the nextcloud front-end web servers
 apiVersion: v1
@@ -262,7 +279,6 @@ spec:
                             number: 80
 ---
 # Ingress for nextcloud from nextcloud.openelectronicslab.org
-# TODO: turn on TLS support once DNS points at this server
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
