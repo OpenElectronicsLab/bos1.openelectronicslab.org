@@ -1,0 +1,18 @@
+---
+network_interfaces:
+    enp1s0:
+        subnet: "{{ oel_subnets.bos1_vpn_boletus2_private }}"
+
+kvm_volumes_used:
+  - ssd0_pool/testvm2_root
+
+ssh_jump_host: "{{ lookup('env', 'USER')
+    }}admin@boletus2.bos1.openelectronicslab.org"
+
+ansible_ssh_common_args: "-oServerAliveInterval=3 -oProxyJump={{ ssh_jump_host | default(omit) }}"
+
+host_devices:
+  # Quadro P1000 GPU video
+  - pci_0000_04_00_0
+  # Quadro P1000 GPU audio
+  - pci_0000_04_00_1
