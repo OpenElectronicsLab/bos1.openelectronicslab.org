@@ -89,10 +89,12 @@ spec:
                         secretKeyRef:
                             name: borg-backup-secrets
                             key: borg-passphrase
-                  - name: BORG_REPO
+                  - name: BORG_REPO_LOCAL
                     value: /var/lib/backups/backup.borg
                   - name: BORG_REPO_MAGELLAN
                     value: openelectronicslab_backup@magellan.kendrickshaw.org:/mnt/storage/openelectronicslab_backups/bos1.borg
+                  - name: BORG_REPO_COPRINUS
+                    value: oel_backup@coprinus0.ams1.openelectronicslab.org:/blobs/oel_backup/bos1.borg
                   - name: MYSQL_DATABASE
                     value: nextcloud
                   - name: MYSQL_USER
@@ -253,8 +255,6 @@ spec:
                                 secretKeyRef:
                                     name: borg-backup-secrets
                                     key: borg-passphrase
-                          - name: BORG_REPO
-                            value: /var/lib/backups/backup.borg
                           - name: BORG_REPO_MAGELLAN
                             value: openelectronicslab_backup@magellan.kendrickshaw.org:/mnt/storage/openelectronicslab_backups/bos1.borg
                           - name: MYSQL_DATABASE
@@ -358,8 +358,6 @@ spec:
                                 secretKeyRef:
                                     name: borg-backup-secrets
                                     key: borg-passphrase
-                          - name: BORG_REPO
-                            value: /var/lib/backups/backup.borg
                           - name: BORG_REPO_COPRINUS
                             value: oel_backup@coprinus0.ams1.openelectronicslab.org:/blobs/oel_backup/bos1.borg
                           - name: MYSQL_DATABASE
