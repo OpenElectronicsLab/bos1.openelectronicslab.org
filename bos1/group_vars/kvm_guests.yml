@@ -13,7 +13,7 @@ primary_interface: enp1s0
 ssh_jump_host: "{{ lookup('env', 'USER') }}admin@{{ kvm_host }}"
 ansible_ssh_common_args: "-oServerAliveInterval=3 -oProxyJump={{ ssh_jump_host | default(omit) }}"
 
-grub_cmdline_linux: "console=ttyS0 nomodeset"
+grub_cmdline_linux: "console=ttyS0 nomodeset raid=noautodetect"
 
 visible_subnets:
   - "{{ oel_subnets['bos1_public0'] }}"
