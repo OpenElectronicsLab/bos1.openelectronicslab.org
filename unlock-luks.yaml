@@ -1,0 +1,5 @@
+---
+  - hosts: luks_encrypted_machines
+    gather_facts: false
+    roles:
+      - unlock_luks
