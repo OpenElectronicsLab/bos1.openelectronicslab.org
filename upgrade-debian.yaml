@@ -1,0 +1,45 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: Perform a dist-upgrade.
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+    - name: Autoremove old packages
+      apt:
+        autoremove: yes
+
+    - name: Change apt sources names from buster to bullseye
+      replace:
+        path: /etc/apt/sources.list
+        regexp: buster
+        replace: bullseye
+
+    - name: Fix apt security sources name change
+      replace:
+        path: /etc/apt/sources.list
+        regexp: bullseye/updates
+        replace: bullseye-security
+
+    - name: Upgrade ssh-server to reduce chances of losing ssh during upgrade
+      apt:
+        name: openssh-server
+        state: latest
+        update_cache: yes
+
+    - name: Perform a safe upgrade.
+      apt:
+        upgrade: safe
+        update_cache: yes
+
+    - name: Perform a dist-upgrade.
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+    - name: Autoremove old packages
+      apt:
+        autoremove: yes
