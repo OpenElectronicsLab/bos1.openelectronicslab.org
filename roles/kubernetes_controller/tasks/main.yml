@@ -9,6 +9,17 @@
     register: alternatives_iptables
     changed_when: false
 
+  - name: Workaround for systemd overwriting flannel mac addresses (flannel bug 1155)
+    copy:
+        dest: /etc/systemd/network/10-flannel.link
+        mode: 0755
+        content: |
+            [Match]
+            OriginalName=flannel*
+
+            [Link]
+            MACAddressPolicy=none
+
   - name: switch to legacy iptables
     shell: |
         iptables -F;
