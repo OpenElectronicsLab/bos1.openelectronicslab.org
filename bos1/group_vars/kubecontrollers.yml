@@ -10,7 +10,8 @@ kubevirt_version: v0.40.0
 kube_manifests:
   - https://github.com/rancher/system-upgrade-controller/releases/latest/download/system-upgrade-controller.yaml
   - /var/lib/manifests/k3s-updates.yml
-  - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
+  #- /var/lib/manifests/helm-controller.yaml
+  - https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml
   - /var/lib/manifests/letsencrypt-issuer.yml
   - /var/lib/manifests/prometheus.yml
   - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/crds.yaml
