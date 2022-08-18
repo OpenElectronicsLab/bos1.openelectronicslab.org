@@ -8,6 +8,8 @@ force_to_appear_as_ssd:
 kubevirt_version: v0.40.0
 
 kube_manifests:
+  - https://github.com/rancher/system-upgrade-controller/releases/latest/download/system-upgrade-controller.yaml
+  - /var/lib/manifests/k3s-updates.yml
   - https://github.com/jetstack/cert-manager/releases/download/v1.2.0/cert-manager.yaml
   - /var/lib/manifests/letsencrypt-issuer.yml
   - /var/lib/manifests/prometheus.yml
