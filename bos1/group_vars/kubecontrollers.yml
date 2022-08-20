@@ -5,7 +5,7 @@ kvm_vcpus: 2
 force_to_appear_as_ssd:
   - vda
 
-kubevirt_version: v0.40.0
+kubevirt_version: v0.55.1
 
 kube_manifests:
   - https://github.com/rancher/system-upgrade-controller/releases/latest/download/system-upgrade-controller.yaml
@@ -14,9 +14,9 @@ kube_manifests:
   - https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml
   - /var/lib/manifests/letsencrypt-issuer.yml
   - /var/lib/manifests/prometheus.yml
-  - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/crds.yaml
-  - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/common.yaml
-  - https://raw.githubusercontent.com/rook/rook/release-1.6/cluster/examples/kubernetes/ceph/operator.yaml
+  - https://raw.githubusercontent.com/rook/rook/v1.7.11/cluster/examples/kubernetes/ceph/crds.yaml
+  - https://raw.githubusercontent.com/rook/rook/v1.7.11/cluster/examples/kubernetes/ceph/common.yaml
+  - https://raw.githubusercontent.com/rook/rook/v1.7.11/cluster/examples/kubernetes/ceph/operator.yaml
   - /var/lib/manifests/rook-cluster.yml
   - /var/lib/manifests/rook-ceph-tools.yml
   - /var/lib/manifests/storage-classes.yml
@@ -27,6 +27,7 @@ kube_manifests:
   - template://nextcloud.yml
   - template://automated-backups.yml
   - /var/lib/manifests/mumble.yml
+    #- /var/lib/manifests/gitlab.yml
 
 oel_nextcloud_db_admin_password: !vault |
           $ANSIBLE_VAULT;1.2;AES256;vault0
