@@ -18,8 +18,9 @@ kube_manifests:
   - https://raw.githubusercontent.com/rook/rook/v1.9.9/deploy/examples/common.yaml
   - https://raw.githubusercontent.com/rook/rook/v1.9.9/deploy/examples/monitoring/rbac.yaml
   - https://raw.githubusercontent.com/rook/rook/v1.9.9/deploy/examples/operator.yaml
+  - https://raw.githubusercontent.com/rook/rook/v1.9.9/deploy/examples/toolbox.yaml
   - /var/lib/manifests/rook-cluster.yml
-  - /var/lib/manifests/rook-ceph-tools.yml
+    #- /var/lib/manifests/rook-ceph-tools.yml
   - /var/lib/manifests/storage-classes.yml
   - https://github.com/kubevirt/kubevirt/releases/download/{{ kubevirt_version }}/kubevirt-operator.yaml
   - https://github.com/kubevirt/kubevirt/releases/download/{{ kubevirt_version }}/kubevirt-cr.yaml
