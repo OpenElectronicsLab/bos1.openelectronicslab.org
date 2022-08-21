@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitlab
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: gitlab-chart
+  namespace: kube-system
+spec:
+  repo: https://charts.gitlab.io
+  chart: gitlab
+  targetNamespace: gitlab
+  set:
+    # see https://docs.gitlab.com/charts/charts/globals
+    # and https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/values.yaml
+
+    global.ingress.configureCertmanager: false
+    global.hosts.domain: openelectronicslab.org
+    global.edition: "ce"
+    global.hosts.externalIP: "154.3.222.202"
+    #global.hosts.gitlab.name: gitlab.openelectronicslab.org 
+    #global.hosts.registry.name: registry.openelectronicslab.org 
+    #global.hosts.minio.name: minio.openelectronicslab.org 
+    #global.hosts.pages.name: pages.openelectronicslab.org 
+    #global.hosts.smartcard.name: smartcard.openelectronicslab.org 
+    #global.hosts.kas.name: kas.openelectronicslab.org 
+    #global.hosts.ssh.name: gitlab.openelectronicslab.org 
+
+    # don't install another certmanager (we already have one)
+    certmanager.install: false
+    certmanager.installCRDs: false
+    certmanager.rbac.create: false
+
+    # use traefik as our ingress
+    ingress.configureCertmanager: false
+
+    # don't install an nginx ingress (we have traefic)
+    # fixme: need to add manual creation of cert-manager certs 
+    global.hosts.https: false
+    nginx-ingress.enabled: false
+
+    # set up some initial storage classes (just small devices for the moment)
+    gitlab.gitaly.persistence.storageClass: ceph-block-sc
+    gitlab.gitaly.persistence.size: "50Gi"
+    postgresql.persistence.storageClass: ceph-block-sc
+    postgresql.persistence.size: "10Gi"
+    minio.persistence.storageClass: ceph-block-sc
+    minio.persistence.size: "50Gi"
+    redis.master.persistence.storageClass: ceph-block-sc
+    redis.master.persistence.size: "10Gi"
+    
+#    nginx-ingress.rbac.createRole: false
+#    prometheus.rbac.create: false
+#    gitlab-runner.rbac.create: false
+#  valuesContent: |-
+#    gitlab:
+#      gitaly:
+#        persistence:
+#          storageClass: ceph-block-sc
+#          size: "50Gi"
+#    postgresql:
+#      persistence:
+#        storageClass: ceph-block-sc
+#        size: "8Gi"
+#    minio:
+#      persistence:
+#        storageClass: ceph-block-sc
+#        size: "10Gi"
+#    redis:
+#      master:
+#        persistence:
+#          storageClass: ceph-block-sc
+#          size: "5Gi"
