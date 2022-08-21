@@ -23,13 +23,13 @@ spec:
   repo: https://charts.bitnami.com/bitnami
   chart: grafana
   targetNamespace: monitoring
----
-apiVersion: helm.cattle.io/v1
-kind: HelmChart
-metadata:
-  name: node-exporter
-  namespace: kube-system
-spec:
-  repo: https://charts.bitnami.com/bitnami
-  chart: node-exporter
-  targetNamespace: monitoring
+#---
+#apiVersion: helm.cattle.io/v1
+#kind: HelmChart
+#metadata:
+#  name: node-exporter
+#  namespace: kube-system
+#spec:
+#  repo: https://charts.bitnami.com/bitnami
+#  chart: node-exporter
+#  targetNamespace: monitoring
