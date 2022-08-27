@@ -17,29 +17,28 @@ spec:
     # see https://docs.gitlab.com/charts/charts/globals
     # and https://gitlab.com/gitlab-org/charts/gitlab/-/blob/master/values.yaml
 
+    # use traefik as our ingress
     global.ingress.configureCertmanager: "false"
+    global.ingress.enabled: "false"
+
     global.hosts.domain: openelectronicslab.org
     global.edition: "ce"
     global.hosts.externalIP: "154.3.222.202"
-    #global.hosts.gitlab.name: gitlab.openelectronicslab.org
-    #global.hosts.registry.name: registry.openelectronicslab.org
-    #global.hosts.minio.name: minio.openelectronicslab.org
+    global.hosts.https: "false"
+    global.hosts.gitlab.name: gitlab.openelectronicslab.org
+    global.hosts.registry.name: registry.gitlab.openelectronicslab.org
+    global.hosts.minio.name: minio.gitlab.openelectronicslab.org
+    global.hosts.kas.name: kas.gitlab.openelectronicslab.org
+    global.hosts.ssh.name: ssh.gitlab.openelectronicslab.org
     #global.hosts.pages.name: pages.openelectronicslab.org
     #global.hosts.smartcard.name: smartcard.openelectronicslab.org
-    #global.hosts.kas.name: kas.openelectronicslab.org
-    #global.hosts.ssh.name: gitlab.openelectronicslab.org
 
     # don't install another certmanager (we already have one)
     certmanager.install: "false"
     certmanager.installCRDs: "false"
     certmanager.rbac.create: "false"
 
-    # use traefik as our ingress
-    ingress.configureCertmanager: "false"
-
     # don't install an nginx ingress (we have traefic)
-    # fixme: need to add manual creation of cert-manager certs
-    global.hosts.https: "false"
     nginx-ingress.enabled: "false"
 
     # set up some initial storage classes (just small devices for the moment)
@@ -51,26 +50,114 @@ spec:
     minio.persistence.size: "50Gi"
     redis.master.persistence.storageClass: ceph-block-sc
     redis.master.persistence.size: "10Gi"
-
-#    nginx-ingress.rbac.createRole: "false"
-#    prometheus.rbac.create: "false"
-#    gitlab-runner.rbac.create: "false"
-#  valuesContent: |-
-#    gitlab:
-#      gitaly:
-#        persistence:
-#          storageClass: ceph-block-sc
-#          size: "50Gi"
-#    postgresql:
-#      persistence:
-#        storageClass: ceph-block-sc
-#        size: "8Gi"
-#    minio:
-#      persistence:
-#        storageClass: ceph-block-sc
-#        size: "10Gi"
-#    redis:
-#      master:
-#        persistence:
-#          storageClass: ceph-block-sc
-#          size: "5Gi"
+---
+# manually exposed ingress for gitlab
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gitlab-ingress
+  namespace: gitlab
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+spec:
+    tls:
+      - hosts:
+          - gitlab.openelectronicslab.org
+        secretName: gitlab-openelectronicslab-org-tls
+    rules:
+      - host: gitlab.openelectronicslab.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: gitlab-chart-webservice-default
+                        port:
+                            number: 8181
+---
+# manually exposed ingress for registry.gitlab
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: registry-gitlab-ingress
+  namespace: gitlab
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+spec:
+    tls:
+      - hosts:
+          - registry.gitlab.openelectronicslab.org
+        secretName: registry-gitlab-openelectronicslab-org-tls
+    rules:
+      - host: registry.gitlab.openelectronicslab.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: gitlab-chart-registry
+                        port:
+                            number: 5000
+---
+# manually exposed ingress for kas.gitlab
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kas-gitlab-ingress
+  namespace: gitlab
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+spec:
+    tls:
+      - hosts:
+          - kas.gitlab.openelectronicslab.org
+        secretName: kas-gitlab-openelectronicslab-org-tls
+    rules:
+      - host: kas.gitlab.openelectronicslab.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: gitlab-chart-kas
+                        port:
+                            number: 8150
+              - pathType: Prefix
+                path: /k8s-proxy/
+                backend:
+                    service:
+                        name: gitlab-chart-kas
+                        port:
+                            number: 8154
+---
+# manually exposed ingress for minio.gitlab
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-gitlab-ingress
+  namespace: gitlab
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-issuer
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+spec:
+    tls:
+      - hosts:
+          - minio.gitlab.openelectronicslab.org
+        secretName: minio-gitlab-openelectronicslab-org-tls
+    rules:
+      - host: minio.gitlab.openelectronicslab.org
+        http:
+            paths:
+              - pathType: Prefix
+                path: /
+                backend:
+                    service:
+                        name: gitlab-chart-minio-svc
+                        port:
+                            number: 9000
